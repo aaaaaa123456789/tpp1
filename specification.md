@@ -66,7 +66,7 @@ Note that there is no way to read MR3, nor to write to MR4 directly. This is int
 
 ROM banks are 4000-byte contiguous and aligned portions of ROM, identified by 16-bit numbers incrementing from 0 (where 0 is the home bank). Bank number 0 is always mapped to the 0000-3FFF block; this cannot be changed. The bank that is mapped to the 4000-7FFF block is selected by the MR0 and MR1 registers, where MR0 contains the low-order byte and MR1 the high-order byte.
 
-Writing to either register shall change the mapped bank immediately. Writing 0 to both registers maps bank 0 to the 4000-7FFF area; no "0 to 1" conversion is performed as in MBC1-3. (In other words, selecting bank 0 behaves as in MBC5.) If a bank number that is higher than the highest available bank (as indicated by the cartridge header) is selected, behavior (with respect to the 4000-7FFF block) is undefined as long as that bank remains selected.
+Writing to either register shall change the mapped bank immediately. Writing 0 to both registers maps bank 0 to the 4000-7FFF area; no "0 to 1" conversion is performed, as opposed to the behavior shown by MBC1-3. (In other words, selecting bank 0 behaves as in MBC5.) If a bank number that is higher than the highest available bank (as indicated by the cartridge header) is selected, behavior (with respect to the 4000-7FFF block) is undefined as long as that bank remains selected.
 
 ### MR2: SRAM bank selection
 
@@ -81,7 +81,7 @@ The following values can be written to MR3. Writing a value not in this list can
 * A000-BFFF mapping control:
     * **00:** map control registers
     * **02:** map SRAM banks, read-only
-    * **03:** map SRAM banks, read-write
+    * **03:** map SRAM banks, read/write
     * **05:** map RTC latched registers
 * RTC control:
     * **10:** latch RTC registers
@@ -107,7 +107,7 @@ The MR4 register is a read-only register that contains information about the cur
 
 The rumble speed bits contain a value from 0 to 3 indicating the current speed of the rumble (off, slow, medium, fast). The RTC on flag indicates whether the RTC is ticking or not. The RTC overflow flag is set by the RTC hardware whenever the RTCW register overflows, and can only be cleared manually by writing 14 to the MR3 register.
 
-Note that bits other than the ones described above are undefined, and may contain any value. (Our recommendation, for consistency with other unused bits throughout the hardware, is to set all unused bits. However, this is an optional recommendation, and thus software must not rely on it.)
+Note that bits other than the ones described above are undefined, and may contain any value. (Our recommendation, for consistency with other unused bits throughout the hardware, is to return set bits for all unused bits. However, this is an optional recommendation, and thus software must not rely on it.)
 
 ## Initial status
 
@@ -125,7 +125,7 @@ This section describes how the hardware responds whenever a value is written to 
 
 ### A000-BFFF mapping control
 
-These values determine exactly what is mapped to the A000-BFFF area. The cartridge shall behave on power-up as if 00 was written to MR3.
+These values determine exactly what is mapped to the A000-BFFF area. The cartridge shall behave on power-up as if 00 was written to MR3. Note that attempting to map non-existent hardware to this area (such as SRAM when zero banks of it have been declared, or RTC latch registers when the cartridge header declares no RTC) results in undefined behavior with respect to this area as long as nothing else is mapped to it.
 
 * **00:** control registers are mapped to the A000-BFFF area, in read-only mode. The MR0, MR1, MR2 and MR4 registers can be read from this area; the lowest two bits of the address select which register is read. Writing to this area is ignored when control registers are mapped to it. (Note that MR0, MR1 and MR2 can still be written to in the usual way.) The registers are mirrored every four bytes across the entire address block: A000, A004, and so on are mapped to MR0; A001, A005 and so on to MR1; A002, A006 and so on to MR2; and A003, A007 and so on to MR4.
 * **02:** a bank of SRAM is mapped to the A000-BFFF area, in read-only mode. Writes are silently discarded while in this mode. (The bank that is mapped is selected by the MR2 register.)
@@ -134,7 +134,7 @@ These values determine exactly what is mapped to the A000-BFFF area. The cartrid
 
 ### RTC control
 
-These values control the functioning of the RTC.
+These values control the functioning of the RTC. The software must wait 3 microseconds before attempting to access RTC latch registers after writing 10 or 11 to MR3.
 
 * **10:** latches the real RTC registers into the RTC latch registers, thus allowing these values to be read. (The real RTC registers are inaccessible to the user.) The RTC latch registers can then be accessed (both to read and to write them) by writing 05 to MR3.
 * **11:** sets the RTC's time, by copying the value of the RTC latch registers into the real RTC registers. (Note that the RTC latch registers can be set by writing 05 to MR3 and accessing them in the A000-BFFF area.) This is the only way the real RTC registers can be written to.
@@ -158,7 +158,7 @@ The four registers, identified as RTCW, RTCDH, RTCM and RTCS, split the time int
 
 The RTCDH register contains two fields: the upper 3 bits contain the day of the week, and the lower 5 bits contain the hour. The other three registers (RTCW, RTCM and RTCS) respectively contain the week number, the minutes and the seconds; all bits of the respective registers are used for that purpose.
 
-As long as the RTCS, RTCM and RTCDH registers are set to values within their valid ranges, the RTC hardware must ensure that they roll over properly (seconds into minutes, minutes into hours, and so on); if the values are set to out of range values, behavior is unspecified. The RTCW register does not have a constrained range of validity, since all values in the 0-FF range are valid week numbers; if this register "rolls over", the RTC overflow flag (in MR4) must be set.
+As long as the RTCS, RTCM and RTCDH registers are set to values within their valid ranges, the RTC hardware must ensure that they roll over properly (seconds into minutes, minutes into hours, and so on); if the values are set to out of range values, behavior is unspecified. The RTCW register does not have a constrained range of validity, since all values in the 0-FF range are valid week numbers; if this register "rolls over", the RTC overflow flag (in MR4) must be set. Note that the RTC overflow flag is never cleared by the RTC hardware; instead, the software must explicitly clear it by writing 14 to MR3.
 
 **Important:** after writing 10 or 11 to MR3, the software must wait at least 3 microseconds before attempting to access the RTC latch registers. (That is 3 clock cycles in normal speed mode, or 6 cycles in GBC double speed mode; the duration of a `nop` instruction is considered to be 1 cycle.) Not following this wait period may result in any undefined behavior, even if the registers are only accessed for reading.
 
@@ -172,7 +172,7 @@ Therefore, for cartridges using this specification, the following values must be
 * **0148:** ROM size. This value is set in the usual way, with some extended values. Namely, the value is a shift count; the size of the ROM can be obtained by shifting the value 2 (for banks) or 8000 (for bytes) by the amount specified here. The maximum value that this byte can take is F, for a ROM size of 10000 banks (or 40000000 bytes, that is, 1 GiB).
 * **0150:** major version number. For this version of the specification, this byte must contain the value 1.
 * **0151:** minor version number. For this version of the specification, this byte must contain the value 0.
-* **0152:** RAM size. Contains a value indicating the size of the SRAM in the cartridge. If no SRAM is present, this byte must be set to 0; otherwise, is set to a value between 1 and 9 indicating respectively 1, 2, 4, 8, 10, 20, 40, 80 or 100 banks of SRAM. (This value is therefore also a shift count.)
+* **0152:** RAM size. Contains a value indicating the size of the SRAM in the cartridge. If no SRAM is present, this byte must be set to 0; otherwise, it must be set to a value between 1 and 9 indicating respectively 1, 2, 4, 8, 10, 20, 40, 80 or 100 banks of SRAM. (This value is therefore also a shift count.)
 * **0153:** feature fields. This value contains bit flags indicating which features the cartridge uses. The flags are as follows, where a set bit indicates presence of the feature and a clear bit indicates absence (and bit 0 is the least significant bit): bit 0: rumble, bit 1: multiple rumble speeds (if this bit is clear, the highest rumble speed allowed is 1), bit 2: RTC. Upper (unused) bits must be unset.
 
 A consequence of the permitted values above is that both ROM size and RAM size can only be set to a power of two that is at least as large as the size of the addressing spaces they respectively have assigned (with the exception of RAM size having zero as an acceptable value). This is intentional and by design.
