@@ -64,7 +64,7 @@ Note that there is no way to read MR3, nor to write to MR4 directly. This is int
 
 ### MR0 and MR1: ROM bank selection
 
-ROM banks are 4000-byte contiguous and aligned portions of ROM, identified by 16-bit numbers incrementing from 0 (where 0 is the home bank). Bank number 0 is always mapped to the 0000-3FFF block; this cannot be changed. The bank that is mapped to the 4000-7FFF block is selected by the MR0 and MR1 registers, where MR0 contains the low-order byte and MR1 the high-order byte.
+ROM banks are 4000-byte contiguous and aligned portions of ROM, identified by 2-byte numbers incrementing from 0 (where 0 is the home bank). Bank number 0 is always mapped to the 0000-3FFF block; this cannot be changed. The bank that is mapped to the 4000-7FFF block is selected by the MR0 and MR1 registers, where MR0 contains the low-order byte and MR1 the high-order byte.
 
 Writing to either register shall change the mapped bank immediately. Writing 0 to both registers maps bank 0 to the 4000-7FFF area; no "0 to 1" conversion is performed, as opposed to the behavior shown by MBC1-3. (In other words, selecting bank 0 behaves as in MBC5.) If a bank number that is higher than the highest available bank (as indicated by the cartridge header) is selected, behavior (with respect to the 4000-7FFF block) is undefined as long as that bank remains selected.
 
