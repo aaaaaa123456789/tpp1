@@ -6,3 +6,4 @@
 *.asm text
 *.txt text
 *.md  text
+Makefile text
