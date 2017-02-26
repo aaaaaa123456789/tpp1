@@ -1,0 +1,4 @@
+[submodule "rgbds"]
+	path = rgbds
+	url = https://github.com/TwitchPlaysPokemon/rgbds.git
+	branch = tpp1spec
