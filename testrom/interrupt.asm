@@ -70,6 +70,8 @@ VBlank::
 	dec b
 	jr nz, .loop
 
+	call UpdateJoypad
+
 	pop af
 	pop hl
 	pop de

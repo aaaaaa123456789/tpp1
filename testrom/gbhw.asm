@@ -31,20 +31,10 @@ MR3_RUMBLE_HIGH         EQU $23
 
 rJOYP       EQU $ff00 ; Joypad (R/W)
 rDIV        EQU $ff04 ; Divider Register (R/W)
-rTIMA       EQU $ff05 ; Timer counter (R/W)
-rTMA        EQU $ff06 ; Timer Modulo (R/W)
-rTAC        EQU $ff07 ; Timer Control (R/W)
-rTAC_ON        EQU 2
-rTAC_4096_HZ   EQU 0
-rTAC_262144_HZ EQU 1
-rTAC_65536_HZ  EQU 2
-rTAC_16384_HZ  EQU 3
-rIF         EQU $ff0f ; Interrupt Flag (R/W)
 rLCDC       EQU $ff40 ; LCD Control (R/W)
 rSTAT       EQU $ff41 ; LCDC Status (R/W)
 rLY         EQU $ff44 ; LCDC Y-Coordinate (R)
 rLYC        EQU $ff45 ; LY Compare (R/W)
-rDMA        EQU $ff46 ; DMA Transfer and Start Address (W)
 rWY         EQU $ff4a ; Window Y Position (R/W)
 rWX         EQU $ff4b ; Window X Position minus 7 (R/W)
 rIE         EQU $ffff ; Interrupt Enable (R/W)

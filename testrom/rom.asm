@@ -18,10 +18,11 @@ INCLUDE "rst.asm"
 SECTION "Interrupts", ROM0[$40]
 
 INCLUDE "interrupt.asm"
+INCLUDE "highhome.asm"
 
 SECTION "Header", ROM0[$100]
 	ld [hGBType], a
-	db $18, $52 ; jr $0154, but rgbds doesn't like compiling a jr across section boundaries
+	db $18, $50 ; jr $0154, but rgbds doesn't like compiling a jr across section boundaries
 	
 	rept $50
 		db $00
@@ -30,5 +31,7 @@ SECTION "Header", ROM0[$100]
 SECTION "Main", ROM0[$154]
 
 INCLUDE "main.asm"
+INCLUDE "util.asm"
 
 Font:: INCLUDE "font.asm"
+ExtendedFont:: INCLUDE "fontext.asm"
