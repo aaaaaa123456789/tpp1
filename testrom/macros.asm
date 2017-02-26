@@ -12,6 +12,7 @@ hlcoord EQUS "coord hl, "
 decoord EQUS "coord de, "
 
 LINES_PER_VBLANK EQU 6
+
 SCREEN_WIDTH EQU 20
 SCREEN_HEIGHT EQU 18
 

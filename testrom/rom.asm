@@ -32,6 +32,7 @@ SECTION "Main", ROM0[$154]
 
 INCLUDE "main.asm"
 INCLUDE "util.asm"
+INCLUDE "copy.asm"
 
 Font:: INCLUDE "font.asm"
 ExtendedFont:: INCLUDE "fontext.asm"

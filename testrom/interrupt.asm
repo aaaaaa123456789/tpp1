@@ -43,12 +43,14 @@ VBlank::
 	ld a, e
 	and $e0
 	ld e, a
-	lb bc, LINES_PER_VBLANK, SCREEN_WIDTH
+	lb bc, LINES_PER_VBLANK, SCREEN_WIDTH / 5
 
 .loop
-	ld a, [hli]
-	ld [de], a
-	inc de
+	rept 5
+		ld a, [hli]
+		ld [de], a
+		inc de
+	endr
 	dec c
 	jr nz, .loop
 	ld a, e
@@ -66,7 +68,7 @@ VBlank::
 	xor a
 .line_OK
 	ld [hVBlankLine], a
-	ld c, SCREEN_WIDTH
+	ld c, SCREEN_WIDTH / 5
 	dec b
 	jr nz, .loop
 
