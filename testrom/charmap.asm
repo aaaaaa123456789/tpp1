@@ -1,6 +1,9 @@
 	charmap "<lt>", $3c ;<
 	charmap "<gt>", $3e ;>
+
 	charmap "<@>", $00
+	charmap "<LF>", $0a
+
 	charmap "<->", $10
 	charmap "<|>", $11
 	charmap "<TL>", $12

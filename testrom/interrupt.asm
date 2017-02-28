@@ -73,6 +73,13 @@ VBlank::
 	jr nz, .loop
 
 	call UpdateJoypad
+	
+	ld hl, hFrameCounter
+	inc [hl]
+	jr nz, .frame_counter_done
+	inc hl
+	inc [hl]
+.frame_counter_done
 
 	pop af
 	pop hl

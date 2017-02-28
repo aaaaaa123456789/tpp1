@@ -5,15 +5,22 @@ ClearScreen::
 	rst FillByte
 	ret
 
-InvertByte::
+Load1bpp::
+	; loads a 1bpp from de at tile hl, a tiles long
 	push bc
-	lb bc, 0, 8
+	ld b, a
+	ld c, 8
 .loop
-	add a, a
-	rr b
+	ld a, [de]
+	call InvertByte
+	ld [hli], a
+	ld [hli], a
+	inc de
 	dec c
 	jr nz, .loop
-	ld a, b
+	ld c, 8
+	dec b
+	jr nz, .loop
 	pop bc
 	ret
 
@@ -25,9 +32,10 @@ UpdateJoypad::
 	; so in order to select direction keys (bit 4), we need to set bit 4 to 0... don't even ask
 	ld a, $2f
 	ld [c], a
-	; D-Pad keys seem to take two reads to stabilize. Source: lots of probably unverified code in the wild that probably also took each other as source
-	ld a, [c]
-	ld a, [c]
+	; D-Pad keys seem to take six reads to stabilize. Source: lots of probably unverified code in the wild that probably also took each other as source
+	rept 6
+		ld a, [c]
+	endr
 	; ...and we invert it, because remember, bits are *cleared* to indicate a button pressed!
 	cpl
 	and 15
@@ -36,12 +44,13 @@ UpdateJoypad::
 	; ...now with buttons...
 	ld a, $1f
 	ld [c], a
-	; ...which seem to take 6 reads to stabilize... (source: voodoo incantations found in most code out there)
+	; ...which seem to take 6 reads to stabilize as well... (source: voodoo incantations found in most code out there)
 	rept 6
 		ld a, [c]
 	endr
 	; ...and another inversion
 	cpl
+	and 15
 	; combine with the previous result...
 	or b
 	ld [hButtonsHeld], a

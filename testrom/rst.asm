@@ -16,3 +16,25 @@ EmptyString::
 
 _FillByte::
 	jp FillByteFunction
+
+_ContinueDelayFrames:
+	pop af
+	dec a
+	jr nz, _LoopDelayFrames
+	ret
+
+_DelayFrames::
+	and a
+	ret z
+_LoopDelayFrames:
+	push af
+	call DelayFrame
+	jr _ContinueDelayFrames
+
+_PrintString::
+	push bc
+	push af
+	call PrintStringFunction
+	pop af
+	pop bc
+	ret

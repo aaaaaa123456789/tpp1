@@ -29,3 +29,5 @@ D_DOWN     EQU $80
 Reset EQU $00
 CopyString EQU $08
 FillByte EQU $10
+DelayFrames EQU $18
+PrintString EQU $20

@@ -60,21 +60,14 @@ CopyBytesUntilMatch::
 	pop bc
 	ret
 
-Load1bpp::
-	; loads a 1bpp from de at tile hl, a tiles long
+InvertByte::
 	push bc
-	ld b, a
-	ld c, 8
+	lb bc, 0, 8
 .loop
-	ld a, [de]
-	call InvertByte
-	ld [hli], a
-	ld [hli], a
-	inc de
+	add a, a
+	rr b
 	dec c
 	jr nz, .loop
-	ld c, 8
-	dec b
-	jr nz, .loop
+	ld a, b
 	pop bc
 	ret
