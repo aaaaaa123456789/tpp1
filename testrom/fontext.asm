@@ -14,7 +14,3 @@
 	db $00, $00, $7F, $7F, $3E, $1C, $08, $00 ;arrow pointing down
 	db $3C, $42, $99, $A5, $BD, $A5, $42, $3C ;A button
 	db $3C, $42, $81, $81, $81, $81, $42, $3C ;button
-	
-	rept 4 * 8
-		nop
-	endr

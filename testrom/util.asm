@@ -61,3 +61,13 @@ UpdateJoypad::
 	and b
 	ld [hButtonsPressed], a
 	ret
+
+WaitForAPress::
+	ld a, [hButtonsPressed]
+	and A_BUTTON
+	jr nz, WaitForAPress
+.loop
+	ld a, [hButtonsPressed]
+	and A_BUTTON
+	jr z, .loop
+	ret

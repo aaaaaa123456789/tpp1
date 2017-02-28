@@ -14,6 +14,9 @@ Random::
 	ld l, a
 	pop af
 	xor [hl]
+	ld h, a
+	ld a, [rDIV]
+	xor h
 	pop hl
 	ret
 

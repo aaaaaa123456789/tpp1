@@ -29,7 +29,7 @@ Init::
 	call Load1bpp
 	ld de, ExtendedFont
 	ld hl, vTilesLow tile $10
-	ld a, $10
+	ld a, $c
 	call Load1bpp
 	ld a, $ff
 	ld bc, $a0
@@ -121,11 +121,8 @@ Main::
 	decoord 5, 17
 	ld hl, .continue_string
 	rst CopyString
-.end
-	ld a, $ff
-	rst DelayFrames
-	halt
-	jr .end
+	call WaitForAPress
+	jp MainMenu
 
 .print_pass_fail_from_zero
 	ld hl, .pass_string

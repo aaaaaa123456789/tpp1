@@ -12,7 +12,7 @@ _CopyString::
 	ret
 	
 EmptyString::
-	db $00
+	db "<@>"
 
 _FillByte::
 	jp FillByteFunction
