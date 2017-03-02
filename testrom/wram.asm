@@ -6,6 +6,8 @@ wScreenBuffer:: ds SCREEN_HEIGHT * SCREEN_WIDTH
 
 wRandomSeed:: ds 8
 
+wSelectedMenu:: ds 2
+
 SECTION "Program stack", WRAM0[$cf00]
 
 Stack:: ds $100

@@ -20,8 +20,8 @@ _FillByte::
 _ContinueDelayFrames:
 	pop af
 	dec a
-	jr nz, _LoopDelayFrames
-	ret
+	ret z
+	jr _LoopDelayFrames
 
 _DelayFrames::
 	and a

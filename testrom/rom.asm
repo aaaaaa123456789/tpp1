@@ -39,5 +39,7 @@ INCLUDE "math.asm"
 INCLUDE "random.asm"
 INCLUDE "banktest.asm"
 
+INCLUDE "menudata.asm"
+
 Font:: INCLUDE "font.asm"
 ExtendedFont:: INCLUDE "fontext.asm"
