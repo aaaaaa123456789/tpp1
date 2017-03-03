@@ -31,10 +31,14 @@ MR3_RUMBLE_HIGH         EQU $23
 
 rJOYP       EQU $ff00 ; Joypad (R/W)
 rDIV        EQU $ff04 ; Divider Register (R/W)
+rIF         EQU $ff0f ; Interrupt Flag (R/W)
 rLCDC       EQU $ff40 ; LCD Control (R/W)
 rSTAT       EQU $ff41 ; LCDC Status (R/W)
 rLY         EQU $ff44 ; LCDC Y-Coordinate (R)
 rLYC        EQU $ff45 ; LY Compare (R/W)
 rWY         EQU $ff4a ; Window Y Position (R/W)
 rWX         EQU $ff4b ; Window X Position minus 7 (R/W)
+rKEY1       EQU $ff4d ; CGB Mode Only - Prepare Speed Switch
+rBGPI       EQU $ff68 ; CGB Mode Only - Background Palette Index
+rBGPD       EQU $ff69 ; CGB Mode Only - Background Palette Data
 rIE         EQU $ffff ; Interrupt Enable (R/W)

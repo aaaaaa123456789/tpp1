@@ -21,7 +21,7 @@ ClearMemory::
 	jr nz, .loop
 	dec b
 	jr nz, .loop
-	ld c, $80
+	ld c, $81 ;skip hGBType
 .hram_loop
 	ld [c], a
 	inc c

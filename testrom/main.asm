@@ -44,6 +44,7 @@ Init::
 	ld bc, $400
 	ld a, " "
 	rst FillByte
+	call LoadPalettes
 	ld a, 1
 	ld [rIE], a
 	ld hl, rLCDC
@@ -122,6 +123,7 @@ Main::
 	ld hl, .continue_string
 	rst CopyString
 	call WaitForAPress
+	call DoubleSpeed
 	jp MainMenu
 
 .print_pass_fail_from_zero

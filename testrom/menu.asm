@@ -1,11 +1,12 @@
 MainMenu::
-	ld hl, wSelectedMenu
+	ld hl, hSelectedMenu
 	ld a, MainTestingMenu & $ff
 	ld [hli], a
-	ld [hl], MainTestingMenu >> 8
+	ld a, MainTestingMenu >> 8
+	ld [hli], a
 	xor a
-	ld [hFirstOption], a
-	ld [hSelectedOption], a
+	ld [hli], a
+	ld [hl], a
 	inc a
 	ld [hNextMenuAction], a
 	call RenderMenu

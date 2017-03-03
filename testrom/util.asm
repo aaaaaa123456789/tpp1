@@ -71,3 +71,50 @@ WaitForAPress::
 	and A_BUTTON
 	jr z, .loop
 	ret
+
+DoubleSpeed::
+	; set double speed if we're on a GBC. This should make some stuff faster.
+	ld a, [hGBType]
+	cp $11
+	ret nz
+	; if we're already in double speed, do nothing
+	ld a, [rKEY1]
+	cp $80
+	ret nc
+	; otherwise, prepare a speed switch
+	or 1
+	ld [rKEY1], a
+	ld a, $3f
+	ld [rJOYP], a
+	xor a
+	ld [rIF], a
+	ld [rIE], a
+	; and do it
+	stop
+	; finally, restore rIE
+	inc a
+	ld [rIE], a
+	ret
+
+LoadPalettes::
+	ld a, [hGBType]
+	cp $11
+	ret nz
+	ld a, $80
+	ld [rBGPI], a
+	ld c, rBGPD & $ff
+	ld a, $ff
+	ld [c], a
+	ld [c], a
+	ld a, $b5
+	ld [c], a
+	ld a, $56
+	ld [c], a
+	ld a, $4a
+	ld [c], a
+	ld a, $29
+	ld [c], a
+	xor a
+	ld [c], a
+	ld [c], a
+	ret
