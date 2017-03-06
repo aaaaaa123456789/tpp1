@@ -5,11 +5,12 @@ MainMenu::
 	ld [hSelectedMenu + 1], a
 	ld a, ACTION_RELOAD
 	ld [hNextMenuAction], a
-	call RenderMenu
+	jr .loop_tail
 .loop
 	call DelayFrame
 	call GetMenuJoypad
 	call nz, UpdateMenuContents
+.loop_tail
 	call RenderMenu
 	jr .loop
 
@@ -110,15 +111,15 @@ RenderMenu:
 	rst AddNTimes
 	ld [hl], "<RIGHT>"
 .invalid_cursor_position
-	hlcoord 17, 3
+	hlcoord 18, 4
 	ld a, [hFirstOption]
 	and a
-	ld [hl], " "
+	ld [hl], "<->"
 	jr z, .cannot_scroll_up
 	ld [hl], "<UP>"
 .cannot_scroll_up
-	inc hl
-	ld [hl], " "
+	hlcoord 18, 17
+	ld [hl], "<->"
 	add a, OPTIONS_PER_SCREEN + 1
 	ld e, a
 	ld a, [hOptionCount]
