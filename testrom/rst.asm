@@ -38,3 +38,11 @@ _PrintString::
 	pop af
 	pop bc
 	ret
+
+_AddNTimes::
+	and a
+	ret z
+	push bc
+	call AddNTimesFunction
+	pop bc
+	ret

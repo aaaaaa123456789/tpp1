@@ -191,7 +191,7 @@ StableRandom::
 	ld h, b
 	ld l, d
 	ld a, 210
-	call AddNTimes
+	rst AddNTimes
 	ld a, l
 	ld b, h
 	pop hl

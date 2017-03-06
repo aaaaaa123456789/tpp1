@@ -44,12 +44,8 @@ Multiply16::
 	pop af
 	ret
 
-AddNTimes::
-	; adds a * bc to hl, preserving bc
-	and a
-	ret z
-	push bc
-.loop
+AddNTimesFunction::
+	; adds a * bc to hl
 	rra ; and a from below and above resets carry
 	jr nc, .no_add
 	add hl, bc
@@ -57,7 +53,5 @@ AddNTimes::
 	sla c
 	rl b
 	and a
-	jr nz, .loop
-.done
-	pop bc
-	ret
+	ret z
+	jr AddNTimesFunction

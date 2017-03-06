@@ -65,12 +65,15 @@ UpdateJoypad::
 WaitForAPress::
 	ld a, [hButtonsPressed]
 	and A_BUTTON
-	jr nz, WaitForAPress
+	jr z, .loop
+	call DelayFrame
+	jr WaitForAPress
 .loop
 	ld a, [hButtonsPressed]
 	and A_BUTTON
-	jr z, .loop
-	ret
+	ret nz
+	call DelayFrame
+	jr .loop
 
 DoubleSpeed::
 	; set double speed if we're on a GBC. This should make some stuff faster.
@@ -97,13 +100,22 @@ DoubleSpeed::
 	ret
 
 LoadPalettes::
+	; only load them if we're on a GBC
 	ld a, [hGBType]
 	cp $11
 	ret nz
-	ld a, $80
+	; initialize the register to a convenient location
+	ld a, $be
 	ld [rBGPI], a
+	; and load all palettes just in case, so we don't have to care about a dirty attribute map
+	ld b, 8
 	ld c, rBGPD & $ff
-	ld a, $ff
+.loop
+	; we load an actual four-shade grayscale just in case some code eventually uses shades 1 and 2
+	xor a
+	ld [c], a
+	ld [c], a
+	dec a
 	ld [c], a
 	ld [c], a
 	ld a, $b5
@@ -114,7 +126,6 @@ LoadPalettes::
 	ld [c], a
 	ld a, $29
 	ld [c], a
-	xor a
-	ld [c], a
-	ld [c], a
+	dec b
+	jr nz, .loop
 	ret
