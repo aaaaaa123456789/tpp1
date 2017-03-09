@@ -140,3 +140,19 @@ LoadPalettes::
 	dec b
 	jr nz, .loop
 	ret
+
+PrintHexByte::
+	; prints a (as a two-digit hex value) to hl; returns hl incremented
+	push af
+	swap a
+	call .print_nibble
+	pop af
+.print_nibble
+	and 15
+	add a, "0"
+	cp "9" + 1
+	jr c, .digit
+	add a, "A" - ("9" + 1)
+.digit
+	ld [hli], a
+	ret
