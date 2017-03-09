@@ -135,7 +135,7 @@ RenderMenu:
 	ld [hNextMenuAction], a
 	ret
 
-GetMenuJoypad:
+GetMenuJoypad::
 	; reacts to only buttons pressed alone, other than A and B (B taking priority). That way we eliminate combined presses
 	push hl
 	ld a, [hButtonsPressed]
@@ -323,7 +323,18 @@ ExecuteSelectedOption:
 
 	and a
 	jr nz, .not_exec
-	jp hl
+	push hl
+	ld a, [hFirstOption]
+	ld e, a
+	ld a, [hSelectedOption]
+	sub e
+	ld bc, SCREEN_WIDTH
+	hlcoord 5, 1
+	rst AddNTimes
+	ld [hl], "<HRIGHT>"
+	ld a, 12
+	rst DelayFrames
+	ret ;jump to the pushed hl
 
 .not_exec
 	dec a

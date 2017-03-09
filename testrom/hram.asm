@@ -6,6 +6,13 @@ hButtonsLast     EQU $ff83
 
 hProduct         EQU $ff84 ;4 bytes
 
+hHexEntryCount   EQU $ffed
+hHexEntryData    EQU $ffee ;2 bytes
+hHexEntryByte    EQU $fff0
+hHexEntryCurrent EQU $fff1
+hHexEntryRow     EQU $fff2
+hHexEntryColumn  EQU $fff3
+
 hSelectedMenu    EQU $fff4 ;2 bytes
 hFirstOption     EQU $fff6
 hSelectedOption  EQU $fff7

@@ -8,6 +8,10 @@ coord: MACRO
 	ld \1, wScreenBuffer + (\2) + ((\3) * SCREEN_WIDTH)
 ENDM
 
+dwcoord: MACRO
+	dw wScreenBuffer + (\1) + ((\2) * SCREEN_WIDTH)
+ENDM
+
 const_def: MACRO
 const_value = 0
 ENDM
@@ -48,6 +52,11 @@ ENDM
 end_menu: MACRO
 	option_label {option_number}
 	dw -1
+ENDM
+
+hex_input: MACRO
+	dw \3
+	dwcoord \1, \2
 ENDM
 
 hlcoord EQUS "coord hl, "
@@ -100,3 +109,4 @@ FillByte EQU $10
 DelayFrames EQU $18
 PrintString EQU $20
 AddNTimes EQU $28
+CopyBytes EQU $30

@@ -46,3 +46,11 @@ _AddNTimes::
 	call AddNTimesFunction
 	pop bc
 	ret
+
+_CopyBytes::
+	push af
+	inc b
+	inc c
+	call CopyBytesFunction
+	pop af
+	ret

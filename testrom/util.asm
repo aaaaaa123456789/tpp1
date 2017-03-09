@@ -5,6 +5,17 @@ ClearScreen::
 	rst FillByte
 	ret
 
+CopyBytesFunctionLoop:
+	ld a, [hli]
+	ld [de], a
+	inc de
+CopyBytesFunction::
+	dec c
+	jr nz, CopyBytesFunctionLoop
+	dec b
+	jr nz, CopyBytesFunctionLoop
+	ret
+
 Load1bpp::
 	; loads a 1bpp from de at tile hl, a tiles long
 	push bc
