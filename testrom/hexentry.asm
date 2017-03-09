@@ -98,10 +98,48 @@ UpdateHexDigits:
 	ld a, c
 	cp b
 	jr c, .initial_loop
+	ld a, [hHexEntryCount]
+	sub b
+	jr z, .finished_entry
+	ld b, a
+	inc hl
+	inc hl
+	call .print_current
+.clear_loop
+	dec b
+	jr z, .done
+	inc hl
+	inc hl
+	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	ld a, "_"
+	ld [de], a
+	inc de
+	ld [de], a
+	jr .clear_loop
+.done
+	ld hl, .exit_string
+.update_option
+	decoord 16, 17
+	rst CopyString
+	ret
+
+.finished_entry
+	ld hl, .done_string
+	jr .update_option
+
+.exit_string
+	db "exit<@>"
+.done_string
+	db "done<@>"
+
+.print_byte
 	; ...
 	ret
 
-.print_byte
+.print_current
 	; ...
 	ret
 
