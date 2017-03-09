@@ -83,6 +83,25 @@ DrawHexEntryMenu:
 UpdateHexDigits:
 	xor a
 	ld [hVBlankLine], a
+	ld a, [hHexEntryByte]
+	ld b, a
+	ld hl, hHexEntryData
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld c, 0
+	jr .handle_initial_loop
+.initial_loop
+	call .print_byte
+	inc c
+.handle_initial_loop
+	ld a, c
+	cp b
+	jr c, .initial_loop
+	; ...
+	ret
+
+.print_byte
 	; ...
 	ret
 
