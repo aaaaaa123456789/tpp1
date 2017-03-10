@@ -4,7 +4,7 @@ MainTestingMenu::
 	option "Option 1", OPTION_MENU, MainTestingMenu
 	option "Option 2", OPTION_MENU, MainTestingMenu
 	option "Option 3", OPTION_MENU, MainTestingMenu
-	option "Option 4", OPTION_MENU, MainTestingMenu
+	option "Test hex entry", OPTION_EXEC, TestHexEntry
 	option "Option 5", OPTION_MENU, MainTestingMenu
 	option "Option 6", OPTION_MENU, MainTestingMenu
 	option "Option 7", OPTION_MENU, MainTestingMenu
@@ -31,3 +31,36 @@ MainTestingMenu::
 	option "Option 28", OPTION_MENU, MainTestingMenu
 	option "Option 29", OPTION_MENU, MainTestingMenu
 	end_menu
+
+TestHexEntry:
+	hlcoord 0, 0
+	lb de, SCREEN_WIDTH, SCREEN_HEIGHT
+	call Textbox
+	hlcoord 2, 2
+	ld de, .screen_text
+	rst PrintString
+	ld hl, .hex_entries
+	call HexadecimalEntry
+	ret c
+	ld hl, .confirmation_text
+	decoord 5, 16
+	rst CopyString
+	call WaitForAPress
+	ret
+
+.screen_text
+	db "C600:<LF><LF>"
+	db "C640:<LF><LF>"
+	db "C800:<@>"
+
+.hex_entries
+	hex_input 8, 2, $c601
+	hex_input 10, 2, $c600
+	hex_input 8, 4, $c641
+	hex_input 10, 4, $c640
+	hex_input 8, 6, $c801
+	hex_input 10, 6, $c800
+	dw 0
+
+.confirmation_text
+	db "<A> Continue<@>"

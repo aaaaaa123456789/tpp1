@@ -119,8 +119,7 @@ LoadPalettes::
 	ld a, $be
 	ld [rBGPI], a
 	; and load all palettes just in case, so we don't have to care about a dirty attribute map
-	ld b, 8
-	ld c, rBGPD & $ff
+	lb bc, 8, rBGPD & $ff
 .loop
 	; we load an actual four-shade grayscale just in case some code eventually uses shades 1 and 2
 	xor a

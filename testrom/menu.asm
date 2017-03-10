@@ -329,7 +329,7 @@ ExecuteSelectedOption:
 	ld a, [hSelectedOption]
 	sub e
 	ld bc, SCREEN_WIDTH
-	hlcoord 5, 1
+	hlcoord 1, 5
 	rst AddNTimes
 	ld [hl], "<HRIGHT>"
 	ld a, 12

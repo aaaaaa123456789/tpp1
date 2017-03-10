@@ -12,6 +12,11 @@ dwcoord: MACRO
 	dw wScreenBuffer + (\1) + ((\2) * SCREEN_WIDTH)
 ENDM
 
+writecoord: MACRO
+	db $ea ;ld [nnnn], a
+	dwcoord \1, \2
+ENDM
+
 const_def: MACRO
 const_value = 0
 ENDM

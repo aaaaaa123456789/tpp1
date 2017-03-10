@@ -1,4 +1,5 @@
 HexadecimalEntry::
+	; returns carry if cancelled or no carry if accepted
 	ld a, l
 	ld [hHexEntryData], a
 	ld a, h
@@ -136,11 +137,45 @@ UpdateHexDigits:
 	db "done<@>"
 
 .print_byte
-	; ...
+	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	push hl
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld a, [de]
+	call PrintHexByte
+	pop hl
+	inc hl
+	inc hl
 	ret
 
 .print_current
-	; ...
+	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	ld a, [hHexEntryCurrent]
+	cp 16
+	jr c, .print_digit
+	ld a, "-"
+	ld [de], a
+	inc de
+	ld a, "_"
+	ld [de], a
+	ret
+.print_digit
+	add a, "0"
+	cp "9" + 1
+	jr c, .true_digit
+	add a, "A" - ("9" + 1)
+.true_digit
+	ld [de], a
+	inc de
+	ld a, "-"
+	ld [de], a
 	ret
 
 UpdateHexEntryCursor:
@@ -265,10 +300,14 @@ ExecuteHexEntryAction:
 	ld a, [hHexEntryCount]
 	cp b
 	ret nz
+	call CalculateCurrentCursorPosition
+	ld [hl], " "
 	ld a, 2
 	ld [hHexEntryRow], a
 	ld a, 5
 	ld [hHexEntryColumn], a
+	ld a, "<RIGHT>"
+	writecoord 15, 17
 	ret
 
 .cancel_current_byte
