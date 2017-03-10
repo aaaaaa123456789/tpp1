@@ -1,3 +1,17 @@
+MakeCurrentTextbox::
+	; same as Textbox, but it also sets it as current
+	ld a, l
+	ld [hTextboxPointer], a
+	ld a, h
+	ld [hTextboxPointer + 1], a
+	ld a, d
+	ld [hTextboxWidth], a
+	ld a, e
+	ld [hTextboxHeight], a
+	xor a
+	ld [hTextboxLine], a
+	; fallthrough
+
 Textbox::
 	; draw at hl, d tiles wide, e tiles tall
 	; minimum values for each are 2
@@ -74,3 +88,137 @@ PrintStringFunction:
 .done
 	add sp, 2
 	ret
+
+PrintHexByte::
+	; prints a (as a two-digit hex value) to hl; returns hl incremented
+	push af
+	swap a
+	call .print_nibble
+	pop af
+.print_nibble
+	and 15
+	add a, "0"
+	cp "9" + 1
+	jr c, .digit
+	add a, "A" - ("9" + 1)
+.digit
+	ld [hli], a
+	ret
+
+ScrollTextbox::
+	push hl
+	push de
+	push bc
+	ld a, [hTextboxPointer]
+	ld l, a
+	ld a, [hTextboxPointer + 1]
+	ld h, a
+	ld de, SCREEN_WIDTH
+	add hl, de
+	inc hl
+	push hl
+	add hl, de
+	pop de
+	ld a, [hTextboxHeight]
+	sub 2
+	ld b, a
+.loop
+	dec b
+	jr z, .done
+	ld a, [hTextboxWidth]
+	sub 2
+	ld c, a
+	push hl
+.inner_loop
+	ld a, [hli]
+	ld [de], a
+	inc de
+	dec c
+	jr nz, .inner_loop
+	pop de
+	ld hl, SCREEN_WIDTH
+	add hl, de
+	jr .loop
+.done
+	ld a, [hTextboxWidth]
+	sub 2
+	ld c, a
+	ld a, " "
+	ld h, d
+	ld l, e
+.clear_loop
+	ld [hli], a
+	dec c
+	jr nz, .clear_loop
+	pop bc
+	pop de
+	pop hl
+	ld a, [hTextboxLine]
+	sub 1
+	ret c
+	ld [hTextboxLine], a
+	ret
+
+PrintFunction::
+	ld d, h
+	ld e, l
+	ld a, [hTextboxHeight]
+	sub 2
+	ld b, a
+.line_loop
+	call .print_line
+	and a
+	jr nz, .line_loop
+	ret
+
+.print_line
+	ld a, [hTextboxLine]
+	cp b
+	jr c, .go
+	call ScrollTextbox
+	jr .print_line
+.go
+	push bc
+	ld c, a
+	ld a, [hTextboxPointer]
+	ld l, a
+	ld a, [hTextboxPointer + 1]
+	ld h, a
+	ld a, c
+	inc hl
+	inc a
+	ld [hTextboxLine], a
+	ld bc, SCREEN_WIDTH
+	rst AddNTimes
+	pop bc
+	ld a, [hTextboxWidth]
+	sub 2
+	ld c, a
+.loop
+	ld a, [de]
+	inc de
+	and a
+	ret z
+	cp "<LF>"
+	ret z
+	cp $a0
+	jr nc, .print_value
+	ld [hli], a
+.handle_loop
+	dec c
+	jr nz, .loop
+	ret
+
+.print_value
+	push bc
+	ld b, a
+	ld a, [de]
+	inc de
+	ld c, a
+	ld a, [bc]
+	call PrintHexByte
+	pop bc
+	ld a, c ;non-zero
+	dec c
+	ret z
+	jr .handle_loop

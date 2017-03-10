@@ -16,6 +16,19 @@ CopyBytesFunction::
 	jr nz, CopyBytesFunctionLoop
 	ret
 
+FillByteFunction::
+	inc b
+	inc c
+	jr .handle_loop
+.loop
+	ld [hli], a
+.handle_loop
+	dec c
+	jr nz, .loop
+	dec b
+	jr nz, .loop
+	ret
+
 Load1bpp::
 	; loads a 1bpp from de at tile hl, a tiles long
 	push bc
@@ -138,20 +151,4 @@ LoadPalettes::
 	ld [c], a
 	dec b
 	jr nz, .loop
-	ret
-
-PrintHexByte::
-	; prints a (as a two-digit hex value) to hl; returns hl incremented
-	push af
-	swap a
-	call .print_nibble
-	pop af
-.print_nibble
-	and 15
-	add a, "0"
-	cp "9" + 1
-	jr c, .digit
-	add a, "A" - ("9" + 1)
-.digit
-	ld [hli], a
 	ret

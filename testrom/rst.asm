@@ -17,11 +17,13 @@ EmptyString::
 _FillByte::
 	jp FillByteFunction
 
+_FinishPopping:
+	pop de
+	jr _PopAFBC
+
 _ContinueDelayFrames:
 	pop af
 	dec a
-	ret z
-	jr _LoopDelayFrames
 
 _DelayFrames::
 	and a
@@ -35,6 +37,7 @@ _PrintString::
 	push bc
 	push af
 	call PrintStringFunction
+_PopAFBC:
 	pop af
 	pop bc
 	ret
@@ -54,3 +57,10 @@ _CopyBytes::
 	call CopyBytesFunction
 	pop af
 	ret
+
+_Print::
+	push bc
+	push af
+	push de
+	call PrintFunction
+	jr _FinishPopping

@@ -1,6 +1,6 @@
 MainTestingMenu::
 	menu "Test menu", MainTestingMenu
-	option "Option 0", OPTION_MENU, MainTestingMenu
+	option "Test text boxes", OPTION_EXEC, TestTextboxes
 	option "Option 1", OPTION_MENU, MainTestingMenu
 	option "Option 2", OPTION_MENU, MainTestingMenu
 	option "Option 3", OPTION_MENU, MainTestingMenu
@@ -54,13 +54,39 @@ TestHexEntry:
 	db "C800:<@>"
 
 .hex_entries
-	hex_input 8, 2, $c601
-	hex_input 10, 2, $c600
-	hex_input 8, 4, $c641
-	hex_input 10, 4, $c640
-	hex_input 8, 6, $c801
-	hex_input 10, 6, $c800
+	hex_input_dw 8, 2, $c600
+	hex_input_dw 8, 4, $c640
+	hex_input_dw 8, 6, $c800
 	dw 0
 
 .confirmation_text
 	db "<A> Continue<@>"
+
+TestTextboxes:
+	hlcoord 0, 0
+	lb de, SCREEN_WIDTH, SCREEN_HEIGHT
+	call MakeCurrentTextbox
+	ld bc, 0
+.loop
+	call DelayFrame
+	call GetMenuJoypad
+	cp MENU_B
+	ret z
+	dec a
+	jr nz, .loop
+	inc bc
+	ld a, c
+	ld [hTemp], a
+	ld a, b
+	ld [hTemp + 1], a
+	ld hl, .text
+	rst Print
+	ld a, 2
+	rst DelayFrames
+	jr .loop
+
+.text
+	db "Line #"
+	bigdw hTemp + 1
+	bigdw hTemp
+	db ".<@>"

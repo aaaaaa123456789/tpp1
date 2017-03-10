@@ -33,7 +33,6 @@ SECTION "Main", ROM0[$154]
 INCLUDE "main.asm"
 INCLUDE "menu.asm"
 INCLUDE "util.asm"
-INCLUDE "copy.asm"
 INCLUDE "text.asm"
 INCLUDE "hexentry.asm"
 INCLUDE "math.asm"

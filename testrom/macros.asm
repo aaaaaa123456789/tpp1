@@ -2,6 +2,10 @@ lb: MACRO
 	ld \1, (((\2) & $ff) << 8) | ((\3) & $ff)
 ENDM
 
+bigdw: MACRO
+	db (\1) >> 8, (\1) & $ff
+ENDM
+
 tile EQUS " + $10 * "
 
 coord: MACRO
@@ -64,6 +68,11 @@ hex_input: MACRO
 	dwcoord \1, \2
 ENDM
 
+hex_input_dw: MACRO
+	hex_input \1, \2, (\3) + 1
+	hex_input (\1) + 2, \2, \3
+ENDM
+
 hlcoord EQUS "coord hl, "
 decoord EQUS "coord de, "
 
@@ -108,6 +117,7 @@ SCREEN_HEIGHT EQU 18
 	const ACTION_REDRAW
 	const ACTION_UPDATE
 
+; RSTs
 Reset EQU $00
 CopyString EQU $08
 FillByte EQU $10
@@ -115,3 +125,4 @@ DelayFrames EQU $18
 PrintString EQU $20
 AddNTimes EQU $28
 CopyBytes EQU $30
+Print EQU $38
