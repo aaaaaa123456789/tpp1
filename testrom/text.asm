@@ -1,3 +1,8 @@
+MakeFullscreenTextbox::
+	hlcoord 0, 0
+	lb de, SCREEN_WIDTH, SCREEN_HEIGHT
+	; fallthrough
+
 MakeCurrentTextbox::
 	; same as Textbox, but it also sets it as current
 	ld a, l
