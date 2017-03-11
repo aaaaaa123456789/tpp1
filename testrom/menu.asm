@@ -74,8 +74,9 @@ RenderMenu:
 	call FindOptionByNumber
 	ld bc, 0
 .loop
-	ld a, h
-	and l
+	inc hl
+	ld a, [hld]
+	and [hl]
 	inc a
 	jr z, .done
 	push hl
