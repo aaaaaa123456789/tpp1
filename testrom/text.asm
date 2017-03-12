@@ -94,22 +94,6 @@ PrintStringFunction:
 	add sp, 2
 	ret
 
-PrintHexByte::
-	; prints a (as a two-digit hex value) to hl; returns hl incremented
-	push af
-	swap a
-	call .print_nibble
-	pop af
-.print_nibble
-	and 15
-	add a, "0"
-	cp "9" + 1
-	jr c, .digit
-	add a, "A" - ("9" + 1)
-.digit
-	ld [hli], a
-	ret
-
 ScrollTextbox::
 	push hl
 	push de
@@ -227,3 +211,44 @@ PrintFunction::
 	dec c
 	ret z
 	jr .handle_loop
+
+MessageBox:
+	push bc
+	push de
+	push hl
+	hlcoord 0, 8
+	ld de, wSavedScreenData
+	ld bc, 4 * SCREEN_WIDTH
+	push hl
+	rst CopyBytes
+	pop hl
+	lb de, SCREEN_WIDTH, 4
+	call Textbox
+	pop de
+	hlcoord 1, 9
+	rst PrintString
+	ld a, 6
+	ld [hVBlankLine], a
+	call WaitForButtonPress
+	xor a
+	ld [hVBlankLine], a
+	ld hl, wSavedScreenData
+	decoord 0, 8
+	ld bc, 4 * SCREEN_WIDTH
+	rst CopyBytes
+	ld a, 2
+	rst DelayFrames
+	pop de
+	pop bc
+	ret
+
+EndFullscreenTextbox::
+	ld hl, EmptyString
+	push hl
+	rst Print
+	pop hl
+	rst Print
+	ld hl, ContinueString
+	decoord 5, 16
+	rst CopyString
+	jp WaitForAPress

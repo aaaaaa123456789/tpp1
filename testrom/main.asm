@@ -1,4 +1,18 @@
 Init::
+	and a
+	jr nz, .initialize
+	ld hl, wRandomSeed + 7
+	ld c, 4
+.random_saving_loop
+	ld a, [hld]
+	ld e, a
+	ld a, [hld]
+	ld d, a
+	push de
+	dec c
+	jr nz, .random_saving_loop
+	jr .got_random_seed
+.initialize
 	di
 	ld sp, StackTop
 	call VBlankBusyWait
@@ -12,6 +26,7 @@ Init::
 	call GetRandomSeed
 	push bc
 	push de
+.got_random_seed
 	call ClearMemory
 	ld hl, wRandomSeed
 	ld c, 4
@@ -120,7 +135,7 @@ Main::
 	ld a, 10
 	rst DelayFrames
 	decoord 5, 17
-	ld hl, .continue_string
+	ld hl, ContinueString
 	rst CopyString
 	call WaitForAPress
 	call DoubleSpeed
@@ -160,6 +175,3 @@ Main::
 	db "MR4[0:1] = 0:<@>"
 .rom1_string
 	db "ROM1 mapped:<@>"
-
-.continue_string
-	db "<A> Continue<@>"

@@ -2,7 +2,7 @@ _Reset::
 	di
 	xor a
 	ld sp, StackTop
-	jp $0154
+	jp Init
 
 _CopyString::
 	push af

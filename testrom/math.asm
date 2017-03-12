@@ -55,3 +55,61 @@ AddNTimesFunction::
 	and a
 	ret z
 	jr AddNTimesFunction
+
+DivideByTen::
+	; divides bcde by 10, remainder in a
+	push hl
+	ld h, 0
+	ld l, b
+	call .divide
+	ld b, l
+	ld l, c
+	call .divide
+	ld c, l
+	ld l, d
+	call .divide
+	ld d, l
+	ld l, e
+	call .divide
+	ld e, l
+	ld a, h
+	pop hl
+	ret
+
+.divide
+	; divides hl by 10, quotient in l, remainder in h
+	; required h < 10
+	push bc
+	ld bc, 0
+	srl h
+	rr l
+	rr c
+	ld a, l
+	and 15
+	add a, c
+	ld c, a
+	ld a, l
+	swap a
+	and 15
+	ld b, a
+	add a, c
+	ld c, a
+	ld a, h
+	swap a
+	add a, h
+	add a, b
+	ld b, a
+	add a, a
+	add a, b
+	ld l, a
+	ld a, h
+	add a, c
+	rlca
+	pop bc
+.loop
+	ld h, a
+	cp 10
+	ret c
+	sub 10
+	inc l
+	jr .loop

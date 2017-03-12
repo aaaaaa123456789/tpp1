@@ -6,7 +6,8 @@ hButtonsLast     EQU $ff83
 
 hProduct         EQU $ff84 ;4 bytes
 
-hTemp            EQU $ff88 ;4 bytes
+hCurrent         EQU $ff88 ;2 bytes
+hMax             EQU $ff8a ;2 bytes
 
 hTextboxPointer  EQU $ffe8 ;2 bytes
 hTextboxWidth    EQU $ffea

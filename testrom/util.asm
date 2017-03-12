@@ -99,6 +99,27 @@ WaitForAPress::
 	call DelayFrame
 	jr .loop
 
+WaitForButtonPress::
+	; returns carry if B is pressed or nc if A is pressed
+	push bc
+	ld a, [hButtonsPressed]
+	cpl
+	ld b, a
+.loop
+	call DelayFrame
+	ld a, [hButtonsPressed]
+	ld c, a
+	cpl
+	or b
+	ld b, a
+	and c
+	and A_BUTTON | B_BUTTON
+	jr z, .loop
+	pop bc
+	cp B_BUTTON ;carry if only A was pressed
+	scf
+	ret
+
 DoubleSpeed::
 	; set double speed if we're on a GBC. This should make some stuff faster.
 	ld a, [hGBType]

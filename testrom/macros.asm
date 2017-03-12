@@ -3,7 +3,10 @@ lb: MACRO
 ENDM
 
 bigdw: MACRO
-	db (\1) >> 8, (\1) & $ff
+	rept _NARG
+		db (\1) >> 8, (\1) & $ff
+		shift
+	endr
 ENDM
 
 tile EQUS " + $10 * "

@@ -26,6 +26,10 @@ MR3_RUMBLE_LOW          EQU $21
 MR3_RUMBLE_MED          EQU $22
 MR3_RUMBLE_HIGH         EQU $23
 
+MR3ROMSize  EQU $0148
+MR3RAMSize  EQU $0152
+MR3Features EQU $0153
+
 ; GB hardware registers. Mostly stolen from Prism.
 ; Only kept the ones which might have some relevance.
 

@@ -37,9 +37,10 @@ INCLUDE "text.asm"
 INCLUDE "hexentry.asm"
 INCLUDE "math.asm"
 INCLUDE "random.asm"
-INCLUDE "banktest.asm"
+INCLUDE "printnum.asm"
 
 INCLUDE "menudata.asm"
+INCLUDE "strings.asm"
 
 INCLUDE "rom_tests.asm"
 
