@@ -15,22 +15,24 @@ VBlank::
 	
 	reti ; $50 handler
 	
-	add a, a
-	add a, a
-	add a, c
-	add a, a
+	cp SCREEN_HEIGHT
+	jr nc, .no_screen_update
 	add a, a
 	db $18, $01 ;skip the next instruction
 	
 	reti ; $58 handler
-	
-	ld b, 0
-	rl b
+
+	add a, a
+	add a, c
+	add a, a
+	add a, a	
 	ld c, a
 	db $18, $01 ;skip the next instruction
-	
+
 	reti ; $60 handler
-	
+
+	ld b, 0
+	rl b	
 	ld hl, wScreenBuffer
 	add hl, bc
 	ld a, [hVBlankLine]
@@ -71,6 +73,7 @@ VBlank::
 	ld c, SCREEN_WIDTH / 5
 	dec b
 	jr nz, .loop
+.no_screen_update
 
 	call UpdateJoypad
 	
