@@ -196,6 +196,13 @@ PrintFunction::
 .handle_loop
 	dec c
 	jr nz, .loop
+	ld a, [de]
+	inc de
+	and a
+	ret z
+	cp "<LF>"
+	ret z
+	dec de
 	ret
 
 .print_value

@@ -198,20 +198,22 @@ TestROMBankRange:
 
 .testing_text
 	db "Testing ROM banks<LF>"
+	db "$"
 	bigdw wInitialROMBank + 1, wInitialROMBank
-	db "-"
+	db "-$"
 	bigdw wFinalROMBank + 1, wFinalROMBank
 	db ", every<LF>"
+	db "$"
 	bigdw wROMBankStep
 	db " bank(s)...<@>"
 
 .failed_text
-	db "FAILED: bank "
+	db "FAILED: bank $"
 	bigdw hCurrent + 1, hCurrent
 	db "<@>"
 
 .invalid_bank_text
-	db "ERROR: bank "
+	db "ERROR: bank $"
 	bigdw hCurrent + 1, hCurrent
 	db "<LF>"
 	db "is not valid<@>"
