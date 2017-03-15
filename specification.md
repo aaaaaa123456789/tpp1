@@ -5,7 +5,7 @@
 * [Features](#features)
 * [Address blocks](#address-blocks)
 * [Mapper registers](#mapper-registers)
-    * [MR0 and MR1: ROM bank selection] (#mr0-and-mr1-rom-bank-selection)
+    * [MR0 and MR1: ROM bank selection](#mr0-and-mr1-rom-bank-selection)
     * [MR2: SRAM bank selection](#mr2-sram-bank-selection)
     * [MR3: control register](#mr3-control-register)
     * [MR4: status register](#mr4-status-register)
@@ -37,7 +37,6 @@ This specification supports the following features in the cartridge:
 * 2 MiB SRAM size (100 banks)
 * Real-time clock, accurate to 1 second, with a 5 year capacity
 * Rumble, with up to 3 different speeds
-
 ## Address blocks
 
 This mapper uses the address blocks assigned to the cartridge for its own functioning, besides their regular purposes. In particular, the three address blocks that are used as the following ones:
