@@ -37,6 +37,7 @@ This specification supports the following features in the cartridge:
 * 2 MiB SRAM size (100 banks)
 * Real-time clock, accurate to 1 second, with a 5 year capacity
 * Rumble, with up to 3 different speeds
+
 ## Address blocks
 
 This mapper uses the address blocks assigned to the cartridge for its own functioning, besides their regular purposes. In particular, the three address blocks that are used as the following ones:
