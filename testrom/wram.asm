@@ -14,7 +14,8 @@ wDigitsBuffer:: ds 11 ;c1ed
 wInitialROMBank:: ds 2 ;c1f8
 wFinalROMBank:: ds 2 ;c1fa
 wROMBankStep:: ds 1 ;c1fc
-wROMBankErrors: ds 3 ;c1fd
+
+wErrorCount: ds 3 ;c1fd
 
 SECTION "Program stack", WRAM0[$cf00]
 

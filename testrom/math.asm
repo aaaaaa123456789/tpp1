@@ -113,3 +113,32 @@ DivideByTen::
 	sub 10
 	inc l
 	jr .loop
+
+CountLeadingZeros::
+	; counts the leading 0 bits in bcde, returns in a (0 - 32)
+	push hl
+	xor a
+	ld l, b
+	call .count
+	jr c, .done
+	ld l, c
+	call .count
+	jr c, .done
+	ld l, d
+	call .count
+	jr c, .done
+	ld l, e
+	call .count
+.done
+	pop hl
+	ret
+
+.count
+	ld h, 8
+.loop
+	sla l
+	ret c
+	inc a
+	dec h
+	jr nz, .loop
+	ret

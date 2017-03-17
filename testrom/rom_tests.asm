@@ -1,3 +1,73 @@
+TestROMBankSampleOption::
+	call ClearErrorCount
+	call MakeFullscreenTextbox
+	ld hl, .testing_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	call GetMaxValidROMBank
+	jr nc, .valid_max
+	ld de, $ffff
+	call IncrementErrorCount
+	ld hl, UnknownMaxBankString
+	rst Print
+.valid_max
+	xor a
+	ld [hCurrent], a
+	ld [hCurrent + 1], a
+	ld b, a
+	ld c, a
+	ld [bc], a ; MR0 = 0
+	ld [rMR1w], a
+	call TestROMHomeBank
+	jr nc, .home_passed
+	call IncrementErrorCount
+	ld hl, BankFailedString
+	rst Print
+.home_passed
+	ld bc, 0
+	call CountLeadingZeros
+	cpl
+	add a, 33
+	add a, a
+	dec a
+	ld [hMax], a ;test between 1 and 63 random banks based on ROM size
+.loop
+	call Random
+	and d
+	ld b, a
+	call Random
+	and e
+	ld c, a
+	or b
+	jr z, .loop
+	ld a, c
+	ld hl, rMR0w
+	ld [hli], a
+	ld [hl], b
+	ld [hCurrent], a
+	ld a, b
+	ld [hCurrent + 1], a
+	call TestROMBank
+	jr nc, .passed
+	call IncrementErrorCount
+	ld hl, BankFailedString
+	rst Print
+.passed
+	ld a, [hMax]
+	dec a
+	ld [hMax], a
+	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
+	call GenerateErrorCountString
+	rst Print
+	jp EndFullscreenTextbox
+
+.testing_text
+	db "Testing random ROM<LF>"
+	db "banks in range...<@>"
+
 TestROMBankRangeOption::
 	call ClearScreen
 	hlcoord 0, 0
@@ -113,11 +183,7 @@ TestROMBankRange:
 
 .go
 	call MakeFullscreenTextbox
-	xor a
-	ld hl, wROMBankErrors
-	ld [hli], a
-	ld [hli], a
-	ld [hl], a
+	call ClearErrorCount
 	ld hl, .testing_text
 	rst Print
 	call GetMaxValidROMBank
@@ -153,7 +219,7 @@ TestROMBankRange:
 	or e
 	jr z, .valid_bank
 	call .increment_error_count
-	ld hl, .invalid_bank_text
+	ld hl, InvalidBankString
 	rst Print
 	jr .handle_loop
 .valid_bank
@@ -168,7 +234,7 @@ TestROMBankRange:
 	ld b, a
 	jr nc, .handle_loop
 	call .increment_error_count
-	ld hl, .failed_text
+	ld hl, BankFailedString
 	rst Print
 .handle_loop
 	ld a, [wROMBankStep]
@@ -180,19 +246,7 @@ TestROMBankRange:
 .done
 	ld hl, EmptyString
 	rst Print
-	ld hl, wROMBankErrors
-	ld a, [hli]
-	ld e, a
-	ld a, [hli]
-	ld d, a
-	ld c, [hl]
-	or c
-	or e
-	ld hl, TestsPassedString
-	jr z, .print_message
-	ld b, 0
 	call GenerateErrorCountString
-.print_message
 	rst Print
 	jp EndFullscreenTextbox
 
@@ -207,17 +261,6 @@ TestROMBankRange:
 	bigdw wROMBankStep
 	db " bank(s)...<@>"
 
-.failed_text
-	db "FAILED: bank $"
-	bigdw hCurrent + 1, hCurrent
-	db "<@>"
-
-.invalid_bank_text
-	db "ERROR: bank $"
-	bigdw hCurrent + 1, hCurrent
-	db "<LF>"
-	db "is not valid<@>"
-
 .test_home_bank
 	xor a
 	ld h, a
@@ -231,29 +274,16 @@ TestROMBankRange:
 	xor a
 	ld [hCurrent], a
 	ld [hCurrent + 1], a
-	ld hl, .failed_text
+	ld hl, BankFailedString
 	rst Print
 .increment_error_count
-	ld hl, wROMBankErrors
-	inc [hl]
-	ret nz
-	inc hl
-	inc [hl]
-	ret nz
-	inc hl
-	inc [hl]
-	ret
+	jp IncrementErrorCount
 
 .unknown_max_bank
 	ld de, $ffff
-	ld hl, .unknown_max_bank_text
+	ld hl, UnknownMaxBankString
 	rst Print
 	jr .increment_error_count
-
-.unknown_max_bank_text
-	db "ERROR: could not<LF>"
-	db "obtain highest ROM<LF>"
-	db "bank number<@>"
 
 TestROMHomeBank:
 	; test ROM bank 0 in $4000-$7fff
