@@ -228,7 +228,7 @@ TestReadContentsFromRAMBank:
 	ret
 
 TestRAMWritesOption::
-	call CheckRAMPresent
+	call CheckRAMInitialized
 	ret c
 	ld hl, TestRAMWrites
 	jp ExecuteTest
@@ -368,6 +368,7 @@ OverwriteInitializedRAMData:
 	xor a
 	ld [hli], a
 	ld [hli], a
+	ret
 
 TestRAMWritesDeselectedOption::
 	call CheckRAMInitialized
@@ -383,14 +384,14 @@ TestRAMWritesDeselected:
 	ld hl, EmptyString
 	rst Print
 	xor a
-	call TestRAMWritesToBankDeselected
+	call .test
 	ld a, [hRAMBanks]
 	push af
-	call TestRAMWritesToBankDeselected
+	call .test
 	call Random
 	pop bc
 	and b
-	call TestRAMWritesToBankDeselected
+	call .test
 	ld hl, EmptyString
 	rst Print
 	xor a ;ld a, MR3_MAP_REGS
@@ -401,7 +402,7 @@ TestRAMWritesDeselected:
 	db "RAM writes with<LF>"
 	db "MR3 = $00 test:<@>"
 
-TestRAMWritesToBankDeselected:
+.test
 	ld [rMR2w], a
 	ld [hCurrent], a
 	ld c, a
@@ -416,6 +417,74 @@ TestRAMWritesToBankDeselected:
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
 	call InitializeRAMBank
+PrintRAMFailedAndIncrement:
 	ld hl, RAMBankFailedString
 	rst Print
 	jp IncrementErrorCount
+
+CheckTwoRAMBanks:
+	ld a, [hRAMBanks]
+	and a
+	ret nz
+	ld hl, .text
+	call MessageBox
+	ld a, ACTION_UPDATE
+	ld [hNextMenuAction], a
+	scf
+	ret
+	
+.text
+	db "Only one bank of<LF>"
+	db "RAM is present.<@>"
+
+TestSwapRAMBanksDeselectedOption::
+	call CheckRAMInitialized
+	ret c
+	call CheckTwoRAMBanks
+	ret c
+	ld hl, TestSwapRAMBanksDeselected
+	jp ExecuteTest
+
+TestSwapRAMBanksDeselected:
+	ld hl, .test_description_text
+	rst Print
+	ld hl, TestingThreeBanksString
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, [hRAMBanks]
+	ld c, a
+.resample
+	call Random
+	and c
+	jr z, .resample
+	ld [rMR2w], a
+	xor a
+	call .test
+	ld a, c
+	call .test
+	call Random
+	and c
+	call .test
+	ld hl, EmptyString
+	rst Print
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ret
+
+.test_description_text
+	db "RAM bank selection<LF>"
+	db "with MR3 = 0 test:<@>"
+
+.test
+	ld [hCurrent], a
+	ld b, a
+	xor a ;ld a, MR3_MAP_REGS
+	ld hl, rMR3w
+	ld [hld], a
+	ld a, b
+	ld [hli], a
+	ld [hl], MR3_MAP_SRAM_RO
+	call TestReadContentsFromRAMBank
+	ret nc
+	jp PrintRAMFailedAndIncrement
