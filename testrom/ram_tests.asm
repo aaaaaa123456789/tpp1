@@ -422,21 +422,6 @@ PrintRAMFailedAndIncrement:
 	rst Print
 	jp IncrementErrorCount
 
-CheckTwoRAMBanks:
-	ld a, [hRAMBanks]
-	and a
-	ret nz
-	ld hl, .text
-	call MessageBox
-	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
-	scf
-	ret
-	
-.text
-	db "Only one bank of<LF>"
-	db "RAM is present.<@>"
-
 TestSwapRAMBanksDeselectedOption::
 	call CheckRAMInitialized
 	ret c
@@ -487,4 +472,19 @@ TestSwapRAMBanksDeselected:
 	ld [hl], MR3_MAP_SRAM_RO
 	call TestReadContentsFromRAMBank
 	ret nc
-	jp PrintRAMFailedAndIncrement
+	jr PrintRAMFailedAndIncrement
+
+CheckTwoRAMBanks:
+	ld a, [hRAMBanks]
+	and a
+	ret nz
+	ld hl, .text
+	call MessageBox
+	ld a, ACTION_UPDATE
+	ld [hNextMenuAction], a
+	scf
+	ret
+	
+.text
+	db "Only one bank of<LF>"
+	db "RAM is present.<@>"
