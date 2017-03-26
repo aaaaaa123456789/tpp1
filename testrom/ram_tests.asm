@@ -248,6 +248,26 @@ TestRAMWrites:
 	ld a, c
 	ld [hCurrent], a
 	ld [rMR2w], a
+	call WriteAndVerifyRAMBank
+	jr nc, .succeeded
+	call IncrementErrorCount
+	ld hl, RAMBankFailedString
+	rst Print
+.succeeded
+	ld a, [hRAMBanks]
+	cp c
+	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ret
+
+.test_description_text
+	db "RAM write and<LF>"
+	db "verify test:<@>"
+
+WriteAndVerifyRAMBank:
 	call FillRandomBuffer
 	ld hl, wRandomBuffer
 	call GetRandomRAMAddress
@@ -268,24 +288,11 @@ TestRAMWrites:
 	inc hl
 	dec b
 	jr nz, .compare_loop
-	jr .succeeded
-.failed
-	call IncrementErrorCount
-	ld hl, RAMBankFailedString
-	rst Print
-.succeeded
-	ld a, [hRAMBanks]
-	cp c
-	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
+	; carry is clear here
 	ret
-
-.test_description_text
-	db "RAM write and<LF>"
-	db "verify test:<@>"
+.failed
+	scf
+	ret
 
 GetRandomRAMAddress:
 	call Random
@@ -488,3 +495,81 @@ CheckTwoRAMBanks:
 .text
 	db "Only one bank of<LF>"
 	db "RAM is present.<@>"
+
+TestAllRAMBanksReadWriteOption::
+	call CheckRAMInitialized
+	ret c
+	xor a
+	ld [wInitialBank], a
+	inc a
+	ld [wBankStep], a
+	ld a, [hRAMBanks]
+	ld [wFinalBank], a
+TestRAMBankRangeReadWrite:
+	; do not run this test via ExecuteTest!
+	call MakeFullscreenTextbox
+	call ClearErrorCount
+	ld hl, .test_description_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, MR3_MAP_SRAM_RW
+	ld [rMR3w], a
+	ld a, [wInitialBank]
+	ld c, a
+.loop
+	ld a, c
+	ld [hCurrent], a
+	ld [rMR2w], a
+	call TestReadContentsFromRAMBank
+	jr nc, .read_success
+	call IncrementErrorCount
+	ld hl, .read_failed_text
+	rst Print
+.read_success
+	call WriteAndVerifyRAMBank
+	jr nc, .write_success
+	call IncrementErrorCount
+	ld hl, .write_failed_text
+	rst Print
+.write_success
+	ld a, [wBankStep]
+	add a, c
+	jr c, .done
+	ld c, a
+	ld a, [wFinalBank]
+	cp c
+	jr nc, .loop
+.done
+	ld hl, EmptyString
+	rst Print
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	call GenerateErrorCountString
+	rst Print
+	jp EndFullscreenTextbox
+	
+.test_description_text
+	db "Testing RAM banks<LF>"
+	db "$"
+	bigdw wInitialBank
+	db "-$"
+	bigdw wFinalBank
+	db " (step<LF>"
+	db "$"
+	bigdw wBankStep
+	db ") for reading<LF>"
+	db "and writing...<@>"
+
+.read_failed_text
+	db "FAILED: reading<LF>"
+	db "from bank $"
+	bigdw hCurrent
+	db "<@>"
+
+.write_failed_text
+	db "FAILED: writing<LF>"
+	db "to bank $"
+	bigdw hCurrent
+	db " (data<LF>"
+	db "did not match)<@>"

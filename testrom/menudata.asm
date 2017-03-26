@@ -30,7 +30,7 @@ RAMTestingMenu:
 	option "Swap banks desel.", OPTION_EXEC, TestSwapRAMBanksDeselectedOption
 	option "R/W test (1 bank)", OPTION_EXEC, NotImplemented
 	option "R/W test (range)", OPTION_EXEC, NotImplemented
-	option "R/W test (all)", OPTION_EXEC, NotImplemented
+	option "R/W test (all)", OPTION_EXEC, TestAllRAMBanksReadWriteOption
 	option "In-bank aliasing", OPTION_EXEC, NotImplemented
 	option "Cross-bank alias.", OPTION_EXEC, NotImplemented
 	option "Back", OPTION_MENU, MainTestingMenu
