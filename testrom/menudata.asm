@@ -23,8 +23,8 @@ RAMTestingMenu:
 	option "Test reads R/O", OPTION_EXEC, TestRAMReadsReadOnlyOption
 	option "Test reads R/W", OPTION_EXEC, TestRAMReadsReadWriteOption
 	option "Write and verify", OPTION_EXEC, TestRAMWritesOption
-	option "Test writes R/O", OPTION_EXEC, NotImplemented
-	option "Write deselected", OPTION_EXEC, NotImplemented
+	option "Test writes R/O", OPTION_EXEC, TestRAMWritesReadOnlyOption
+	option "Write deselected", OPTION_EXEC, TestRAMWritesDeselectedOption
 	option "Swap banks desel.", OPTION_EXEC, NotImplemented
 	option "Full test<COMMA> 1 bank", OPTION_EXEC, NotImplemented
 	option "Full test<COMMA> range", OPTION_EXEC, NotImplemented

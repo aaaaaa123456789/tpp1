@@ -166,6 +166,8 @@ TestRAMReads:
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
 	xor a ;ld a, MR3_MAP_REGS
 	ld [rMR3w], a
 	ret
@@ -226,7 +228,7 @@ TestReadContentsFromRAMBank:
 	ret
 
 TestRAMWritesOption::
-	call CheckRAMInitialized
+	call CheckRAMPresent
 	ret c
 	ld hl, TestRAMWrites
 	jp ExecuteTest
@@ -275,6 +277,8 @@ TestRAMWrites:
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
 	xor a ;ld a, MR3_MAP_REGS
 	ld [rMR3w], a
 	ret
@@ -298,3 +302,120 @@ GetRandomRAMAddress:
 	add a, $a0
 	ld d, a
 	ret
+
+TestRAMWritesReadOnlyOption::
+	call CheckRAMInitialized
+	ret c
+	ld hl, TestRAMWritesReadOnly
+	jp ExecuteTest
+
+TestRAMWritesReadOnly:
+	ld hl, .test_description_text
+	rst Print
+	ld hl, TestingAmountOfRAMBanksString
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, MR3_MAP_SRAM_RO
+	ld [rMR3w], a
+	ld c, -1
+.loop
+	inc c
+	ld a, c
+	ld [hCurrent], a
+	ld [rMR2w], a
+	call OverwriteInitializedRAMData
+	ld a, c
+	call TestReadContentsFromRAMBank
+	jr nc, .passed
+	ld a, MR3_MAP_SRAM_RW
+	ld [rMR3w], a
+	call InitializeRAMBank
+	ld a, MR3_MAP_SRAM_RO
+	ld [rMR3w], a
+	call IncrementErrorCount
+	ld hl, RAMBankFailedString
+	rst Print
+.passed
+	ld a, [hRAMBanks]
+	cp c
+	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ret
+
+.test_description_text
+	db "RAM writes while<LF>"
+	db "in read-only mode<LF>"
+	db "test:<@>"
+
+OverwriteInitializedRAMData:
+	ld hl, $a000
+	ld a, $ff
+	ld [hli], a
+	ld [hli], a
+	call Random
+	ld [hli], a
+	call Random
+	ld [hl], a
+	ld hl, $bffc
+	call Random
+	ld [hli], a
+	call Random
+	ld [hli], a
+	xor a
+	ld [hli], a
+	ld [hli], a
+
+TestRAMWritesDeselectedOption::
+	call CheckRAMInitialized
+	ret c
+	ld hl, TestRAMWritesDeselected
+	jp ExecuteTest
+
+TestRAMWritesDeselected:
+	ld hl, .test_description_text
+	rst Print
+	ld hl, TestingThreeBanksString
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	xor a
+	call TestRAMWritesToBankDeselected
+	ld a, [hRAMBanks]
+	push af
+	call TestRAMWritesToBankDeselected
+	call Random
+	pop bc
+	and b
+	call TestRAMWritesToBankDeselected
+	ld hl, EmptyString
+	rst Print
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ret
+
+.test_description_text
+	db "RAM writes with<LF>"
+	db "MR3 = $00 test:<@>"
+
+TestRAMWritesToBankDeselected:
+	ld [rMR2w], a
+	ld [hCurrent], a
+	ld c, a
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	call OverwriteInitializedRAMData
+	ld a, MR3_MAP_SRAM_RO
+	ld [rMR3w], a
+	ld a, c
+	call TestReadContentsFromRAMBank
+	ret nc
+	ld a, MR3_MAP_SRAM_RW
+	ld [rMR3w], a
+	call InitializeRAMBank
+	ld hl, RAMBankFailedString
+	rst Print
+	jp IncrementErrorCount

@@ -180,8 +180,6 @@ ExecuteTest::
 	call ClearErrorCount
 	pop hl
 	call _hl_
-	ld hl, EmptyString
-	rst Print
 	call GenerateErrorCountString
 	rst Print
 	jp EndFullscreenTextbox
