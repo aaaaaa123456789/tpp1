@@ -5,6 +5,8 @@ MainTestingMenu::
 	option "RTC tests", OPTION_EXEC, NotImplemented
 	option "Rumble tests", OPTION_EXEC, NotImplemented
 	option "MR register tests", OPTION_EXEC, NotImplemented
+	option "Run all tests", OPTION_EXEC, NotImplemented
+	option "About", OPTION_EXEC, NotImplemented
 	option "Reset", OPTION_EXEC, DoReset
 	end_menu
 
