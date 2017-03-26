@@ -151,7 +151,7 @@ TestAllROMBanksOption::
 
 TestROMBankRange:
 	ld a, [wBankStep]
-	ld hl, .zero_step_text
+	ld hl, ZeroStepString
 	and a
 	jr z, .message_box
 	ld hl, wInitialBank
@@ -169,17 +169,9 @@ TestROMBankRange:
 	cp c
 	jr nc, .go
 .nope
-	ld hl, .no_banks_selected_text
+	ld hl, NoBanksSelectedString
 .message_box
 	jp MessageBox
-
-.no_banks_selected_text
-	db "No ROM banks have<LF>"
-	db "been selected.<@>"
-
-.zero_step_text
-	db "The step cannot<LF>"
-	db "be zero.<@>"
 
 .go
 	call MakeFullscreenTextbox

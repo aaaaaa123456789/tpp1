@@ -496,6 +496,99 @@ CheckTwoRAMBanks:
 	db "Only one bank of<LF>"
 	db "RAM is present.<@>"
 
+RAMBankReadWriteScreen:
+	push hl
+	push de
+	call ClearScreen
+	hlcoord 0, 0
+	lb de, SCREEN_WIDTH, SCREEN_HEIGHT - 4
+	call Textbox
+	ld a, 3
+	rst DelayFrames
+	pop de
+	hlcoord 1, 2
+	rst PrintString
+	ld a, [hRAMBanks]
+	hlcoord 15, 2
+	call PrintHexByte
+	pop hl
+	jp HexadecimalEntry
+
+TestRAMBankRangeReadWriteOption::
+	call CheckRAMInitialized
+	ret c
+.retry
+	ld hl, .hex_input
+	ld de, .screen_text
+	call RAMBankReadWriteScreen
+	ret c
+	ld a, [wBankStep]
+	and a
+	ld hl, ZeroStepString
+	jr z, .error
+	ld a, [wInitialBank]
+	ld c, a
+	ld a, [wFinalBank]
+	cp c
+	ld hl, NoBanksSelectedString
+	jr c, .error
+	ld c, a
+	ld a, [hRAMBanks]
+	cp c
+	ld hl, RAMBankOutOfRangeString
+	jr c, .error
+	jp TestRAMBankRangeReadWrite
+.error
+	call MessageBox
+	jr .retry
+
+.screen_text
+	db "Max RAM bank:<LF>"
+	db "<LF>"
+	db "Initial bank:<LF>"
+	db "<LF>"
+	db "Final bank:<LF>"
+	db "<LF>"
+	db "Step:<@>"
+
+.hex_input
+	hex_input 15, 4, wInitialBank
+	hex_input 15, 6, wFinalBank
+	hex_input 15, 8, wBankStep
+	dw 0
+
+TestOneRAMBankReadWriteOption::
+	call CheckRAMInitialized
+	ret c
+.retry
+	ld hl, .hex_input
+	ld de, .screen_text
+	call RAMBankReadWriteScreen
+	ret c
+	ld a, [wInitialBank]
+	ld c, a
+	ld a, [hRAMBanks]
+	cp c
+	jr nc, .go
+	ld hl, RAMBankOutOfRangeString
+	call MessageBox
+	jr .retry
+.go
+	ld a, c
+	ld [wFinalBank], a
+	ld a, 1
+	ld [wBankStep], a
+	jr TestRAMBankRangeReadWrite
+
+.screen_text
+	db "Max RAM bank:<LF>"
+	db "<LF>"
+	db "Bank to test:<@>"
+
+.hex_input
+	hex_input 15, 4, wInitialBank
+	dw 0
+
 TestAllRAMBanksReadWriteOption::
 	call CheckRAMInitialized
 	ret c

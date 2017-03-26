@@ -255,7 +255,7 @@ CalculateCurrentCursorValue:
 
 ExecuteHexEntryAction:
 	dec a
-	jr nz, .back
+	jr nz, .back_button
 	call CalculateCurrentCursorValue
 	cp 16
 	jr z, .back
@@ -316,6 +316,14 @@ ExecuteHexEntryAction:
 	and a
 	ret
 
+.back_button
+	ld a, [hHexEntryByte]
+	and a
+	jr nz, .back
+	ld a, [hHexEntryCurrent]
+	cp 16
+	ccf
+	ret c
 .back
 	ld a, [hHexEntryByte]
 	ld b, a

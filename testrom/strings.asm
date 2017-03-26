@@ -39,3 +39,15 @@ RAMReadOnlyTestDescriptionString::
 
 TestingThreeBanksString::
 	db "Testing 3 banks...<@>"
+
+RAMBankOutOfRangeString::
+	db "The selected RAM<LF>"
+	db "bank is too high!<@>"
+
+ZeroStepString::
+	db "The step cannot<LF>"
+	db "be zero.<@>"
+
+NoBanksSelectedString::
+	db "No banks have been<LF>"
+	db "selected.<@>"
