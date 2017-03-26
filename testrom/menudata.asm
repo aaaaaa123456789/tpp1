@@ -28,9 +28,9 @@ RAMTestingMenu:
 	option "Test writes R/O", OPTION_EXEC, TestRAMWritesReadOnlyOption
 	option "Write deselected", OPTION_EXEC, TestRAMWritesDeselectedOption
 	option "Swap banks desel.", OPTION_EXEC, TestSwapRAMBanksDeselectedOption
-	option "Full test<COMMA> 1 bank", OPTION_EXEC, NotImplemented
-	option "Full test<COMMA> range", OPTION_EXEC, NotImplemented
-	option "Full test<COMMA> all", OPTION_EXEC, NotImplemented
+	option "R/W test (1 bank)", OPTION_EXEC, NotImplemented
+	option "R/W test (range)", OPTION_EXEC, NotImplemented
+	option "R/W test (all)", OPTION_EXEC, NotImplemented
 	option "In-bank aliasing", OPTION_EXEC, NotImplemented
 	option "Cross-bank alias.", OPTION_EXEC, NotImplemented
 	option "Back", OPTION_MENU, MainTestingMenu

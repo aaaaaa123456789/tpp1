@@ -166,11 +166,11 @@ Main::
 	db "FAIL<@>"
 
 .mr0_string
-	db "MR0 = 01h:<@>"
+	db "MR0 = $01:<@>"
 .mr1_string
-	db "MR1 = 00h:<@>"
+	db "MR1 = $00:<@>"
 .mr2_string
-	db "MR2 = 00h:<@>"
+	db "MR2 = $00:<@>"
 .mr4_string
 	db "MR4[0:1] = 0:<@>"
 .rom1_string
