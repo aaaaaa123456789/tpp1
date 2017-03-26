@@ -19,3 +19,20 @@ UnknownMaxBankString::
 
 TestsPassedString::
 	db "All tests passed.<@>"
+
+TestingAmountOfRAMBanksString::
+	db "Testing RAM banks<LF>"
+	db "$00-$"
+	bigdw hRAMBanks
+	db "...<@>"
+
+RAMBankFailedString::
+	db "FAILED: RAM bank<LF>"
+	db "$"
+	bigdw hCurrent
+	db " did not match<LF>"
+	db "the expected data<@>"
+
+RAMReadOnlyTestDescriptionString::
+	db "RAM reads in read-<LF>"
+	db "only mode test:<@>"

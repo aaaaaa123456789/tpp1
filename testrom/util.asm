@@ -173,3 +173,18 @@ LoadPalettes::
 	dec b
 	jr nz, .loop
 	ret
+
+ExecuteTest::
+	push hl
+	call MakeFullscreenTextbox
+	call ClearErrorCount
+	pop hl
+	call _hl_
+	ld hl, EmptyString
+	rst Print
+	call GenerateErrorCountString
+	rst Print
+	jp EndFullscreenTextbox
+
+_hl_::
+	jp hl

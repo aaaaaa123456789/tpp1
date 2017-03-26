@@ -9,6 +9,9 @@ hProduct         EQU $ff84 ;4 bytes
 hCurrent         EQU $ff88 ;2 bytes
 hMax             EQU $ff8a ;2 bytes
 
+hRAMBanks        EQU $ffe6
+hRAMInitialized  EQU $ffe7
+
 hTextboxPointer  EQU $ffe8 ;2 bytes
 hTextboxWidth    EQU $ffea
 hTextboxHeight   EQU $ffeb

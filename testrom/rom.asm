@@ -44,6 +44,7 @@ INCLUDE "menudata.asm"
 INCLUDE "strings.asm"
 
 INCLUDE "rom_tests.asm"
+INCLUDE "ram_tests.asm"
 
 Font:: INCLUDE "font.asm"
 ExtendedFont:: INCLUDE "fontext.asm"

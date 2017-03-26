@@ -1,5 +1,6 @@
 	charmap "<lt>", $3c ;<
 	charmap "<gt>", $3e ;>
+	charmap "<COMMA>", $2c ;for use in macros
 
 	charmap "<@>", $00
 	charmap "<LF>", $0a

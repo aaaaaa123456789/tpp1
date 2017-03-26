@@ -339,17 +339,18 @@ ExecuteSelectedOption:
 
 .not_exec
 	dec a
-	jr nz, .not_menu
+	jr z, LoadMenu
+
+	; so far we don't have any other types
+	xor a
+	ld [hNextMenuAction], a
+	ret
+
+LoadMenu::
 	ld a, l
 	ld [hSelectedMenu], a
 	ld a, h
 	ld [hSelectedMenu + 1], a
 	ld a, ACTION_RELOAD
-	ld [hNextMenuAction], a
-	ret
-
-.not_menu
-	; so far we don't have any other types
-	xor a
 	ld [hNextMenuAction], a
 	ret
