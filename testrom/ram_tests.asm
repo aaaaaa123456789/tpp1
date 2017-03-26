@@ -11,47 +11,11 @@ InitializeRAMBanks::
 	and a
 	jr z, .resample
 	ld [hRAMInitialized], a
-	call GetMaxValidRAMBank
-	ld a, c
-	ld [hRAMBanks], a
 	ld hl, .selected_seed
 	rst Print
 	ld hl, EmptyString
 	rst Print
-	ld a, MR3_MAP_SRAM_RW
-	ld [rMR3w], a
-	ld c, 0
-.loop
-	ld a, c
-	ld [rMR2w], a
-	ld hl, $a000
-	xor a
-	ld [hli], a
-	ld [hli], a
-	ld a, [hRAMInitialized]
-	ld [hli], a
-	ld [hl], c
-	ld hl, 0
-	ld b, h
-	ld a, [hRAMInitialized]
-	rst AddNTimes
-	ld b, h
-	ld a, l
-	ld hl, $bffc
-	ld [hli], a
-	ld a, b
-	ld [hli], a
-	ld a, $ff
-	ld [hli], a
-	ld [hl], a
-	ld a, [hRAMBanks]
-	cp c
-	jr z, .done
-	inc c
-	jr .loop
-.done
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
+	call DoRAMBankInitialization
 	ld hl, .done_text
 	rst Print
 	jp EndFullscreenTextbox
@@ -72,6 +36,49 @@ InitializeRAMBanks::
 	db "banks $00-$"
 	bigdw hRAMBanks
 	db ".<@>"
+
+DoRAMBankInitialization:
+	call GetMaxValidRAMBank
+	ld a, c
+	ld [hRAMBanks], a
+	ld a, MR3_MAP_SRAM_RW
+	ld [rMR3w], a
+	ld c, -1
+.loop
+	inc c
+	ld a, c
+	ld [rMR2w], a
+	call InitializeRAMBank
+	ld a, [hRAMBanks]
+	cp c
+	jr nz, .loop
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ret
+
+InitializeRAMBank:
+	; initializes RAM bank c; destroys b and hl
+	ld hl, $a000
+	xor a
+	ld [hli], a
+	ld [hli], a
+	ld a, [hRAMInitialized]
+	ld [hli], a
+	ld [hl], c
+	ld hl, 0
+	ld b, h
+	ld a, [hRAMInitialized]
+	rst AddNTimes
+	ld b, h
+	ld a, l
+	ld hl, $bffc
+	ld [hli], a
+	ld a, b
+	ld [hli], a
+	ld a, $ff
+	ld [hli], a
+	ld [hl], a
+	ret
 
 CheckRAMPresent:
 	; prints an error box if there is no SRAM
@@ -159,6 +166,8 @@ TestRAMReads:
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
 	ret
 
 TestRAMReadsReadWriteOption::
@@ -266,6 +275,8 @@ TestRAMWrites:
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
 	ret
 
 .test_description_text
