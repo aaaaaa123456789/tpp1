@@ -142,6 +142,8 @@ TestRAMReads:
 	ld [rMR3w], a
 	ld hl, TestingAmountOfRAMBanksString
 	rst Print
+	ld hl, EmptyString
+	rst Print
 	ld c, -1
 .loop
 	inc c
@@ -212,4 +214,76 @@ TestReadContentsFromRAMBank:
 	ret
 .failed
 	scf
+	ret
+
+TestRAMWritesOption::
+	call CheckRAMInitialized
+	ret c
+	ld hl, TestRAMWrites
+	jp ExecuteTest
+
+TestRAMWrites:
+	ld hl, .test_description_text
+	rst Print
+	ld hl, TestingAmountOfRAMBanksString
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, MR3_MAP_SRAM_RW
+	ld [rMR3w], a
+	ld c, -1
+.loop
+	inc c
+	ld a, c
+	ld [hCurrent], a
+	ld [rMR2w], a
+	call FillRandomBuffer
+	ld hl, wRandomBuffer
+	call GetRandomRAMAddress
+	push hl
+	push de
+	push bc
+	ld bc, $40
+	rst CopyBytes
+	pop bc
+	ld b, $40
+	pop de
+	pop hl
+.compare_loop
+	ld a, [de]
+	cp [hl]
+	jr nz, .failed
+	inc de
+	inc hl
+	dec b
+	jr nz, .compare_loop
+	jr .succeeded
+.failed
+	call IncrementErrorCount
+	ld hl, RAMBankFailedString
+	rst Print
+.succeeded
+	ld a, [hRAMBanks]
+	cp c
+	jr nz, .loop
+	ret
+
+.test_description_text
+	db "RAM write and<LF>"
+	db "verify test:<@>"
+
+GetRandomRAMAddress:
+	call Random
+	add a, a
+	jr z, GetRandomRAMAddress
+	dec a
+	swap a
+	rlca
+	ld d, a
+	and $e0
+	ld e, a
+	ld a, d
+	and $1f
+	add a, $a0
+	ld d, a
 	ret

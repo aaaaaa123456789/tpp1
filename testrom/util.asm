@@ -188,3 +188,32 @@ ExecuteTest::
 
 _hl_::
 	jp hl
+
+FillRandomBuffer::
+	push bc
+	push de
+	push hl
+	call Random
+	ld b, a
+	call Random
+	ld c, a
+	call Random
+	ld d, a
+	call Random
+	ld e, a
+	ld a, $10
+	di
+	ld hl, sp + 0
+	ld sp, wRandomBuffer + $40
+.loop
+	push de
+	push bc
+	dec a
+	jr nz, .loop
+	ld sp, hl
+	pop hl
+	pop de
+	pop bc
+	xor a
+	ld [rIF], a ;if we're in vblank, discard it
+	reti
