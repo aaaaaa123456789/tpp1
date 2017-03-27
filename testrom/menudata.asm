@@ -1,11 +1,11 @@
 MainTestingMenu::
 	menu "Main menu", MainTestingMenu
+	option "Run all tests", OPTION_EXEC, NotImplemented
 	option "ROM bank tests", OPTION_MENU, ROMTestingMenu
 	option "RAM bank tests", OPTION_MENU, RAMTestingMenu
 	option "RTC tests", OPTION_EXEC, NotImplemented
 	option "Rumble tests", OPTION_EXEC, NotImplemented
 	option "MR register tests", OPTION_EXEC, NotImplemented
-	option "Run all tests", OPTION_EXEC, NotImplemented
 	option "Memory viewer", OPTION_EXEC, NotImplemented
 	option "About", OPTION_EXEC, NotImplemented
 	option "Reset", OPTION_EXEC, DoReset
@@ -22,7 +22,7 @@ ROMTestingMenu:
 RAMTestingMenu:
 	menu "RAM bank tests", MainTestingMenu
 	option "Initialize banks", OPTION_EXEC, InitializeRAMBanks
-	option "Run all tests", OPTION_EXEC, NotImplemented
+	option "Run all tests", OPTION_EXEC, RunAllRAMTestsOption
 	option "Test reads R/O", OPTION_EXEC, TestRAMReadsReadOnlyOption
 	option "Test reads R/W", OPTION_EXEC, TestRAMReadsReadWriteOption
 	option "Write and verify", OPTION_EXEC, TestRAMWritesOption
@@ -32,8 +32,8 @@ RAMTestingMenu:
 	option "R/W test (1 bank)", OPTION_EXEC, TestOneRAMBankReadWriteOption
 	option "R/W test (range)", OPTION_EXEC, TestRAMBankRangeReadWriteOption
 	option "R/W test (all)", OPTION_EXEC, TestAllRAMBanksReadWriteOption
-	option "In-bank aliasing", OPTION_EXEC, NotImplemented
-	option "Cross-bank alias.", OPTION_EXEC, NotImplemented
+	option "In-bank aliasing", OPTION_EXEC, TestRAMInBankAliasingOption
+	option "Cross-bank alias.", OPTION_EXEC, TestRAMCrossBankAliasingOption
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
 

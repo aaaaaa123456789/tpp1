@@ -2,6 +2,10 @@ InitializeRAMBanks::
 	call CheckRAMPresent
 	ret c
 	call MakeFullscreenTextbox
+	call DoRAMBankInitialization
+	jp EndFullscreenTextbox
+
+DoRAMBankInitialization:
 	ld hl, .initial_text
 	rst Print
 	ld hl, EmptyString
@@ -15,10 +19,27 @@ InitializeRAMBanks::
 	rst Print
 	ld hl, EmptyString
 	rst Print
-	call DoRAMBankInitialization
+	call GetMaxValidRAMBank
+	ld a, c
+	ld [hRAMBanks], a
+	ld a, MR3_MAP_SRAM_RW
+	ld [rMR3w], a
+	ld c, -1
+.loop
+	inc c
+	ld a, c
+	ld [rMR2w], a
+	call InitializeRAMBank
+	ld a, [hRAMBanks]
+	cp c
+	jr nz, .loop
 	ld hl, .done_text
 	rst Print
-	jp EndFullscreenTextbox
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ld hl, EmptyString
+	rst Print
+	ret
 
 .initial_text
 	db "Initializing RAM,<LF>"
@@ -36,25 +57,6 @@ InitializeRAMBanks::
 	db "banks $00-$"
 	bigdw hRAMBanks
 	db ".<@>"
-
-DoRAMBankInitialization:
-	call GetMaxValidRAMBank
-	ld a, c
-	ld [hRAMBanks], a
-	ld a, MR3_MAP_SRAM_RW
-	ld [rMR3w], a
-	ld c, -1
-.loop
-	inc c
-	ld a, c
-	ld [rMR2w], a
-	call InitializeRAMBank
-	ld a, [hRAMBanks]
-	cp c
-	jr nz, .loop
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ret
 
 InitializeRAMBank:
 	; initializes RAM bank c; destroys b and hl
@@ -80,7 +82,7 @@ InitializeRAMBank:
 	ld [hl], a
 	ret
 
-CheckRAMPresent:
+CheckRAMPresent::
 	; prints an error box if there is no SRAM
 	call GetMaxValidRAMBank
 	ret nc
@@ -430,8 +432,6 @@ PrintRAMFailedAndIncrement:
 	jp IncrementErrorCount
 
 TestSwapRAMBanksDeselectedOption::
-	call CheckRAMInitialized
-	ret c
 	call CheckTwoRAMBanks
 	ret c
 	ld hl, TestSwapRAMBanksDeselected
@@ -482,6 +482,8 @@ TestSwapRAMBanksDeselected:
 	jr PrintRAMFailedAndIncrement
 
 CheckTwoRAMBanks:
+	call CheckRAMInitialized
+	ret c
 	ld a, [hRAMBanks]
 	and a
 	ret nz
@@ -666,3 +668,218 @@ TestRAMBankRangeReadWrite:
 	bigdw hCurrent
 	db " (data<LF>"
 	db "did not match)<@>"
+
+TestRAMInBankAliasingOption::
+	call CheckRAMInitialized
+	ret c
+	ld hl, TestRAMInBankAliasing
+	jp ExecuteTest
+
+TestRAMInBankAliasing:
+	ld hl, .test_description_text
+	rst Print
+	ld hl, TestingThreeBanksString
+	rst Print
+	ld a, MR3_MAP_SRAM_RW
+	ld [rMR3w], a
+	xor a
+	call .test
+	ld a, [hRAMBanks]
+	call .test
+	call Random
+	ld c, a
+	ld a, [hRAMBanks]
+	and c
+	call .test
+	ld hl, EmptyString
+	rst Print
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ret
+
+.test_description_text
+	db "RAM in-bank<LF>"
+	db "aliasing test:<@>"
+
+.test
+	ld [hCurrent], a
+	ld [rMR2w], a
+.resample
+	call GetRandomRAMAddress
+	ld a, d
+	cp $af
+	jr nz, .go
+	ld a, e
+	cp $c1
+	jr nc, .resample
+.go
+	push de
+	xor a
+	ld h, d
+	ld l, e
+	ld bc, $40
+	push bc
+	rst FillByte
+	call FillRandomBuffer
+	pop bc
+	pop de
+	push de
+	ld a, d
+	xor $10
+	ld d, a
+	ld hl, wRandomBuffer
+	rst CopyBytes
+	pop hl
+	ld c, $40
+.loop
+	ld a, [hli]
+	and a
+	jr nz, .failed
+	dec c
+	jr nz, .loop
+	ret
+
+.failed
+	ld hl, .failed_text
+	rst Print
+	jp IncrementErrorCount
+
+.failed_text
+	db "FAILED: aliasing<LF>"
+	db "found in bank $"
+	bigdw hCurrent
+	db "<@>"
+
+TestRAMCrossBankAliasingOption::
+	call CheckTwoRAMBanks
+	ret c
+	ld hl, TestRAMCrossBankAliasing
+	jp ExecuteTest
+
+TestRAMCrossBankAliasing:
+	ld a, MR3_MAP_SRAM_RW
+	ld [rMR3w], a
+	ld hl, .test_description_text
+	rst Print
+	ld a, [hRAMBanks]
+	dec a
+	jr z, .two_banks
+	ld hl, .testing_five_pairs_text
+	rst Print
+	ld a, [hRAMBanks]
+	srl a
+	inc a
+	ld c, a
+	ld b, 0
+	call .test
+	ld a, [hRAMBanks]
+	ld b, a
+	srl a
+	ld c, a
+	call .test
+	ld a, 3
+	ld [hMax], a
+.loop
+	ld a, [hRAMBanks]
+	ld c, a
+	call Random
+	and c
+	ld b, a
+	call Random
+	and c
+	cp b
+	jr z, .loop
+	ld c, a
+	call .test
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+.done_testing
+	ld hl, EmptyString
+	rst Print
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ret
+
+.two_banks
+	ld hl, TestingAmountOfRAMBanksString
+	rst Print
+	lb bc, 0, 1
+	call .test
+	jr .done_testing
+
+.test_description_text
+	db "RAM cross-bank<LF>"
+	db "aliasing test:<@>"
+
+.testing_five_pairs_text
+	db "Testing five<LF>"
+	db "pairs of banks...<@>"
+
+.test
+	push bc
+	ld a, b
+	ld [hCurrent], a
+	ld [rMR2w], a
+	call FillRandomBuffer
+	xor a
+	call GetRandomRAMAddress
+	ld bc, $40
+	ld h, d
+	ld l, e
+	rst FillByte
+	pop bc
+	ld a, c
+	ld [hCurrent + 1], a
+	ld [rMR2w], a
+	push bc
+	push de
+	ld hl, wRandomBuffer
+	ld bc, $40
+	rst CopyBytes
+	pop hl
+	pop af
+	ld [rMR2w], a
+	ld c, $40
+.testing_loop
+	ld a, [hli]
+	and a
+	jr nz, .failed
+	dec c
+	jr nz, .testing_loop
+	ret
+.failed
+	ld hl, .failed_text
+	rst Print
+	jp IncrementErrorCount
+
+.failed_text
+	db "FAILED: aliasing<LF>"
+	db "found between<LF>"
+	db "banks $"
+	bigdw hCurrent
+	db " and $"
+	bigdw hCurrent + 1
+	db "<@>"
+
+RunAllRAMTestsOption::
+	call CheckRAMPresent
+	ret c
+	ld hl, RunAllRAMTests
+	jp ExecuteTest
+
+RunAllRAMTests::
+	call DoRAMBankInitialization
+	call TestRAMReadsReadOnly
+	call TestRAMReadsReadWrite
+	call TestRAMWrites
+	call TestRAMWritesReadOnly
+	call TestRAMWritesDeselected
+	ld a, [hRAMBanks]
+	and a
+	push af
+	call nz, TestSwapRAMBanksDeselected
+	call TestRAMInBankAliasing
+	pop af
+	call nz, TestRAMCrossBankAliasing
+	ret
