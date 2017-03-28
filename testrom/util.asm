@@ -202,3 +202,12 @@ FillRandomBuffer::
 	xor a
 	ld [rIF], a ;if we're in vblank, discard it
 	reti
+
+DoReset:
+	xor a
+	ld hl, rMR3w
+	ld [hld], a
+	ld [hld], a
+	ld [hld], a
+	ld [hl], 1
+	rst Reset ;does not return

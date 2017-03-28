@@ -43,12 +43,3 @@ NotImplemented:
 
 .text
 	db "Not implemented.<@>"
-
-DoReset:
-	xor a
-	ld hl, rMR3w
-	ld [hld], a
-	ld [hld], a
-	ld [hld], a
-	ld [hl], 1
-	rst Reset ;does not return
