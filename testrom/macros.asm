@@ -112,6 +112,7 @@ SCREEN_HEIGHT EQU 18
 	const_def
 	const OPTION_EXEC
 	const OPTION_MENU
+	const OPTION_TEST
 
 ; menu actions
 	const_def

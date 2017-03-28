@@ -51,3 +51,15 @@ ZeroStepString::
 NoBanksSelectedString::
 	db "No banks have been<LF>"
 	db "selected.<@>"
+
+NoRAMString::
+	db "No RAM present in<LF>"
+	db "the current build.<@>"
+
+UninitializedRAMString::
+	db "RAM contents are<LF>"
+	db "not initialized.<@>"
+
+OneRAMBankString::
+	db "Only one bank of<LF>"
+	db "RAM is present.<@>"

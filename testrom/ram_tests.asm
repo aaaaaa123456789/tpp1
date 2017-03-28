@@ -86,16 +86,12 @@ CheckRAMPresent::
 	; prints an error box if there is no SRAM
 	call GetMaxValidRAMBank
 	ret nc
-	ld hl, .text
+	ld hl, NoRAMString
 	call MessageBox
 	ld a, ACTION_UPDATE
 	ld [hNextMenuAction], a
 	scf
 	ret
-	
-.text
-	db "No RAM present in<LF>"
-	db "the current build.<@>"
 
 GetMaxValidRAMBank:
 	; returns the max valid RAM bank in c
@@ -126,24 +122,45 @@ CheckRAMInitialized:
 	ld a, [hRAMInitialized]
 	and a
 	ret nz
-	ld hl, .text
+	ld hl, UninitializedRAMString
 	call MessageBox
 	ld a, ACTION_UPDATE
 	ld [hNextMenuAction], a
 	scf
 	ret
 
-.text
-	db "RAM contents are<LF>"
-	db "not initialized.<@>"
+CheckRAMStatusForTesting:
+	ld b, 0
+	jr _CheckRAMStatusForTesting
 
-TestRAMReadsReadOnlyOption::
-	call CheckRAMInitialized
-	ret c
-	ld hl, TestRAMReadsReadOnly
-	jp ExecuteTest
+CheckRAMStatusForTesting_RequireTwoBanks:
+	ld b, 1
+_CheckRAMStatusForTesting:
+	call GetMaxValidRAMBank
+	ld hl, NoRAMString
+	jr c, .failed
+	dec b
+	jr nz, .no_two_bank_testing
+	ld a, c
+	and a
+	ld hl, OneRAMBankString
+	jr z, .failed
+.no_two_bank_testing
+	ld a, [hRAMInitialized]
+	and a
+	ret nz
+	call IncrementErrorCount
+	ld hl, UninitializedRAMString
+.failed
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	scf
+	ret
 
 TestRAMReadsReadOnly:
+	call CheckRAMStatusForTesting
+	ret c
 	ld hl, RAMReadOnlyTestDescriptionString
 	rst Print
 	ld a, MR3_MAP_SRAM_RO
@@ -174,13 +191,9 @@ TestRAMReads:
 	ld [rMR3w], a
 	ret
 
-TestRAMReadsReadWriteOption::
-	call CheckRAMInitialized
-	ret c
-	ld hl, TestRAMReadsReadWrite
-	jp ExecuteTest
-
 TestRAMReadsReadWrite:
+	call CheckRAMStatusForTesting
+	ret c
 	ld hl, .test_description_string
 	rst Print
 	ld a, MR3_MAP_SRAM_RW
@@ -229,13 +242,9 @@ TestReadContentsFromRAMBank:
 	scf
 	ret
 
-TestRAMWritesOption::
-	call CheckRAMInitialized
-	ret c
-	ld hl, TestRAMWrites
-	jp ExecuteTest
-
 TestRAMWrites:
+	call CheckRAMStatusForTesting
+	ret c
 	ld hl, .test_description_text
 	rst Print
 	ld hl, TestingAmountOfRAMBanksString
@@ -312,13 +321,9 @@ GetRandomRAMAddress:
 	ld d, a
 	ret
 
-TestRAMWritesReadOnlyOption::
-	call CheckRAMInitialized
-	ret c
-	ld hl, TestRAMWritesReadOnly
-	jp ExecuteTest
-
 TestRAMWritesReadOnly:
+	call CheckRAMStatusForTesting
+	ret c
 	ld hl, .test_description_text
 	rst Print
 	ld hl, TestingAmountOfRAMBanksString
@@ -379,13 +384,9 @@ OverwriteInitializedRAMData:
 	ld [hli], a
 	ret
 
-TestRAMWritesDeselectedOption::
-	call CheckRAMInitialized
-	ret c
-	ld hl, TestRAMWritesDeselected
-	jp ExecuteTest
-
 TestRAMWritesDeselected:
+	call CheckRAMStatusForTesting
+	ret c
 	ld hl, .test_description_text
 	rst Print
 	ld hl, TestingThreeBanksString
@@ -431,13 +432,9 @@ PrintRAMFailedAndIncrement:
 	rst Print
 	jp IncrementErrorCount
 
-TestSwapRAMBanksDeselectedOption::
-	call CheckTwoRAMBanks
-	ret c
-	ld hl, TestSwapRAMBanksDeselected
-	jp ExecuteTest
-
 TestSwapRAMBanksDeselected:
+	call CheckRAMStatusForTesting_RequireTwoBanks
+	ret c
 	ld hl, .test_description_text
 	rst Print
 	ld hl, TestingThreeBanksString
@@ -480,23 +477,6 @@ TestSwapRAMBanksDeselected:
 	call TestReadContentsFromRAMBank
 	ret nc
 	jr PrintRAMFailedAndIncrement
-
-CheckTwoRAMBanks:
-	call CheckRAMInitialized
-	ret c
-	ld a, [hRAMBanks]
-	and a
-	ret nz
-	ld hl, .text
-	call MessageBox
-	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
-	scf
-	ret
-	
-.text
-	db "Only one bank of<LF>"
-	db "RAM is present.<@>"
 
 RAMBankReadWriteScreen:
 	push hl
@@ -669,13 +649,9 @@ TestRAMBankRangeReadWrite:
 	db " (data<LF>"
 	db "did not match)<@>"
 
-TestRAMInBankAliasingOption::
-	call CheckRAMInitialized
-	ret c
-	ld hl, TestRAMInBankAliasing
-	jp ExecuteTest
-
 TestRAMInBankAliasing:
+	call CheckRAMStatusForTesting
+	ret c
 	ld hl, .test_description_text
 	rst Print
 	ld hl, TestingThreeBanksString
@@ -750,13 +726,9 @@ TestRAMInBankAliasing:
 	bigdw hCurrent
 	db "<@>"
 
-TestRAMCrossBankAliasingOption::
-	call CheckTwoRAMBanks
-	ret c
-	ld hl, TestRAMCrossBankAliasing
-	jp ExecuteTest
-
 TestRAMCrossBankAliasing:
+	call CheckRAMStatusForTesting_RequireTwoBanks
+	ret c
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
 	ld hl, .test_description_text
@@ -862,13 +834,15 @@ TestRAMCrossBankAliasing:
 	bigdw hCurrent + 1
 	db "<@>"
 
-RunAllRAMTestsOption::
-	call CheckRAMPresent
-	ret c
-	ld hl, RunAllRAMTests
-	jp ExecuteTest
-
 RunAllRAMTests::
+	call GetMaxValidRAMBank
+	jr nc, .ok
+	ld hl, NoRAMString
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ret
+.ok
 	call DoRAMBankInitialization
 	call TestRAMReadsReadOnly
 	call TestRAMReadsReadWrite

@@ -128,27 +128,6 @@ GetMaxValidROMBank:
 	dec de
 	ret
 
-TestAllROMBanksOption::
-	call GetMaxValidROMBank
-	jr nc, .go
-	ld hl, .error_text
-	jp MessageBox
-.error_text
-	db "Could not detect<LF>"
-	db "last ROM bank.<@>"
-
-.go
-	xor a
-	ld hl, wInitialBank
-	ld [hli], a
-	ld [hli], a
-	ld a, e
-	ld [hli], a
-	ld a, d
-	ld [hli], a
-	ld [hl], 1
-	; fallthrough
-
 TestROMBankRange:
 	ld a, [wBankStep]
 	ld hl, ZeroStepString
@@ -174,8 +153,32 @@ TestROMBankRange:
 	jp MessageBox
 
 .go
-	call MakeFullscreenTextbox
-	call ClearErrorCount
+	ld hl, ROMBankRangeTest
+	jp ExecuteTest
+
+TestAllROMBanks::
+	call GetMaxValidROMBank
+	jr nc, .go
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ret
+.error_text
+	db "Could not detect<LF>"
+	db "last ROM bank.<@>"
+
+.go
+	xor a
+	ld hl, wInitialBank
+	ld [hli], a
+	ld [hli], a
+	ld a, e
+	ld [hli], a
+	ld a, d
+	ld [hli], a
+	ld [hl], 1
+	; fallthrough
+ROMBankRangeTest:
 	ld hl, .testing_text
 	rst Print
 	call GetMaxValidROMBank
@@ -184,7 +187,10 @@ TestROMBankRange:
 	ld [hMax], a
 	ld a, d
 	ld [hMax + 1], a
-	ld a, b
+	ld hl, wInitialBank
+	ld a, [hli]
+	ld c, a
+	ld b, [hl]
 	or c
 	call z, .test_home_bank
 .loop
@@ -238,9 +244,7 @@ TestROMBankRange:
 .done
 	ld hl, EmptyString
 	rst Print
-	call GenerateErrorCountString
-	rst Print
-	jp EndFullscreenTextbox
+	ret
 
 .testing_text
 	db "Testing ROM banks<LF>"

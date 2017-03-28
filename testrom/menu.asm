@@ -341,6 +341,9 @@ ExecuteSelectedOption:
 	dec a
 	jr z, LoadMenu
 
+	dec a
+	jp z, ExecuteTest
+
 	; so far we don't have any other types
 	xor a
 	ld [hNextMenuAction], a
