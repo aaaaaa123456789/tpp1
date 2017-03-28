@@ -36,20 +36,3 @@ RAMTestingMenu:
 	option "Cross-bank alias.", OPTION_TEST, TestRAMCrossBankAliasing
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
-
-NotImplemented:
-	ld hl, .text
-	ret
-
-.text
-	db "Not implemented.<@>"
-
-AboutBox:
-	call ClearScreen
-	ld de, TitleString
-	hlcoord 1, 0
-	rst PrintString
-	ld de, AboutString
-	hlcoord 0, 6
-	rst PrintString
-	jp WaitForAPress

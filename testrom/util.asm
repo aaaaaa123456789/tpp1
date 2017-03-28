@@ -203,7 +203,7 @@ FillRandomBuffer::
 	ld [rIF], a ;if we're in vblank, discard it
 	reti
 
-DoReset:
+DoReset::
 	xor a
 	ld hl, rMR3w
 	ld [hld], a
@@ -211,3 +211,13 @@ DoReset:
 	ld [hld], a
 	ld [hl], 1
 	rst Reset ;does not return
+
+AboutBox::
+	call ClearScreen
+	ld de, TitleString
+	hlcoord 1, 0
+	rst PrintString
+	ld de, AboutString
+	hlcoord 0, 6
+	rst PrintString
+	jp WaitForAPress

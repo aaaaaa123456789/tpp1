@@ -38,12 +38,12 @@ INCLUDE "hexentry.asm"
 INCLUDE "math.asm"
 INCLUDE "random.asm"
 INCLUDE "printnum.asm"
-INCLUDE "testing.asm"
 INCLUDE "error_count.asm"
 
 INCLUDE "menudata.asm"
 INCLUDE "strings.asm"
 
+INCLUDE "testing.asm"
 INCLUDE "rom_tests.asm"
 INCLUDE "ram_tests.asm"
 

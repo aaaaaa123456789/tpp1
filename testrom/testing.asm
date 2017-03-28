@@ -14,3 +14,10 @@ LoadRAMTestingMenu::
 	ret c
 	ldopt hl, OPTION_MENU, RAMTestingMenu
 	ret
+
+NotImplemented::
+	ld hl, .text
+	ret
+
+.text
+	db "Not implemented.<@>"
