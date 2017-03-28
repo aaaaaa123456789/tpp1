@@ -16,4 +16,3 @@
 	charmap "<UP>", $18
 	charmap "<DOWN>", $19
 	charmap "<A>", $1a
-	charmap "<BUTTON>", $1b
