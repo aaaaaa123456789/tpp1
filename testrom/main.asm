@@ -67,7 +67,7 @@ Init::
 	; fallthrough
 
 Main::
-	ld de, .title_string
+	ld de, TitleString
 	hlcoord 1, 0
 	rst PrintString
 	hlcoord 0, 6
@@ -148,13 +148,6 @@ Main::
 .print
 	rst CopyString
 	ret
-
-.title_string
-	db " TPP1 testing ROM<LF>"
-	db "<LF>"
-	db "http://github.com/<LF>"
-	db "TwitchPlaysPokemon<LF>"
-	db "      /tpp1/<@>"
 
 .testing_initial_values
 	db "Testing initial<LF>"

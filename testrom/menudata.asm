@@ -7,7 +7,7 @@ MainTestingMenu::
 	option "Rumble tests", OPTION_CHECK, NotImplemented
 	option "MR register tests", OPTION_CHECK, NotImplemented
 	option "Memory viewer", OPTION_CHECK, NotImplemented
-	option "About", OPTION_CHECK, NotImplemented
+	option "About", OPTION_EXEC, AboutBox
 	option "Reset", OPTION_EXEC, DoReset
 	end_menu
 
@@ -43,3 +43,13 @@ NotImplemented:
 
 .text
 	db "Not implemented.<@>"
+
+AboutBox:
+	call ClearScreen
+	ld de, TitleString
+	hlcoord 1, 0
+	rst PrintString
+	ld de, AboutString
+	hlcoord 0, 6
+	rst PrintString
+	jp WaitForAPress

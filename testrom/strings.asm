@@ -64,3 +64,24 @@ UninitializedRAMString::
 OneRAMBankString::
 	db "Only one bank of<LF>"
 	db "RAM is present.<@>"
+
+TitleString::
+	db " TPP1 testing ROM<LF>"
+	db "<LF>"
+	db "http://github.com/<LF>"
+	db "TwitchPlaysPokemon<LF>"
+	db "      /tpp1/<@>"
+
+AboutString::
+	db "  Designed to test<LF>"
+	db "  compliance of an<LF>"
+	db "emulator or hardware<LF>"
+	db "implementation with<LF>"
+	db "   the TPP1 spec.<LF>"
+	db "For more information<LF>"
+	db "refer to the speci-<LF>"
+	db "   fication file.<LF>"
+	db "<LF>"
+	db "   TPPDevs - 2017<LF>"
+	db "<LF>"
+	db "       <A> Back<@>"
