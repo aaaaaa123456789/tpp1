@@ -11,7 +11,7 @@ MainTestingMenu::
 	option "Reset", OPTION_EXEC, DoReset
 	end_menu
 
-ROMTestingMenu:
+ROMTestingMenu::
 	menu "ROM bank tests", MainTestingMenu
 	option "Test bank sample", OPTION_EXEC, TestROMBankSampleOption
 	option "Test bank range", OPTION_EXEC, TestROMBankRangeOption
@@ -19,7 +19,7 @@ ROMTestingMenu:
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
 
-RAMTestingMenu:
+RAMTestingMenu::
 	menu "RAM bank tests", MainTestingMenu
 	option "Initialize banks", OPTION_EXEC, InitializeRAMBanks
 	option "Run all tests", OPTION_TEST, RunAllRAMTests
