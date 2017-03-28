@@ -61,6 +61,10 @@ option_number = option_number + 1
 	db \1, "<@>"
 ENDM
 
+ldopt: MACRO
+	ld \1, (\3) | ((\2) << 14)
+ENDM
+
 end_menu: MACRO
 	option_label {option_number}
 	dw -1
@@ -113,6 +117,7 @@ SCREEN_HEIGHT EQU 18
 	const OPTION_EXEC
 	const OPTION_MENU
 	const OPTION_TEST
+	const OPTION_CHECK
 
 ; menu actions
 	const_def

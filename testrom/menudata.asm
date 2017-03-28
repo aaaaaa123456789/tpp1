@@ -1,13 +1,13 @@
 MainTestingMenu::
 	menu "Main menu", MainTestingMenu
-	option "Run all tests", OPTION_EXEC, NotImplemented
+	option "Run all tests", OPTION_CHECK, NotImplemented
 	option "ROM bank tests", OPTION_MENU, ROMTestingMenu
-	option "RAM bank tests", OPTION_MENU, RAMTestingMenu
-	option "RTC tests", OPTION_EXEC, NotImplemented
-	option "Rumble tests", OPTION_EXEC, NotImplemented
-	option "MR register tests", OPTION_EXEC, NotImplemented
-	option "Memory viewer", OPTION_EXEC, NotImplemented
-	option "About", OPTION_EXEC, NotImplemented
+	option "RAM bank tests", OPTION_CHECK, LoadRAMTestingMenu
+	option "RTC tests", OPTION_CHECK, NotImplemented
+	option "Rumble tests", OPTION_CHECK, NotImplemented
+	option "MR register tests", OPTION_CHECK, NotImplemented
+	option "Memory viewer", OPTION_CHECK, NotImplemented
+	option "About", OPTION_CHECK, NotImplemented
 	option "Reset", OPTION_EXEC, DoReset
 	end_menu
 
@@ -37,11 +37,15 @@ RAMTestingMenu:
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
 
+LoadRAMTestingMenu:
+	call GetMaxValidRAMBank
+	ld hl, NoRAMString
+	ret c
+	ldopt hl, OPTION_MENU, RAMTestingMenu
+	ret
+
 NotImplemented:
 	ld hl, .text
-	call MessageBox
-	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
 	ret
 
 .text
@@ -54,4 +58,4 @@ DoReset:
 	ld [hld], a
 	ld [hld], a
 	ld [hl], 1
-	rst Reset
+	rst Reset ;does not return

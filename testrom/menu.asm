@@ -344,8 +344,20 @@ ExecuteSelectedOption:
 	dec a
 	jp z, ExecuteTest
 
-	; so far we don't have any other types
+	call _hl_
+	ld a, h
+	ld b, h
+	and $3f
+	ld h, a
 	xor a
+	sla b
+	rla
+	sla b
+	rla
+	and a
+	jr nz, .not_exec
+	call MessageBox
+	ld a, ACTION_UPDATE
 	ld [hNextMenuAction], a
 	ret
 
