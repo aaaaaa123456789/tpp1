@@ -1,20 +1,23 @@
 _Reset::
+	; @ = 0
 	di
 	xor a
 	ld sp, StackTop
 	jp Init
 
 _CopyString::
+	; @ = 8
 	push af
 	xor a
 	call CopyBytesUntilMatch
 	pop af
 	ret
 	
-EmptyString::
-	db "<@>"
+_hl_::
+	jp hl
 
 _FillByte::
+	; @ = 10
 	jp FillByteFunction
 
 _FinishPopping:
@@ -26,6 +29,7 @@ _ContinueDelayFrames:
 	dec a
 
 _DelayFrames::
+	; @ = 18
 	and a
 	ret z
 _LoopDelayFrames:
@@ -34,6 +38,7 @@ _LoopDelayFrames:
 	jr _ContinueDelayFrames
 
 _PrintString::
+	; @ = 20
 	push bc
 	push af
 	call PrintStringFunction
@@ -43,6 +48,7 @@ _PopAFBC:
 	ret
 
 _AddNTimes::
+	; @ = 28
 	and a
 	ret z
 	push bc
@@ -51,6 +57,7 @@ _AddNTimes::
 	ret
 
 _CopyBytes::
+	; @ = 30
 	push af
 	inc b
 	inc c
@@ -59,6 +66,7 @@ _CopyBytes::
 	ret
 
 _Print::
+	; @ = 38
 	push bc
 	push af
 	push de

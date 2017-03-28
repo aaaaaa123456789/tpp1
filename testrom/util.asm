@@ -174,19 +174,6 @@ LoadPalettes::
 	jr nz, .loop
 	ret
 
-ExecuteTest::
-	push hl
-	call MakeFullscreenTextbox
-	call ClearErrorCount
-	pop hl
-	call _hl_
-	call GenerateErrorCountString
-	rst Print
-	jp EndFullscreenTextbox
-
-_hl_::
-	jp hl
-
 FillRandomBuffer::
 	push bc
 	push de

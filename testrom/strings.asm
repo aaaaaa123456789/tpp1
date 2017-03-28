@@ -4,6 +4,7 @@ ContinueString::
 BankFailedString::
 	db "FAILED: bank $"
 	bigdw hCurrent + 1, hCurrent
+EmptyString::
 	db "<@>"
 
 InvalidBankString::
