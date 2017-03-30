@@ -5,7 +5,7 @@ MainTestingMenu::
 	option "RAM bank tests", OPTION_CHECK, LoadRAMTestingMenu
 	option "RTC tests", OPTION_CHECK, NotImplemented
 	option "Rumble tests", OPTION_CHECK, NotImplemented
-	option "MR register tests", OPTION_CHECK, NotImplemented
+	option "MR register tests", OPTION_MENU, MRTestingMenu
 	option "Memory viewer", OPTION_CHECK, NotImplemented
 	option "About", OPTION_EXEC, AboutBox
 	option "Reset", OPTION_EXEC, DoReset
@@ -34,5 +34,15 @@ RAMTestingMenu::
 	option "R/W test (all)", OPTION_EXEC, TestAllRAMBanksReadWriteOption
 	option "In-bank aliasing", OPTION_TEST, TestRAMInBankAliasing
 	option "Cross-bank alias.", OPTION_TEST, TestRAMCrossBankAliasing
+	option "Back", OPTION_MENU, MainTestingMenu
+	end_menu
+
+MRTestingMenu::
+	menu "MR register tests", MainTestingMenu
+	option "Run all tests", OPTION_CHECK, NotImplemented
+	option "Mapping test", OPTION_CHECK, NotImplemented
+	option "Mirroring test", OPTION_CHECK, NotImplemented
+	option "Reading test", OPTION_CHECK, NotImplemented
+	option "Writing test", OPTION_CHECK, NotImplemented
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
