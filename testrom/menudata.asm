@@ -40,7 +40,7 @@ RAMTestingMenu::
 MRTestingMenu::
 	menu "MR register tests", MainTestingMenu
 	option "Run all tests", OPTION_CHECK, NotImplemented
-	option "Mapping test", OPTION_CHECK, NotImplemented
+	option "Mapping test", OPTION_TEST, MRMappingTest
 	option "Mirroring test", OPTION_CHECK, NotImplemented
 	option "Reading test", OPTION_CHECK, NotImplemented
 	option "Writing test", OPTION_CHECK, NotImplemented

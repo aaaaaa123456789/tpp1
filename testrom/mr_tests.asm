@@ -24,12 +24,16 @@ MRMappingTest::
 	rst Print
 	ld hl, EmptyString
 	rst Print
-	xor a
-	ld hl, hCurrent
-	ld [hli], a
-	ld [hli], a
-	ld [hl], a
-	call ReinitializeMRRegisters ;exits with hl = 0
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	call .test_random
+	call .test_random
+	call .test_random
+	call ReinitializeMRRegisters ;exits with a = hl = 0
+	ld [hCurrent + 2], a
+	ld [hCurrent + 1], a
+	inc a
+	ld [hCurrent], a
 	ld h, rMR0r >> 8
 	ld a, [hli]
 	dec a
@@ -37,15 +41,8 @@ MRMappingTest::
 	inc hl
 	or [hl]
 	call nz, .error
-	call .test_random
-	call .test_random
 	ld hl, EmptyString
 	rst Print
-	xor a
-	ld hl, rMR2w
-	ld [hld], a
-	ld [hld], a
-	ld [hl], 1
 	ret
 
 .initial_text
