@@ -204,12 +204,7 @@ FillRandomBuffer::
 	reti
 
 DoReset::
-	xor a
-	ld hl, rMR3w
-	ld [hld], a
-	ld [hld], a
-	ld [hld], a
-	ld [hl], 1
+	call ReinitializeMRRegisters
 	rst Reset ;does not return
 
 AboutBox::
