@@ -155,16 +155,15 @@ MRWritesTest::
 	xor a
 	rst FillByte
 	pop de
-	push de
 	ld hl, .error_text
 	rst CopyString
 	pop af
 	cp "3"
-	jr z, .not_three
+	jr nz, .not_three
 	inc a
 .not_three
 	ld [wTextBuffer + 10], a
-	pop hl
+	ld hl, wTextBuffer
 	rst Print
 	call IncrementErrorCount
 .handle_loop
