@@ -89,16 +89,20 @@ MRMappingTest::
 	rst Print
 	jp IncrementErrorCount
 
+ClearMR4:
+	ld hl, rMR3w
+	ld [hl], MR3_RUMBLE_OFF
+	ld [hl], MR3_RTC_OFF
+	ld [hl], MR3_CLEAR_RTC_OVERFLOW
+	ret
+
 MRWritesTest::
 	ld hl, .initial_text
 	rst Print
 	ld hl, EmptyString
 	rst Print
 	call ReinitializeMRRegisters ;also maps regs to $a000
-	ld hl, rMR3w
-	ld [hl], MR3_RUMBLE_OFF
-	ld [hl], MR3_RTC_OFF
-	ld [hl], MR3_CLEAR_RTC_OVERFLOW
+	call ClearMR4
 	ld bc, 1
 	ld e, b
 	ld a, 10
