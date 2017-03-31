@@ -16,6 +16,7 @@ ROMTestingMenu::
 	option "Test bank sample", OPTION_EXEC, TestROMBankSampleOption
 	option "Test bank range", OPTION_EXEC, TestROMBankRangeOption
 	option "Test all banks", OPTION_TEST, TestAllROMBanks
+	option "Bankswitch speed", OPTION_CHECK, NotImplemented
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
 
