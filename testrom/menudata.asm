@@ -48,10 +48,10 @@ RumbleTestingMenu::
 
 ManualRumbleSelection::
 	menu "Rumble controls", RumbleTestingMenu
-	option "Off", OPTION_CHECK, NotImplemented
-	option "Low", OPTION_CHECK, NotImplemented
-	option "Medium", OPTION_CHECK, NotImplemented
-	option "High", OPTION_CHECK, NotImplemented
+	option "Off", OPTION_CHECK, SetRumbleOff
+	option "Low", OPTION_CHECK, SetRumbleLow
+	option "Medium", OPTION_CHECK, SetRumbleMedium
+	option "High", OPTION_CHECK, SetRumbleHigh
 	option "Go to main menu", OPTION_MENU, MainTestingMenu
 	option "Back", OPTION_MENU, RumbleTestingMenu
 	end_menu
