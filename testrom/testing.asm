@@ -15,6 +15,14 @@ LoadRAMTestingMenu::
 	ldopt hl, OPTION_MENU, RAMTestingMenu
 	ret
 
+LoadRumbleTestingMenu::
+	call GetMaxRumbleSpeed
+	and a
+	ld hl, NoRumbleString
+	ret z
+	ldopt hl, OPTION_MENU, RumbleTestingMenu
+	ret
+
 NotImplemented::
 	ld hl, .text
 	ret

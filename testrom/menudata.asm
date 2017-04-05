@@ -39,6 +39,23 @@ RAMTestingMenu::
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
 
+RumbleTestingMenu::
+	menu "Rumble tests", MainTestingMenu
+	option "Test MR4", OPTION_CHECK, NotImplemented
+	option "Manual testing", OPTION_CHECK, NotImplemented
+	option "Back", OPTION_MENU, MainTestingMenu
+	end_menu
+
+ManualRumbleSelection::
+	menu "Rumble controls", RumbleTestingMenu
+	option "Off", OPTION_CHECK, NotImplemented
+	option "Low", OPTION_CHECK, NotImplemented
+	option "Medium", OPTION_CHECK, NotImplemented
+	option "High", OPTION_CHECK, NotImplemented
+	option "Go to main menu", OPTION_MENU, MainTestingMenu
+	option "Back", OPTION_MENU, RumbleTestingMenu
+	end_menu
+
 MRTestingMenu::
 	menu "MR register tests", MainTestingMenu
 	option "Run all tests", OPTION_TEST, RunAllMRTests

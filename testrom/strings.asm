@@ -65,6 +65,10 @@ OneRAMBankString::
 	db "Only one bank of<LF>"
 	db "RAM is present.<@>"
 
+NoRumbleString::
+	db "This build has<LF>"
+	db "rumble disabled.<@>"
+
 TitleString::
 	db " TPP1 testing ROM<LF>"
 	db "<LF>"
