@@ -18,6 +18,7 @@ wBankStep:: ds 1 ;c1fc
 
 wErrorCount:: ds 3 ;c1fd
 
+wDataBuffer::
 wRandomBuffer:: ds $40 ;c200
 
 SECTION "Program stack", WRAM0[$cf00]

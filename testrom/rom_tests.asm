@@ -156,20 +156,24 @@ TestROMBankRange:
 	ld hl, ROMBankRangeTest
 	jp ExecuteTest
 
-TestAllROMBanks::
+CheckLastROMBankExists:
 	call GetMaxValidROMBank
-	jr nc, .go
+	ret nc
 	ld hl, .error_text
 	rst Print
 	ld hl, EmptyString
 	rst Print
-	jp IncrementErrorCount
+	call IncrementErrorCount
+	scf
+	ret
 
 .error_text
 	db "Could not detect<LF>"
 	db "last ROM bank.<@>"
 
-.go
+TestAllROMBanks::
+	call CheckLastROMBankExists
+	ret c
 	xor a
 	ld hl, wInitialBank
 	ld [hli], a
@@ -394,3 +398,128 @@ TestROMBank::
 	ret nz
 	inc hl
 	ret
+
+TestROMBankswitchSpeed:
+	ld hl, .initial_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	call CheckLastROMBankExists
+	ret c
+	call GetMaxValidROMBank
+	ld a, 5
+	ld [hMax], a
+	xor a
+	ld h, a
+	ld l, a
+	ld [hli], a
+	ld [hl], a ;bankswitch to home
+	ld [hCurrent], a
+	ld [hCurrent + 1], a
+.loop
+	call Random
+	and e
+	ld c, a
+	call Random
+	and d
+	ld b, a
+	ld a, [hCurrent]
+	cp c
+	jr nz, .go
+	ld a, [hCurrent + 1]
+	cp b
+	jr z, .loop
+.go
+	push de
+	ld a, c
+	ld [hCurrent], a
+	ld a, b
+	ld [hCurrent + 1], a
+	ld hl, $4004
+	ld de, rMR0w
+	ld a, b
+	ld [rMR1w], a
+	ld a, c
+	ld [de], a
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	inc hl
+	ld a, [hli]
+	ld b, [hl]
+	ld c, a
+	call .validate
+	pop de
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
+	ret
+
+.validate
+	ld a, [hCurrent]
+	ld l, a
+	ld a, [hCurrent + 1]
+	ld h, a
+	or l
+	jr z, .validate_home
+	push bc
+	ld bc, $4004
+	call Multiply16
+	pop bc
+.do_validation
+	ld hl, hProduct
+	ld a, [hli]
+	cp e
+	jr nz, .error
+	ld a, [hli]
+	cp d
+	jr nz, .error
+	ld a, [hli]
+	cp c
+	jr nz, .error
+	ld a, [hl]
+	cp b
+	ret z
+.error
+	ld hl, wDataBuffer
+	ld a, e
+	ld [hli], a
+	ld a, d
+	ld [hli], a
+	ld a, c
+	ld [hli], a
+	ld [hl], b
+	ld hl, .error_text
+	rst Print
+	jp IncrementErrorCount
+
+.validate_home
+	; the ROM begins with di ($f3), xor a ($af), ld sp, $d000 ($31 $00 $d0), jp $0154 ($c3 $54 $01)
+	ld hl, hProduct ;just use it as storage for the "correct" values
+	ld a, $d0
+	ld [hli], a
+	ld a, $c3
+	ld [hli], a
+	ld a, $54
+	ld [hli], a
+	ld [hl], $01
+	jr .do_validation
+
+.initial_text
+	db "Testing ROM bank<LF>"
+	db "switching speed...<@>"
+
+.error_text
+	db "FAILED: switching<LF>"
+	db "to bank $"
+	bigdw hCurrent + 1, hCurrent
+	db "<LF>"
+	db "(at $4004 expected<LF>"
+	db "$"
+	bigdw hProduct + 3, hProduct + 2, hProduct + 1, hProduct
+	db ", got<LF>"
+	db "$"
+	bigdw wDataBuffer + 3, wDataBuffer + 2, wDataBuffer + 1, wDataBuffer
+	db ")<@>"
