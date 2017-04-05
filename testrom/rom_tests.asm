@@ -399,7 +399,11 @@ TestROMBank::
 	inc hl
 	ret
 
-TestROMBankswitchSpeed:
+RunAllROMTests::
+	call TestAllROMBanks
+	; fallthrough
+
+TestROMBankswitchSpeed::
 	ld hl, .initial_text
 	rst Print
 	ld hl, EmptyString

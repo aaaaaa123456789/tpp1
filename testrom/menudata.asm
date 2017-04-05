@@ -13,6 +13,7 @@ MainTestingMenu::
 
 ROMTestingMenu::
 	menu "ROM bank tests", MainTestingMenu
+	option "Run both tests", OPTION_TEST, RunAllROMTests
 	option "Test bank sample", OPTION_EXEC, TestROMBankSampleOption
 	option "Test bank range", OPTION_EXEC, TestROMBankRangeOption
 	option "Test all banks", OPTION_TEST, TestAllROMBanks
