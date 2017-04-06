@@ -354,7 +354,8 @@ ExecuteSelectedOption:
 	jr nz, .not_exec
 	ld a, h
 	or l
-	call nz, MessageBox
+	ret z
+	call MessageBox
 	ld a, ACTION_UPDATE
 	ld [hNextMenuAction], a
 	ret
