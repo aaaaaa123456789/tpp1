@@ -41,7 +41,7 @@ RAMTestingMenu::
 
 RumbleTestingMenu::
 	menu "Rumble tests", MainTestingMenu
-	option "Test MR4", OPTION_CHECK, NotImplemented
+	option "Test MR4", OPTION_TEST, TestRumbleMR4
 	option "Manual testing", OPTION_MENU, ManualRumbleSelection
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
