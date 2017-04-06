@@ -346,17 +346,15 @@ ExecuteSelectedOption:
 
 	call _hl_
 	ld a, h
-	ld b, h
-	and $3f
-	ld h, a
-	xor a
-	sla b
-	rla
-	sla b
-	rla
-	and a
+	res 6, h
+	res 7, h
+	rlca
+	rlca
+	and 3
 	jr nz, .not_exec
-	call MessageBox
+	ld a, h
+	or l
+	call nz, MessageBox
 	ld a, ACTION_UPDATE
 	ld [hNextMenuAction], a
 	ret

@@ -4,7 +4,7 @@ MainTestingMenu::
 	option "ROM bank tests", OPTION_MENU, ROMTestingMenu
 	option "RAM bank tests", OPTION_CHECK, LoadRAMTestingMenu
 	option "RTC tests", OPTION_CHECK, NotImplemented
-	option "Rumble tests", OPTION_CHECK, NotImplemented
+	option "Rumble tests", OPTION_CHECK, LoadRumbleTestingMenu
 	option "MR register tests", OPTION_MENU, MRTestingMenu
 	option "Memory viewer", OPTION_CHECK, NotImplemented
 	option "About", OPTION_EXEC, AboutBox
@@ -42,16 +42,16 @@ RAMTestingMenu::
 RumbleTestingMenu::
 	menu "Rumble tests", MainTestingMenu
 	option "Test MR4", OPTION_CHECK, NotImplemented
-	option "Manual testing", OPTION_CHECK, NotImplemented
+	option "Manual testing", OPTION_MENU, ManualRumbleSelection
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
 
 ManualRumbleSelection::
 	menu "Rumble controls", RumbleTestingMenu
-	option "Off", OPTION_CHECK, SetRumbleOff
-	option "Low", OPTION_CHECK, SetRumbleLow
-	option "Medium", OPTION_CHECK, SetRumbleMedium
-	option "High", OPTION_CHECK, SetRumbleHigh
+	option "Off", OPTION_EXEC, SetRumbleOff
+	option "Low", OPTION_EXEC, SetRumbleLow
+	option "Medium", OPTION_EXEC, SetRumbleMedium
+	option "High", OPTION_EXEC, SetRumbleHigh
 	option "Go to main menu", OPTION_MENU, MainTestingMenu
 	option "Back", OPTION_MENU, RumbleTestingMenu
 	end_menu
