@@ -73,6 +73,9 @@ NoRTCString::
 	db "This build has<LF>"
 	db "the RTC disabled.<@>"
 
+WaitingString::
+	db "Waiting...<@>"
+
 TitleString::
 	db " TPP1 testing ROM<LF>"
 	db "<LF>"

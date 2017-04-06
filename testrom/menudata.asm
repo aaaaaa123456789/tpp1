@@ -42,7 +42,7 @@ RAMTestingMenu::
 RTCTestingMenu::
 	menu "RTC tests", MainTestingMenu
 	option "Run all tests", OPTION_CHECK, NotImplemented
-	option "On/off test", OPTION_CHECK, NotImplemented
+	option "On/off test", OPTION_TEST, RTCOnOffTest
 	option "Setting test<COMMA> on", OPTION_CHECK, NotImplemented
 	option "Setting test<COMMA> off", OPTION_CHECK, NotImplemented
 	option "Rollovers test", OPTION_CHECK, NotImplemented
