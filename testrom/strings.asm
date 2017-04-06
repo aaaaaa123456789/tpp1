@@ -69,6 +69,10 @@ NoRumbleString::
 	db "This build has<LF>"
 	db "rumble disabled.<@>"
 
+NoRTCString::
+	db "This build has<LF>"
+	db "the RTC disabled.<@>"
+
 TitleString::
 	db " TPP1 testing ROM<LF>"
 	db "<LF>"

@@ -46,6 +46,7 @@ INCLUDE "strings.asm"
 INCLUDE "testing.asm"
 INCLUDE "rom_tests.asm"
 INCLUDE "ram_tests.asm"
+INCLUDE "rtc_tests.asm"
 INCLUDE "rumble_tests.asm"
 INCLUDE "mr_tests.asm"
 

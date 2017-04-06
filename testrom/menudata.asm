@@ -3,7 +3,7 @@ MainTestingMenu::
 	option "Run all tests", OPTION_CHECK, NotImplemented
 	option "ROM bank tests", OPTION_MENU, ROMTestingMenu
 	option "RAM bank tests", OPTION_CHECK, LoadRAMTestingMenu
-	option "RTC tests", OPTION_CHECK, NotImplemented
+	option "RTC tests", OPTION_CHECK, LoadRTCTestingMenu
 	option "Rumble tests", OPTION_CHECK, LoadRumbleTestingMenu
 	option "MR register tests", OPTION_MENU, MRTestingMenu
 	option "Memory viewer", OPTION_CHECK, NotImplemented
@@ -36,6 +36,25 @@ RAMTestingMenu::
 	option "R/W test (all)", OPTION_EXEC, TestAllRAMBanksReadWriteOption
 	option "In-bank aliasing", OPTION_TEST, TestRAMInBankAliasing
 	option "Cross-bank alias.", OPTION_TEST, TestRAMCrossBankAliasing
+	option "Back", OPTION_MENU, MainTestingMenu
+	end_menu
+
+RTCTestingMenu::
+	menu "RTC tests", MainTestingMenu
+	option "Run all tests", OPTION_CHECK, NotImplemented
+	option "On/off test", OPTION_CHECK, NotImplemented
+	option "Setting test<COMMA> on", OPTION_CHECK, NotImplemented
+	option "Setting test<COMMA> off", OPTION_CHECK, NotImplemented
+	option "Rollovers test", OPTION_CHECK, NotImplemented
+	option "Overflow test", OPTION_CHECK, NotImplemented
+	option "OF clearing test", OPTION_CHECK, NotImplemented
+	option "Access time test", OPTION_CHECK, NotImplemented
+	option "Latching test", OPTION_CHECK, NotImplemented
+	option "Running flag test", OPTION_CHECK, NotImplemented
+	option "MR4 writing test", OPTION_CHECK, NotImplemented
+	option "Unmap&latch test", OPTION_CHECK, NotImplemented
+	option "Manual setting", OPTION_CHECK, NotImplemented
+	option "Manual check", OPTION_CHECK, NotImplemented
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
 

@@ -15,6 +15,13 @@ LoadRAMTestingMenu::
 	ldopt hl, OPTION_MENU, RAMTestingMenu
 	ret
 
+LoadRTCTestingMenu::
+	call CheckRTCAllowed
+	ld hl, NoRTCString
+	ret c
+	ldopt hl, OPTION_MENU, RTCTestingMenu
+	ret
+
 LoadRumbleTestingMenu::
 	call GetMaxRumbleSpeed
 	and a
