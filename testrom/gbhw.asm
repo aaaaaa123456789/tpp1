@@ -39,7 +39,6 @@ rIF         EQU $ff0f ; Interrupt Flag (R/W)
 rLCDC       EQU $ff40 ; LCD Control (R/W)
 rSTAT       EQU $ff41 ; LCDC Status (R/W)
 rLY         EQU $ff44 ; LCDC Y-Coordinate (R)
-rLYC        EQU $ff45 ; LY Compare (R/W)
 rWY         EQU $ff4a ; Window Y Position (R/W)
 rWX         EQU $ff4b ; Window X Position minus 7 (R/W)
 rKEY1       EQU $ff4d ; CGB Mode Only - Prepare Speed Switch
