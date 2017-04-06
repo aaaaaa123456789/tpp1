@@ -53,6 +53,7 @@ RTCTestingMenu::
 	option "Running flag test", OPTION_CHECK, NotImplemented
 	option "MR4 writing test", OPTION_CHECK, NotImplemented
 	option "Unmap&latch test", OPTION_CHECK, NotImplemented
+	option "Mirroring test", OPTION_CHECK, NotImplemented
 	option "Set RTC manually", OPTION_CHECK, NotImplemented
 	option "Turn RTC off", OPTION_EXEC, TurnRTCOff
 	option "View RTC status", OPTION_CHECK, NotImplemented
