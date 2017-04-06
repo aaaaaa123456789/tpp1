@@ -112,7 +112,7 @@ TestROMBankRangeOption::
 
 GetMaxValidROMBank:
 	; returns max bank in de, carry if the ROM size is invalid
-	ld a, [MR3ROMSize]
+	ld a, [TPP1ROMSize]
 	cp 16
 	ccf
 	ret c

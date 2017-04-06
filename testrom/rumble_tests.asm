@@ -1,5 +1,5 @@
 GetMaxRumbleSpeed::
-	ld a, [MR3Features]
+	ld a, [TPP1Features]
 	rra
 	jr nc, .no
 	rra

@@ -96,7 +96,7 @@ CheckRAMPresent::
 GetMaxValidRAMBank::
 	; returns the max valid RAM bank in c
 	; returns carry if invalid/zero (i.e., no SRAM)
-	ld a, [MR3RAMSize]
+	ld a, [TPP1RAMSize]
 	and a
 	scf
 	ret z
