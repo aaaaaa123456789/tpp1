@@ -13,3 +13,14 @@ LatchReadRTC::
 	pop hl
 	ld [hl], MR3_MAP_RTC
 	ret
+
+TurnRTCOff::
+	ld a, MR3_RTC_OFF
+	ld [rMR3w], a
+	ld a, ACTION_UPDATE
+	ld [hNextMenuAction], a
+	ld hl, .text
+	jp MessageBox
+
+.text
+	db "RTC turned off.<@>"
