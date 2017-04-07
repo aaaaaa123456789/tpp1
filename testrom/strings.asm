@@ -76,6 +76,11 @@ NoRTCString::
 WaitingString::
 	db "Waiting...<@>"
 
+RTCSetTestingString::
+	db "Testing setting<LF>"
+	db "the RTC (while<LF>"
+	db "turned o<@>"
+
 TitleString::
 	db " TPP1 testing ROM<LF>"
 	db "<LF>"

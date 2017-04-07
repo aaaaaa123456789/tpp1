@@ -172,27 +172,36 @@ RTCOnOffTest::
 	db "while off<@>"
 
 RTCSetWhileOnTest::
-	ld hl, .initial_test_text
+	ld hl, RTCSetTestingString
+	ld de, wTextBuffer
+	rst CopyString
+	ld h, d
+	ld l, e
+	ld a, "n"
+	ld [hli], a
 	ld a, MR3_RTC_ON
 	jr RTCSetTest
-	
-.initial_test_text
-	db "Testing setting<LF>"
-	db "the RTC (while<LF>"
-	db "turned on)...<@>"
 
 RTCSetWhileOffTest::
-	ld hl, .initial_test_text
+	ld hl, RTCSetTestingString
+	ld de, wTextBuffer
+	rst CopyString
+	ld h, d
+	ld l, e
+	ld a, "f"
+	ld [hli], a
+	ld [hli], a
 	ld a, MR3_RTC_OFF
-	jr RTCSetTest
-
-.initial_test_text
-	db "Testing setting<LF>"
-	db "the RTC (while<LF>"
-	db "turned off)...<@>"
-
 RTCSetTest:
 	push af
+	ld a, ")"
+	ld [hli], a
+	ld a, "."
+	ld [hli], a
+	ld [hli], a
+	ld [hli], a
+	ld [hl], "<@>"
+	ld hl, wTextBuffer
 	rst Print
 	ld hl, EmptyString
 	rst Print
