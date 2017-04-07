@@ -350,3 +350,55 @@ RTCLatchTest::
 .initial_test_text
 	db "Testing RTC<LF>"
 	db "latching...<@>"
+
+RTCRunningFlagTest::
+	ld hl, .initial_test_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, MR3_MAP_RTC
+	ld [rMR3w], a
+	xor a
+	ld hl, rRTCW
+	ld [hli], a
+	ld [hli], a
+	ld [hli], a
+	ld [hl], a
+	; hl = $a003
+	ld h, a
+	; hl = $0003
+	ld [hl], MR3_SET_RTC
+	ld [hl], a ;a = MR3_MAP_REGS
+	ld [hl], MR3_RTC_ON
+	ld a, [rMR4r]
+	and 4
+	jr nz, .on
+	push hl
+	ld hl, .on_error_text
+	rst Print
+	call IncrementErrorCount
+	pop hl
+.on
+	ld [hl], MR3_RTC_OFF
+	ld a, [rMR4r]
+	and 4
+	jr nz, .off
+	ld hl, .off_error_text
+	rst Print
+	call IncrementErrorCount
+.off
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.initial_test_text
+	db "Testing MR4 RTC<LF>"
+	db "on/off flag...<@>"
+.on_error_text
+	db "FAILED: MR4 RTC<LF>"
+	db "flag is off while<LF>"
+	db "running<@>"
+.off_error_text
+	db "FAILED: MR4 RTC<LF>"
+	db "flag is on while<LF>"
+	db "stopped<@>"
