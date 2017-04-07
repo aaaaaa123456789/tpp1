@@ -74,34 +74,47 @@ WaitForRTCChange:
 	inc a
 	jr .done
 
-SetRTCRandomly:
-	push hl
-	ld hl, rRTCW
+GenerateRandomRTCSetting:
 	call Random
-	ld [hli], a
+	ld b, a
 .resample_day_hour
 	call Random
 	cp 7 << 5
 	jr nc, .resample_day_hour
-	bit 4, a
-	jr z, .hour_OK
-	bit 3, a
-	jr nz, .resample_day_hour
-.hour_OK
-	ld [hli], a
+	ld c, a
+	or $e7 ;set all bits that aren't the top two hour bits
+	inc a
+	jr z, .resample_day_hour
 .resample_minutes
 	call Random
 	and $3f
+	ld d, a
 	cp 60
 	jr nc, .resample_minutes
-	ld [hli], a
 .resample_seconds
 	call Random
 	and $3f
+	ld e, a
 	cp 60
 	jr nc, .resample_seconds
-	ld [hl], a
+	ret
+
+SetRTCRandomly:
+	push bc
+	push de
+	push hl
+	call GenerateRandomRTCSetting
+	ld hl, rRTCW
+	ld a, b
+	ld [hli], a
+	ld a, c
+	ld [hli], a
+	ld a, d
+	ld [hli], a
+	ld [hl], e
 	pop hl
+	pop de
+	pop bc
 	ret
 
 RTCOnOffTest::
@@ -157,3 +170,92 @@ RTCOnOffTest::
 .off_error_text
 	db "FAILED: RTC ticked<LF>"
 	db "while off<@>"
+
+RTCSetWhileOnTest::
+	ld hl, .initial_test_text
+	ld a, MR3_RTC_ON
+	jr RTCSetTest
+	
+.initial_test_text
+	db "Testing setting<LF>"
+	db "the RTC (while<LF>"
+	db "turned on)...<@>"
+
+RTCSetWhileOffTest::
+	ld hl, .initial_test_text
+	ld a, MR3_RTC_OFF
+	jr RTCSetTest
+
+.initial_test_text
+	db "Testing setting<LF>"
+	db "the RTC (while<LF>"
+	db "turned off)...<@>"
+
+RTCSetTest:
+	push af
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	pop af
+	ld [rMR3w], a
+	ld a, 5
+	ld [hMax], a
+.loop
+	ld a, MR3_MAP_RTC
+	ld [rMR3w], a
+.resample
+	call GenerateRandomRTCSetting
+	ld a, e
+	cp 59
+	jr nc, .resample
+	ld hl, rRTCW
+	push hl
+	ld a, b
+	ld [hli], a
+	ld a, c
+	ld [hli], a
+	ld a, d
+	ld [hli], a
+	ld [hl], e
+	ld a, MR3_SET_RTC
+	ld [rMR3w], a
+	call LatchReadRTC
+	pop hl
+	ld a, [hli]
+	cp b
+	jr nz, .error
+	ld a, [hli]
+	cp c
+	jr nz, .error
+	ld a, [hli]
+	cp d
+	jr nz, .error
+	ld a, [hl]
+	sub e
+	jr z, .ok
+	dec a
+	jr z, .ok
+.error
+	push de
+	ld hl, .error_text
+	ld de, wTextBuffer
+	rst CopyString
+	ld h, d
+	ld l, e
+	pop de
+	call GenerateTimeString
+	ld hl, wTextBuffer
+	rst Print
+	call IncrementErrorCount
+.ok
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.error_text
+	db "FAILED: could not<LF>"
+	db "set RTC to<LF>"
+	db "<@>"

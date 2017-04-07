@@ -39,3 +39,60 @@ PrintHexByte::
 .digit
 	ld [hli], a
 	ret
+
+PrintByte::
+	; prints a to hl, as long as it's <= c, using b digits (b = 1-3)
+	; if a > c, prints b question marks instead
+	; returns with hl pointing to the end, abc clobbered
+	cp c
+	jr c, .go
+	jr z, .go
+	ld a, "?"
+.question_mark_loop
+	ld [hli], a
+	dec b
+	jr nz, .question_mark_loop
+	ret
+.go
+	ld c, b
+	dec c
+	jr z, .no_hundreds
+	dec c
+	jr z, .no_hundreds
+	ld c, 0
+.hundreds_loop
+	sub 100
+	jr c, .done_hundreds
+	inc c
+	jr .hundreds_loop
+.done_hundreds
+	add a, 100
+	call .print_digit
+.no_hundreds
+	dec b
+	jr z, .no_tens
+	ld c, 0
+.tens_loop
+	sub 10
+	jr c, .done_tens
+	inc c
+	jr .tens_loop
+.done_tens
+	add a, 10
+	call .print_digit
+.no_tens
+	add a, "0"
+	ld [hli], a
+	ret
+
+.print_digit
+	push af
+	ld a, c
+	and a
+	jr nz, .digit_OK
+	ld a, (" " - "0") & $ff
+.digit_OK
+	add a, "0"
+	ld [hli], a
+	pop af
+	ret
