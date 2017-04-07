@@ -218,3 +218,74 @@ RTCRolloversTest::
 .initial_test_text
 	db "Testing RTC value<LF>"
 	db "rollovers...<@>"
+
+RTCOverflowTest::
+	ld hl, .initial_test_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld hl, rMR3w
+	ld [hl], MR3_RTC_OFF
+	ld [hl], MR3_CLEAR_RTC_OVERFLOW
+	ld [hl], MR3_MAP_RTC
+	ld hl, rRTCS
+	ld a, 59
+	ld [hld], a
+	ld [hld], a
+	ld a, (6 << 5) | 23
+	ld [hld], a
+	ld [hl], $ff
+	ld a, MR3_RTC_ON
+	ld [rMR3w], a
+	call WaitForRTCChange
+	call LatchReadRTC
+	ld hl, rRTCW
+	ld a, [hli]
+	or [hl]
+	inc hl
+	or [hl]
+	inc hl
+	or [hl]
+	jr z, .no_time_error
+	ld hl, .time_error_text
+	rst Print
+	call IncrementErrorCount
+.no_time_error
+	ld hl, rMR3w
+	ld de, rMR4r
+	ld [hl], MR3_MAP_REGS
+	ld a, [de]
+	and 8
+	jr nz, .overflow_is_on
+	push hl
+	ld hl, .overflow_on_error_text
+	rst Print
+	call IncrementErrorCount
+	pop hl
+.overflow_is_on
+	ld [hl], MR3_CLEAR_RTC_OVERFLOW
+	ld a, [de]
+	and 8
+	jr z, .overflow_is_off
+	ld hl, .overflow_off_error_text
+	rst Print
+	call IncrementErrorCount
+.overflow_is_off
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.initial_test_text
+	db "Testing RTC<LF>"
+	db "overflow behavior<LF>"
+	db "and flag...<@>"
+.time_error_text
+	db "FAILED: RTC value<LF>"
+	db "did not fully<LF>"
+	db "roll over<@>"
+.overflow_on_error_text
+	db "FAILED: overflow<LF>"
+	db "flag is not on<@>"
+.overflow_off_error_text
+	db "FAILED: overflow<LF>"
+	db "flag did not clear<@>"
