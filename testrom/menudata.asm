@@ -47,7 +47,6 @@ RTCTestingMenu::
 	option "Setting test<COMMA> off", OPTION_TEST, RTCSetWhileOffTest
 	option "Rollovers test", OPTION_CHECK, NotImplemented
 	option "Overflow test", OPTION_CHECK, NotImplemented
-	option "OF clearing test", OPTION_CHECK, NotImplemented
 	option "Access time test", OPTION_CHECK, NotImplemented
 	option "Latching test", OPTION_CHECK, NotImplemented
 	option "Running flag test", OPTION_CHECK, NotImplemented
