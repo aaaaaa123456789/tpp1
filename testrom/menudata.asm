@@ -54,7 +54,8 @@ RTCTestingMenu::
 	option "Unmap&latch test", OPTION_CHECK, NotImplemented
 	option "Mirroring test", OPTION_CHECK, NotImplemented
 	option "Set RTC manually", OPTION_CHECK, NotImplemented
-	option "Turn RTC off", OPTION_EXEC, TurnRTCOff
+	option "Turn RTC off", OPTION_CHECK, TurnRTCOff
+	option "Clear overflow", OPTION_CHECK, ClearRTCOverflowOption
 	option "View RTC status", OPTION_EXEC, DisplayRTCState
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
