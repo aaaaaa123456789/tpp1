@@ -297,3 +297,56 @@ RTCOverflowTest::
 .overflow_off_error_text
 	db "FAILED: overflow<LF>"
 	db "flag did not clear<@>"
+
+RTCLatchTest::
+	ld hl, .initial_test_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, 3
+	ld [hMax], a
+.loop
+	call GenerateRandomRTCSetting
+	ld a, e
+	cp 57 ;make sure the test doesn't involve rollovers
+	jr nc, .loop
+	ld a, MR3_RTC_OFF
+	ld [rMR3w], a
+	call SetRTCToValue
+	ld hl, rRTCW
+	call Random
+	ld [hli], a
+	call Random
+	ld [hli], a
+	call Random
+	ld [hli], a
+	call Random
+	ld [hli], a
+	call CheckRTCForValue
+	ld hl, WaitingString
+	rst Print
+	ld hl, rMR3w
+	ld [hl], MR3_RTC_ON
+	ld a, 80
+	rst DelayFrames
+	ld [hl], MR3_MAP_RTC
+	call CheckRTCLatchForValue
+	inc e
+	inc e
+	call LatchReadRTC
+	ld a, [rRTCS]
+	cp e
+	jr z, .seconds_match
+	dec e
+.seconds_match
+	call CheckRTCLatchForValue
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.initial_test_text
+	db "Testing RTC<LF>"
+	db "latching...<@>"

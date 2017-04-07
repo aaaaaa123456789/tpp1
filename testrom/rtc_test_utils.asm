@@ -108,6 +108,7 @@ SetRTCRandomly:
 
 CheckRTCForValue::
 	call LatchReadRTC
+CheckRTCLatchForValue::
 	ld hl, rRTCW
 	ld a, [hli]
 	cp b
