@@ -54,12 +54,14 @@ PrintByte::
 	jr nz, .question_mark_loop
 	ret
 .go
+	push de
+	ld e, 0
 	ld c, b
 	dec c
 	jr z, .no_hundreds
 	dec c
 	jr z, .no_hundreds
-	ld c, 0
+	ld c, e
 .hundreds_loop
 	sub 100
 	jr c, .done_hundreds
@@ -67,6 +69,7 @@ PrintByte::
 	jr .hundreds_loop
 .done_hundreds
 	add a, 100
+	ld e, c
 	call .print_digit
 .no_hundreds
 	dec b
@@ -79,10 +82,21 @@ PrintByte::
 	jr .tens_loop
 .done_tens
 	add a, 10
+	inc e
+	dec e
+	jr nz, .print_tens_always
 	call .print_digit
+	jr .no_tens
+.print_tens_always
+	push af
+	ld a, c
+	add a, "0"
+	ld [hli], a
+	pop af
 .no_tens
 	add a, "0"
 	ld [hli], a
+	pop de
 	ret
 
 .print_digit

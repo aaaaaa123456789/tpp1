@@ -56,7 +56,7 @@ RTCTestingMenu::
 	option "Mirroring test", OPTION_CHECK, NotImplemented
 	option "Set RTC manually", OPTION_CHECK, NotImplemented
 	option "Turn RTC off", OPTION_EXEC, TurnRTCOff
-	option "View RTC status", OPTION_CHECK, NotImplemented
+	option "View RTC status", OPTION_EXEC, DisplayRTCState
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
 
