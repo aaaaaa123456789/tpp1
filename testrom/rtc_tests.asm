@@ -409,3 +409,107 @@ RTCRunningFlagTest::
 	db "FAILED: MR4 RTC<LF>"
 	db "flag is on while<LF>"
 	db "stopped<@>"
+
+RTCTimingTest::
+	ld hl, .initial_test_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, MR3_RTC_ON
+	ld [rMR3w], a
+	ld a, 3
+	ld [hMax], a
+.loop
+	call GenerateRandomRTCSetting
+	ld a, e
+	cp 59
+	jr nc, .loop ;ensure there are no rollovers
+	call SetRTCToValue
+	ld hl, wDataBuffer
+	ld a, b
+	ld [hli], a
+	ld a, c
+	ld [hli], a
+	ld a, d
+	ld [hli], a
+	ld [hl], e
+	ld hl, rRTCW
+	call Random
+	ld [hli], a
+	call Random
+	ld [hli], a
+	call Random
+	ld [hli], a
+	call Random
+	ld [hl], a
+	xor a ;ld a, MR3_MAP_REGS
+	ld bc, rMR3w
+	ld [bc], a
+	call .do_timing_test
+	ld hl, wDataBuffer
+	ld a, [hli]
+	cp b
+	jr nz, .error
+	ld a, [hli]
+	cp c
+	jr nz, .error
+	ld a, [hli]
+	cp d
+	jr nz, .error
+	ld a, [hl]
+	cp e
+	jr z, .ok
+.error
+	ld hl, wDataBuffer
+	ld a, [hli]
+	ld b, a
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	ld d, a
+	ld e, [hl]
+	call RTCMismatchError
+.ok
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.do_timing_test
+	call GetCurrentSpeed
+	jr c, .double_speed_test
+	ld a, MR3_LATCH_RTC
+	ld [bc], a
+	ld a, MR3_MAP_RTC
+	nop
+	ld [bc], a
+	ld a, [hld]
+	ld d, [hl]
+	ld e, a
+	dec hl
+	ld a, [hld]
+	ld b, [hl]
+	ld c, a
+	ret
+
+.double_speed_test
+	ld a, MR3_LATCH_RTC
+	ld [bc], a
+	ld a, MR3_MAP_RTC
+	inc de
+	dec de
+	ld [bc], a
+	ld a, [hld]
+	ld d, [hl]
+	ld e, a
+	dec hl
+	ld a, [hld]
+	ld b, [hl]
+	ld c, a
+	ret
+
+.initial_test_text
+	db "Testing RTC latch<LF>"
+	db "timing...<@>"

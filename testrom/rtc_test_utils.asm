@@ -112,17 +112,17 @@ CheckRTCLatchForValue::
 	ld hl, rRTCW
 	ld a, [hli]
 	cp b
-	jr nz, .error
+	jr nz, RTCMismatchError
 	ld a, [hli]
 	cp c
-	jr nz, .error
+	jr nz, RTCMismatchError
 	ld a, [hli]
 	cp d
-	jr nz, .error
+	jr nz, RTCMismatchError
 	ld a, [hl]
 	cp e
 	ret z
-.error
+RTCMismatchError::
 	push de
 	ld hl, .error_text
 	ld de, wTextBuffer

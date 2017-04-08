@@ -144,6 +144,16 @@ DoubleSpeed::
 	ld [rIE], a
 	ret
 
+GetCurrentSpeed::
+	; returns carry if we're running on double speed
+	ld a, [hGBType]
+	xor $11 ;xor clears carry
+	; this is not even a GBC at all
+	ret nz
+	ld a, [rKEY1]
+	add a, a
+	ret
+
 LoadPalettes::
 	; only load them if we're on a GBC
 	ld a, [hGBType]
