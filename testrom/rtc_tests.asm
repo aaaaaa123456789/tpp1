@@ -119,7 +119,7 @@ RTCSetTest:
 	jr nc, .resample
 	call SetRTCToValue
 	push hl
-	call LatchReadRTC
+	call LatchMapRTC
 	pop hl
 	ld a, [hli]
 	cp b
@@ -246,7 +246,7 @@ RTCOverflowTest::
 	ld a, MR3_RTC_ON
 	ld [rMR3w], a
 	call WaitForRTCChange
-	call LatchReadRTC
+	call LatchMapRTC
 	ld hl, rRTCW
 	ld a, [hli]
 	or [hl]
@@ -333,7 +333,7 @@ RTCLatchTest::
 	call CheckRTCLatchForValue
 	inc e
 	inc e
-	call LatchReadRTC
+	call LatchMapRTC
 	ld a, [rRTCS]
 	cp e
 	jr z, .seconds_match

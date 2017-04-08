@@ -69,7 +69,7 @@ GenerateTimeString::
 	ret
 
 DisplayRTCState::
-	call LatchReadRTC
+	call LatchMapRTC
 	ld hl, rRTCW
 	ld a, [hli]
 	ld b, a

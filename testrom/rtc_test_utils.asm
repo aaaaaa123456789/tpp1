@@ -5,7 +5,7 @@ CheckRTCAllowed::
 	scf
 	ret
 
-LatchReadRTC:
+LatchMapRTC:
 	ld hl, rMR3w
 	ld [hl], MR3_MAP_REGS
 	ld [hl], MR3_LATCH_RTC
@@ -19,7 +19,7 @@ WaitForRTCChange:
 	push hl
 	push de
 	push bc
-	call LatchReadRTC
+	call LatchMapRTC
 	ld hl, rRTCW
 	ld a, [hli]
 	ld b, a
@@ -34,7 +34,7 @@ WaitForRTCChange:
 .loop
 	push af
 	call DelayFrame
-	call LatchReadRTC
+	call LatchMapRTC
 	ld hl, rRTCW
 	ld a, [hli]
 	cp b
@@ -107,7 +107,7 @@ SetRTCRandomly:
 	ret
 
 CheckRTCForValue::
-	call LatchReadRTC
+	call LatchMapRTC
 CheckRTCLatchForValue::
 	ld hl, rRTCW
 	ld a, [hli]
