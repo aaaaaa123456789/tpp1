@@ -513,3 +513,70 @@ RTCTimingTest::
 .initial_test_text
 	db "Testing RTC latch<LF>"
 	db "timing...<@>"
+
+RTCWritingMR4Test::
+	ld hl, .initial_test_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld hl, rMR3w
+	ld de, rMR4r
+	ld [hl], MR3_RTC_OFF
+	ld [hl], MR3_CLEAR_RTC_OVERFLOW
+	ld [hl], MR3_MAP_RTC
+	push hl
+	ld h, $a0 ;hl = rRTCS
+	xor a
+	ld [hld], a
+	ld [hld], a
+	ld [hld], a
+	ld [hl], a
+	pop hl
+	ld [hl], MR3_SET_RTC
+	ld [hl], MR3_MAP_REGS
+	ld a, [de]
+	and $c
+	jr z, .initial_state_OK
+	push hl
+	ld hl, .initial_state_error_text
+	rst Print
+	call IncrementErrorCount
+	pop hl
+.initial_state_OK
+	ld a, [de]
+	xor $c
+	ld [de], a
+	ld a, [de]
+	and $c
+	call nz, .error
+	ld [hl], MR3_RTC_ON
+	ld a, [de]
+	xor c
+	ld [de], a
+	ld a, [de]
+	and $c
+	cp 4
+	call nz, .error
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.error
+	push hl
+	ld hl, .error_text
+	rst Print
+	call IncrementErrorCount
+	pop hl
+	ret
+
+.initial_test_text
+	db "Testing MR4 RTC-<LF>"
+	db "related fields for<LF>"
+	db "writing...<@>"
+.initial_state_error_text
+	db "FAILED: initial<LF>"
+	db "MR4 state was<LF>"
+	db "incorrect<@>"
+.error_text
+	db "FAILED: MR4 fields<LF>"
+	db "could be written<@>"

@@ -50,7 +50,7 @@ RTCTestingMenu::
 	option "Access time test", OPTION_TEST, RTCTimingTest
 	option "Latching test", OPTION_TEST, RTCLatchTest
 	option "Running flag test", OPTION_TEST, RTCRunningFlagTest
-	option "MR4 writing test", OPTION_CHECK, NotImplemented
+	option "MR4 writing test", OPTION_TEST, RTCWritingMR4Test
 	option "Unmap&latch test", OPTION_CHECK, NotImplemented
 	option "Mirroring test", OPTION_CHECK, NotImplemented
 	option "Set RTC manually", OPTION_EXEC, Timeset
