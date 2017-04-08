@@ -159,17 +159,13 @@ TestROMBankRange:
 CheckLastROMBankExists:
 	call GetMaxValidROMBank
 	ret nc
-	ld hl, .error_text
+	ld hl, UnknownLastROMBankString
 	rst Print
 	ld hl, EmptyString
 	rst Print
 	call IncrementErrorCount
 	scf
 	ret
-
-.error_text
-	db "Could not detect<LF>"
-	db "last ROM bank.<@>"
 
 TestAllROMBanks::
 	call CheckLastROMBankExists

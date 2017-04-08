@@ -53,5 +53,8 @@ INCLUDE "rtc_set.asm"
 INCLUDE "rumble_tests.asm"
 INCLUDE "mr_tests.asm"
 
+INCLUDE "memory_viewer.asm"
+INCLUDE "memory_viewer_loader.asm"
+
 Font:: INCLUDE "font.asm"
 ExtendedFont:: INCLUDE "fontext.asm"

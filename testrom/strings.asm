@@ -53,6 +53,10 @@ NoBanksSelectedString::
 	db "No banks have been<LF>"
 	db "selected.<@>"
 
+UnknownLastROMBankString::
+	db "Could not detect<LF>"
+	db "last ROM bank.<@>"
+
 NoRAMString::
 	db "No RAM present in<LF>"
 	db "the current build.<@>"
@@ -80,6 +84,17 @@ RTCSetTestingString::
 	db "Testing setting<LF>"
 	db "the RTC (while<LF>"
 	db "turned o<@>"
+
+ParenthesisMaxBankString::
+	db "(max bank: <@>"
+
+InvalidAddressString::
+	db "The address is not<LF>"
+	db "within range!<@>"
+
+BankTooHighString::
+	db "The selected bank<LF>"
+	db "does not exist!<@>"
 
 TitleString::
 	db " TPP1 testing ROM<LF>"

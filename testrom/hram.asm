@@ -9,6 +9,10 @@ hProduct         EQU $ff84 ;4 bytes
 hCurrent         EQU $ff88 ;2 bytes
 hMax             EQU $ff8a ;2 bytes
 
+hMemoryBank      EQU $ff8c ;2 bytes
+hMemoryCursor    EQU $ff8d ;overlapping with previous
+hMemoryAddress   EQU $ff8e ;2 bytes
+
 hTimesetSecond   EQU $ffe0
 hTimesetMinute   EQU $ffe1
 hTimesetHour     EQU $ffe2
