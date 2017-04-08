@@ -49,6 +49,7 @@ INCLUDE "ram_tests.asm"
 INCLUDE "rtc_tests.asm"
 INCLUDE "rtc_test_utils.asm"
 INCLUDE "rtc_display.asm"
+INCLUDE "rtc_set.asm"
 INCLUDE "rumble_tests.asm"
 INCLUDE "mr_tests.asm"
 

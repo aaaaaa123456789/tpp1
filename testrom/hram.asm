@@ -9,6 +9,13 @@ hProduct         EQU $ff84 ;4 bytes
 hCurrent         EQU $ff88 ;2 bytes
 hMax             EQU $ff8a ;2 bytes
 
+hTimesetSecond   EQU $ffe0
+hTimesetMinute   EQU $ffe1
+hTimesetHour     EQU $ffe2
+hTimesetDay      EQU $ffe3
+hTimesetWeek     EQU $ffe4
+hTimesetCursor   EQU $ffe5
+
 hRAMBanks        EQU $ffe6
 hRAMInitialized  EQU $ffe7
 

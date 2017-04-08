@@ -153,3 +153,16 @@ SetRTCToValue::
 	ld a, MR3_SET_RTC
 	ld [rMR3w], a
 	ret
+
+ValidateRTCTime::
+	ld a, 59
+	cp e
+	ret c
+	cp d
+	ret c
+	ld a, c
+	add a, $20
+	ret c
+	or $e7
+	add a, 1
+	ret

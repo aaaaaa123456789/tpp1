@@ -9,6 +9,11 @@ bigdw: MACRO
 	endr
 ENDM
 
+dbww: MACRO
+	db \1
+	dw \2, \3
+ENDM
+
 tile EQUS " + $10 * "
 
 coord: MACRO
