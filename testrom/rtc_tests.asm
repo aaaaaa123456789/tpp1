@@ -312,8 +312,7 @@ RTCLatchTest::
 	jr nc, .loop
 	ld a, MR3_RTC_OFF
 	ld [rMR3w], a
-	call SetRTCToValue
-	ld hl, rRTCW
+	call SetRTCToValue ;exits with hl = rRTCW
 	call Random
 	ld [hli], a
 	call Random
@@ -321,8 +320,12 @@ RTCLatchTest::
 	call Random
 	ld [hli], a
 	call Random
-	ld [hli], a
+	ld [hl], a
+	push bc
+	push de
 	call CheckRTCForValue
+	pop de
+	pop bc
 	ld hl, WaitingString
 	rst Print
 	ld hl, rMR3w
@@ -330,7 +333,11 @@ RTCLatchTest::
 	ld a, 80
 	rst DelayFrames
 	ld [hl], MR3_MAP_RTC
+	push bc
+	push de
 	call CheckRTCLatchForValue
+	pop de
+	pop bc
 	inc e
 	inc e
 	call LatchMapRTC
@@ -382,7 +389,7 @@ RTCRunningFlagTest::
 	ld [hl], MR3_RTC_OFF
 	ld a, [rMR4r]
 	and 4
-	jr nz, .off
+	jr z, .off
 	ld hl, .off_error_text
 	rst Print
 	call IncrementErrorCount
