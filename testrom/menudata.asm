@@ -1,6 +1,6 @@
 MainTestingMenu::
 	menu "Main menu", MainTestingMenu
-	option "Run all tests", OPTION_CHECK, NotImplemented
+	option "Run all tests", OPTION_EXEC, RunAllTests
 	option "ROM bank tests", OPTION_MENU, ROMTestingMenu
 	option "RAM bank tests", OPTION_CHECK, LoadRAMTestingMenu
 	option "RTC tests", OPTION_CHECK, LoadRTCTestingMenu
