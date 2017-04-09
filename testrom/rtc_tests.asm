@@ -580,3 +580,101 @@ RTCWritingMR4Test::
 .error_text
 	db "FAILED: MR4 fields<LF>"
 	db "could be written<@>"
+
+RTCUnmapLatchTest::
+	ld hl, .initial_test_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, MR3_RTC_OFF
+	ld [rMR3w], a
+	ld a, 5
+	ld [hMax], a
+.loop
+	call GenerateRandomRTCSetting
+	call SetRTCToValue
+	ld hl, rMR3w
+	ld [hl], MR3_MAP_RTC
+	push hl
+	ld h, rRTCS >> 8 ;hl = rRTCS
+	call Random
+	ld [hld], a
+	call Random
+	ld [hld], a
+	call Random
+	ld [hld], a
+	call Random
+	ld [hl], a
+	pop hl
+	ld [hl], MR3_MAP_REGS
+	call CheckRTCForValue
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.initial_test_text
+	db "Testing RTC value<LF>"
+	db "latching while<LF>"
+	db "unmapped...<@>"
+
+RTCMirroringTestRead::
+	ld hl, .initial_test_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, MR3_MAP_RTC
+	ld [rMR3w], a
+	ld hl, rRTCW
+	call Random
+	ld e, a
+	ld [hli], a
+	call Random
+	ld d, a
+	ld [hli], a
+	call Random
+	ld c, a
+	ld [hli], a
+	call Random
+	ld b, a
+	ld [hli], a
+.loop
+	ld a, [hli]
+	cp e
+	jr nz, .error
+	ld a, [hli]
+	cp d
+	jr nz, .error
+	ld a, [hli]
+	cp c
+	jr nz, .error
+	ld a, [hl]
+	cp b
+	jr z, .ok
+.error
+	ld a, l
+	and $fc
+	ld [hCurrent], a
+	ld a, h
+	ld [hCurrent + 1], a
+	push hl
+	ld hl, RTCMirrorFailString
+	rst Print
+	call IncrementErrorCount
+	pop hl
+.ok
+	set 1, l
+	set 0, l
+	inc hl
+	bit 6, h
+	jr z, .loop
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.initial_test_text
+	db "Testing RTC value<LF>"
+	db "mirroring when<LF>"
+	db "reading...<@>"
