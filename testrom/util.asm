@@ -84,7 +84,12 @@ UpdateJoypad::
 	cpl
 	and b
 	ld [hButtonsPressed], a
-	ret
+	; now we check for soft reset
+	ld a, [hButtonsHeld]
+	or (A_BUTTON | B_BUTTON | SELECT | START) ^ $ff
+	inc a
+	ret nz
+	rst Reset
 
 WaitForAPress::
 	ld a, [hButtonsPressed]
