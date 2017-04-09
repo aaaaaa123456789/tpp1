@@ -126,6 +126,7 @@ GetMaxValidROMBank:
 	dec a
 	jr nz, .loop
 	dec de
+	and a
 	ret
 
 TestROMBankRange:
