@@ -607,7 +607,11 @@ RTCUnmapLatchTest::
 	ld [hl], a
 	pop hl
 	ld [hl], MR3_MAP_REGS
-	call CheckRTCForValue
+	ld [hl], MR3_LATCH_RTC
+	push hl
+	pop hl
+	ld [hl], MR3_MAP_RTC
+	call CheckRTCLatchForValue
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
@@ -641,32 +645,7 @@ RTCMirroringTestRead::
 	ld b, a
 	ld [hli], a
 .loop
-	ld a, [hli]
-	cp e
-	jr nz, .error
-	ld a, [hli]
-	cp d
-	jr nz, .error
-	ld a, [hli]
-	cp c
-	jr nz, .error
-	ld a, [hl]
-	cp b
-	jr z, .ok
-.error
-	ld a, l
-	and $fc
-	ld [hCurrent], a
-	ld a, h
-	ld [hCurrent + 1], a
-	push hl
-	ld hl, RTCMirrorFailString
-	rst Print
-	call IncrementErrorCount
-	pop hl
-.ok
-	set 1, l
-	set 0, l
+	call TestRTCMirroring
 	inc hl
 	bit 6, h
 	jr z, .loop
@@ -678,3 +657,121 @@ RTCMirroringTestRead::
 	db "Testing RTC value<LF>"
 	db "mirroring when<LF>"
 	db "reading...<@>"
+
+RTCMirroringTestWrite::
+	ld hl, .initial_test_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	ld a, MR3_MAP_RTC
+	ld [rMR3w], a
+	ld a, 5
+	ld [hMax], a
+.outer_loop
+	call .generate_random_address
+	ld a, l
+	ld [hCurrent], a
+	ld a, h
+	ld [hCurrent + 1], a
+	push hl
+	ld hl, .writing_to_text
+	rst Print
+	pop hl
+	call Random
+	ld e, a
+	ld [hli], a
+	call Random
+	ld d, a
+	ld [hli], a
+	call Random
+	ld c, a
+	ld [hli], a
+	call Random
+	ld b, a
+	ld [hl], a
+	ld a, 5
+	ld [hMax + 1], a
+.inner_loop
+	call .generate_random_address
+	call TestRTCMirroring
+	ld hl, hMax + 1
+	dec [hl]
+	jr nz, .inner_loop
+	dec hl
+	dec [hl]
+	jr nz, .outer_loop
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.generate_random_address
+	call Random
+	and $1f
+	add a, $a0
+	ld h, a
+	call Random
+	and $fc
+	ld l, a
+	ret
+
+.initial_test_text
+	db "Testing RTC value<LF>"
+	db "mirroring after<LF>"
+	db "writing...<@>"
+.writing_to_text
+	db "Writing: $"
+	bigdw hCurrent + 1, hCurrent
+	db "...<@>"
+
+TestRTCMirroring:
+	ld a, [hli]
+	cp e
+	jr nz, .error
+	ld a, [hli]
+	cp d
+	jr nz, .error
+	ld a, [hli]
+	cp c
+	jr nz, .error
+	ld a, [hl]
+	cp b
+	ret z
+.error
+	ld a, l
+	and $fc
+	ld [hCurrent], a
+	or 3
+	ld l, a
+	ld a, h
+	ld [hCurrent + 1], a
+	push hl
+	ld hl, .error_text
+	rst Print
+	call IncrementErrorCount
+	pop hl
+	ret
+
+.error_text
+	db "FAILED: address<LF>"
+	db "$"
+	bigdw hCurrent + 1, hCurrent
+	db " did not<LF>"
+	db "contain a mirror<LF>"
+	db "of the RTC data<@>"
+
+RunAllRTCTests::
+	call RTCOnOffTest
+	call RTCSetWhileOnTest
+	call RTCSetWhileOffTest
+	call RTCRolloversTest
+	call RTCOverflowTest
+	call RTCTimingTest
+	call RTCLatchTest
+	call RTCRunningFlagTest
+	call RTCWritingMR4Test
+	call RTCUnmapLatchTest
+	call RTCMirroringTestRead
+	call RTCMirroringTestWrite
+	ld a, MR3_RTC_OFF
+	ld [rMR3w], a
+	ret

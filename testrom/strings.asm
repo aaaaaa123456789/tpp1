@@ -85,14 +85,6 @@ RTCSetTestingString::
 	db "the RTC (while<LF>"
 	db "turned o<@>"
 
-RTCMirrorFailString::
-	db "FAILED: address<LF>"
-	db "$"
-	bigdw hCurrent + 1, hCurrent
-	db " did not<LF>"
-	db "contain a mirror<LF>"
-	db "of the RTC data<@>"
-
 ParenthesisMaxBankString::
 	db "(max bank: <@>"
 

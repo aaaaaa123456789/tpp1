@@ -41,7 +41,7 @@ RAMTestingMenu::
 
 RTCTestingMenu::
 	menu "RTC tests", MainTestingMenu
-	option "Run all tests", OPTION_CHECK, NotImplemented
+	option "Run all tests", OPTION_TEST, RunAllRTCTests
 	option "On/off test", OPTION_TEST, RTCOnOffTest
 	option "Setting test<COMMA> on", OPTION_TEST, RTCSetWhileOnTest
 	option "Setting test<COMMA> off", OPTION_TEST, RTCSetWhileOffTest
@@ -53,7 +53,7 @@ RTCTestingMenu::
 	option "MR4 writing test", OPTION_TEST, RTCWritingMR4Test
 	option "Unmap&latch test", OPTION_TEST, RTCUnmapLatchTest
 	option "Mirroring test<COMMA> R", OPTION_TEST, RTCMirroringTestRead
-	option "Mirroring test<COMMA> W", OPTION_CHECK, NotImplemented
+	option "Mirroring test<COMMA> W", OPTION_TEST, RTCMirroringTestWrite
 	option "Set RTC manually", OPTION_EXEC, Timeset
 	option "Turn RTC off", OPTION_CHECK, TurnRTCOff
 	option "Clear overflow", OPTION_CHECK, ClearRTCOverflowOption
