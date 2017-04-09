@@ -88,6 +88,17 @@ RTCSetTestingString::
 ParenthesisMaxBankString::
 	db "(max bank: <@>"
 
+MemoryViewerDescriptionString::
+	db "Enter the address<LF>"
+	db " that you want to<LF>"
+	db " view. An area of<LF>"
+	db "memory containing<LF>"
+	db "your address will<LF>"
+	db "be loaded. Use the<LF>"
+	db " arrow buttons to<LF>"
+	db " move around the<LF>"
+	db "   memory bank.<@>"
+
 InvalidAddressString::
 	db "The address is not<LF>"
 	db "within range!<@>"
