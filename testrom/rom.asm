@@ -58,3 +58,5 @@ INCLUDE "memory_viewer_loader.asm"
 
 Font:: INCLUDE "font.asm"
 ExtendedFont:: INCLUDE "fontext.asm"
+
+ContentEnd::
