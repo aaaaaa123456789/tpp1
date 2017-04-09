@@ -15,4 +15,5 @@
 	charmap "<HRIGHT>", $17
 	charmap "<UP>", $18
 	charmap "<DOWN>", $19
-	charmap "<A>", $1a
+	charmap "<DOT>", $1a
+	charmap "<A>", $1b

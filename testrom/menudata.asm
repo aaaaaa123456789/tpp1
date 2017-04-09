@@ -6,7 +6,7 @@ MainTestingMenu::
 	option "RTC tests", OPTION_CHECK, LoadRTCTestingMenu
 	option "Rumble tests", OPTION_CHECK, LoadRumbleTestingMenu
 	option "MR register tests", OPTION_MENU, MRTestingMenu
-	option "Memory viewer", OPTION_CHECK, NotImplemented
+	option "Memory viewer", OPTION_MENU, MemoryViewerMenu
 	option "About", OPTION_EXEC, AboutBox
 	option "Reset", OPTION_EXEC, DoReset
 	end_menu
@@ -86,5 +86,12 @@ MRTestingMenu::
 	option "Reading test", OPTION_TEST, MRReadingTest
 	option "Writing test", OPTION_TEST, MRWritesTest
 	option "Restore values", OPTION_EXEC, RestoreMRValues
+	option "Back", OPTION_MENU, MainTestingMenu
+	end_menu
+
+MemoryViewerMenu::
+	menu "Memory viewer", MainTestingMenu
+	option "ROM viewer", OPTION_CHECK, ROMViewer
+	option "RAM viewer/editor", OPTION_CHECK, RAMViewer
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu

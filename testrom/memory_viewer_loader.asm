@@ -1,11 +1,8 @@
 ROMViewer::
+	; execute as OPTION_CHECK
 	call GetMaxValidROMBank
-	jr nc, .ok
-	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
 	ld hl, UnknownLastROMBankString
-	jp MessageBox
-.ok
+	ret c
 	push de
 	call ClearScreen
 	ld hl, ParenthesisMaxBankString
@@ -15,9 +12,9 @@ ROMViewer::
 	ld l, e
 	pop de
 	push de
-	ld a, d
-	push af
 	ld a, e
+	push af
+	ld a, d
 	call PrintHexByte
 	pop af
 	call PrintHexByte
@@ -38,7 +35,7 @@ ROMViewer::
 	push de
 	call HexadecimalEntry
 	pop de
-	ret c
+	jr c, ExitMemoryViewer
 	ld a, [hMemoryAddress + 1]
 	and $c0
 	cp $40
@@ -69,16 +66,16 @@ OpenMemoryViewer:
 	ld a, [hMemoryAddress]
 	and $c0
 	ld [hMemoryAddress], a
-	jp MemoryViewer
+	call MemoryViewer
+ExitMemoryViewer:
+	ldopt hl, OPTION_MENU, MainTestingMenu
+	ret
 
 RAMViewer::
+	; execute as OPTION_CHECK
 	call GetMaxValidRAMBank
-	jr nc, .ok
-	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
 	ld hl, NoRAMString
-	jp MessageBox
-.ok
+	ret c
 	ld a, c
 	push af
 	call ClearScreen
@@ -107,7 +104,7 @@ RAMViewer::
 	push bc
 	call HexadecimalEntry
 	pop bc
-	ret c
+	jr c, ExitMemoryViewer
 	ld a, [hMemoryAddress + 1]
 	and $e0
 	cp $a0
