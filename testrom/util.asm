@@ -89,7 +89,9 @@ UpdateJoypad::
 	or (A_BUTTON | B_BUTTON | SELECT | START) ^ $ff
 	inc a
 	ret nz
-	rst Reset
+DoReset::
+	call ReinitializeMRRegisters
+	rst Reset ;does not return
 
 WaitForAPress::
 	ld a, [hButtonsPressed]
@@ -217,10 +219,6 @@ FillRandomBuffer::
 	xor a
 	ld [rIF], a ;if we're in vblank, discard it
 	reti
-
-DoReset::
-	call ReinitializeMRRegisters
-	rst Reset ;does not return
 
 AboutBox::
 	call ClearScreen
