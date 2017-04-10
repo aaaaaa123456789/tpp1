@@ -1,6 +1,6 @@
 RGBDS := rgbds
 
-ROMSIZE := 0
+ROMSIZE := 9
 RAMSIZE := 5
 ROMFLAGS := 7
 
