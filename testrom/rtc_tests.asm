@@ -235,44 +235,10 @@ RTCOverflowTest::
 	ld hl, rMR3w
 	ld [hl], MR3_RTC_OFF
 	ld [hl], MR3_CLEAR_RTC_OVERFLOW
-	ld [hl], MR3_MAP_RTC
-	ld hl, rRTCS
-	ld a, 59
-	ld [hld], a
-	ld [hld], a
-	ld a, (6 << 5) | 23
-	ld [hld], a
-	ld [hl], $ff
-	ld a, MR3_RTC_ON
-	ld [rMR3w], a
-	call WaitForRTCChange
-	call LatchMapRTC
-	ld hl, rRTCW
-	ld a, [hli]
-	or [hl]
-	inc hl
-	or [hl]
-	inc hl
-	or [hl]
-	jr z, .no_time_error
-	ld hl, .time_error_text
-	rst Print
-	call IncrementErrorCount
-.no_time_error
-	ld hl, rMR3w
-	ld de, rMR4r
-	ld [hl], MR3_MAP_REGS
-	ld a, [de]
-	and 8
-	jr nz, .overflow_is_on
-	push hl
-	ld hl, .overflow_on_error_text
-	rst Print
-	call IncrementErrorCount
-	pop hl
-.overflow_is_on
+	call .set_and_check
+	call .set_and_check
 	ld [hl], MR3_CLEAR_RTC_OVERFLOW
-	ld a, [de]
+	ld a, [rMR4r]
 	and 8
 	jr z, .overflow_is_off
 	ld hl, .overflow_off_error_text
@@ -282,6 +248,46 @@ RTCOverflowTest::
 	ld hl, EmptyString
 	rst Print
 	jp ReinitializeMRRegisters
+
+.set_and_check
+	ld [hl], MR3_MAP_RTC
+	push hl
+	ld hl, rRTCS
+	ld a, 59
+	ld [hld], a
+	ld [hld], a
+	ld a, (6 << 5) | 23
+	ld [hld], a
+	ld [hl], $ff
+	pop hl
+	ld [hl], MR3_SET_RTC
+	ld [hl], MR3_RTC_ON
+	push hl
+	call WaitForRTCChange
+	call LatchMapRTC
+	ld hl, rRTCW
+	ld a, [hli]
+	or [hl]
+	inc hl
+	or [hl]
+	inc hl
+	or [hl]
+	jr z, .time_OK
+	ld hl, .time_error_text
+	rst Print
+	call IncrementErrorCount
+.time_OK
+	pop hl
+	ld [hl], MR3_MAP_REGS
+	ld a, [rMR4r]
+	and 8
+	ret nz
+	push hl
+	ld hl, .overflow_on_error_text
+	rst Print
+	call IncrementErrorCount
+	pop hl
+	ret
 
 .initial_test_text
 	db "Testing RTC<LF>"
