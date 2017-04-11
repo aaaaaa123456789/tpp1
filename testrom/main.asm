@@ -1,18 +1,4 @@
 Init::
-	and a
-	jr nz, .initialize
-	ld hl, wRandomSeed + 7
-	ld c, 4
-.random_saving_loop
-	ld a, [hld]
-	ld e, a
-	ld a, [hld]
-	ld d, a
-	push de
-	dec c
-	jr nz, .random_saving_loop
-	jr .got_random_seed
-.initialize
 	di
 	ld sp, StackTop
 	call VBlankBusyWait
@@ -26,7 +12,6 @@ Init::
 	call GetRandomSeed
 	push bc
 	push de
-.got_random_seed
 	call ClearMemory
 	ld hl, wRandomSeed
 	ld c, 4
@@ -189,3 +174,51 @@ Main::
 	db "MR4[0:1] = 0:<@>"
 .rom1_string
 	db "ROM1 mapped:<@>"
+
+Restart::
+	ld hl, wRandomSeed + 7
+	ld c, 4
+.random_saving_loop
+	ld a, [hld]
+	ld e, a
+	ld a, [hld]
+	ld d, a
+	push de
+	dec c
+	jr nz, .random_saving_loop
+	ld a, [hInitialTestResult]
+	ld b, a
+	ld hl, hFrameCounter
+	ld a, [hli]
+	ld c, a
+	push bc
+	ld a, [hli]
+	ld c, a
+	ld b, [hl]
+	push bc
+	push hl
+	call ClearMemory
+	pop hl
+	pop bc
+	ld a, b
+	ld [hld], a
+	ld a, c
+	ld [hld], a
+	pop bc
+	ld [hl], c
+	ld a, b
+	ld [hInitialTestResult], a
+	ld hl, wRandomSeed
+	ld c, 4
+.random_reloading_loop
+	pop de
+	ld a, d
+	ld [hli], a
+	ld a, e
+	ld [hli], a
+	dec c
+	jr nz, .random_reloading_loop
+	call ClearScreen
+	ld a, 1
+	ld [rIE], a
+	jp MainMenu

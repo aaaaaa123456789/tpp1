@@ -3,7 +3,7 @@ _Reset::
 	di
 	xor a
 	ld sp, StackTop
-	jp Init
+	jp Restart
 
 _CopyString::
 	; @ = 8
