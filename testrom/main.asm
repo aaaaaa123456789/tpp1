@@ -38,6 +38,11 @@ Init::
 	ld [hli], a
 	dec c
 	jr nz, .random_loading_loop
+	ld c, 10
+.random_mixing_loop
+	call Random
+	dec c
+	jr nz, .random_mixing_loop
 	ld de, Font
 	ld hl, vTilesLow tile $20
 	ld a, $5f
