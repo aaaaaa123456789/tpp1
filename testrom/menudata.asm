@@ -6,6 +6,7 @@ MainTestingMenu::
 	option "RTC tests", OPTION_CHECK, LoadRTCTestingMenu
 	option "Rumble tests", OPTION_CHECK, LoadRumbleTestingMenu
 	option "MR register tests", OPTION_MENU, MRTestingMenu
+	option "Initial tests", OPTION_TEST, CheckInitialTests
 	option "Memory viewer", OPTION_MENU, MemoryViewerMenu
 	option "About", OPTION_EXEC, AboutBox
 	option "Reset", OPTION_EXEC, DoReset
