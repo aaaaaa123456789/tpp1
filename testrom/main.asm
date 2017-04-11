@@ -91,7 +91,7 @@ Main::
 	ld a, [rMR0r]
 	cp 1
 	decoord 15, 10
-	call .print_pass_fail_from_zero
+	call .handle_pass_fail_from_zero
 	ld a, 10
 	rst DelayFrames
 	decoord 1, 11
@@ -102,7 +102,7 @@ Main::
 	ld a, [rMR1r]
 	and a
 	decoord 15, 11
-	call .print_pass_fail_from_zero
+	call .handle_pass_fail_from_zero
 	ld a, 10
 	rst DelayFrames
 	decoord 1, 12
@@ -113,7 +113,7 @@ Main::
 	ld a, [rMR2r]
 	and a
 	decoord 15, 12
-	call .print_pass_fail_from_zero
+	call .handle_pass_fail_from_zero
 	ld a, 10
 	rst DelayFrames
 	decoord 1, 13
@@ -124,7 +124,7 @@ Main::
 	ld a, [rMR4r]
 	and 3
 	decoord 15, 13
-	call .print_pass_fail_from_zero
+	call .handle_pass_fail_from_zero
 	ld a, 20
 	rst DelayFrames
 	ld hl, .rom1_string
@@ -136,7 +136,7 @@ Main::
 	call TestROMBank
 	sbc a ;transfer !carry into zero
 	decoord 15, 14
-	call .print_pass_fail_from_zero
+	call .handle_pass_fail_from_zero
 	ld a, 10
 	rst DelayFrames
 	decoord 5, 17
@@ -146,9 +146,25 @@ Main::
 	call DoubleSpeed
 	jp MainMenu
 
-.print_pass_fail_from_zero
+.handle_pass_fail_from_zero
+	push af
+	ld a, [hInitialTestNumber]
+	inc a
+	ld b, a
+	ld [hInitialTestNumber], a
+	pop af
 	ld hl, .pass_string
 	jr z, .print
+	xor a
+	scf
+.flag_loop
+	rla
+	dec b
+	jr nz, .flag_loop
+	ld b, a
+	ld a, [hInitialTestResult]
+	or b
+	ld [hInitialTestResult], a
 	ld hl, .fail_string
 .print
 	rst CopyString
