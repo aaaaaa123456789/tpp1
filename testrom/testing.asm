@@ -51,6 +51,9 @@ RunAllTests::
 	inc hl
 	or [hl]
 	jr nz, .no_compliance_message
+	ld a, [hInitialTestResult]
+	and a
+	jr nz, .no_compliance_message
 	ld hl, EmptyString
 	rst Print
 	ld hl, .compliance_text
