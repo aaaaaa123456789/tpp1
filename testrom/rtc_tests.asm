@@ -319,6 +319,8 @@ RTCLatchTest::
 	ld a, MR3_RTC_OFF
 	ld [rMR3w], a
 	call SetRTCToValue ;exits with hl = rRTCW
+	push hl
+	pop hl
 	call Random
 	ld [hli], a
 	call Random
@@ -599,7 +601,8 @@ RTCUnmapLatchTest::
 .loop
 	call GenerateRandomRTCSetting
 	call SetRTCToValue
-	ld hl, rMR3w
+	ld hl, rMR3w - 1
+	inc hl ;ensure that there is enough delay
 	ld [hl], MR3_MAP_RTC
 	push hl
 	ld h, rRTCS >> 8 ;hl = rRTCS
