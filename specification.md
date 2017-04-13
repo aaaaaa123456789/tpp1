@@ -118,6 +118,7 @@ The cartridge shall behave on power-up in a predictable, established way. In par
 * Control registers are mapped to the A000-BFFF area, as if 00 had been written to MR3;
 * Rumble features are off (as if 20 had been written to MR3), and MR4 reflects this; and
 * RTC retains its settings, including an updated clock if it was set to continue ticking while powered off. (If the cartridge (or at least its RTC features) had not been used before, the RTC should be off (i.e., not ticking), with undefined initial values.)
+* The RTC latch registers may contain any value, including invalid values.
 
 ## Control register operation
 
