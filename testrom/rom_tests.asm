@@ -194,7 +194,7 @@ ROMBankRangeTest:
 	ld a, [hli]
 	ld c, a
 	ld b, [hl]
-	and c
+	or b
 	call z, .test_home_bank
 .loop
 	ld hl, wFinalBank + 1
