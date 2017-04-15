@@ -194,7 +194,7 @@ ROMBankRangeTest:
 	ld a, [hli]
 	ld c, a
 	ld b, [hl]
-	or c
+	and c
 	call z, .test_home_bank
 .loop
 	ld hl, wFinalBank + 1
@@ -323,7 +323,7 @@ TestROMHomeBank:
 	dec b
 	jr nz, .inner_loop
 	dec c
-	jr .random_testing_loop
+	jr nz, .random_testing_loop
 	; carry must be clear here
 .done
 	pop bc
