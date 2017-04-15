@@ -9,6 +9,7 @@ MainTestingMenu::
 	option "Initial tests", OPTION_TEST, CheckInitialTests
 	option "Memory viewer", OPTION_MENU, MemoryViewerMenu
 	option "About", OPTION_EXEC, AboutBox
+	option "System info", OPTION_EXEC, DisplaySystemInformation
 	option "Reset", OPTION_EXEC, DoReset
 	end_menu
 

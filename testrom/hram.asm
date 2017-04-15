@@ -16,6 +16,9 @@ hMemoryAddress       EQU $ff8e ;2 bytes
 hInitialTestNumber   EQU $ff90
 hInitialTestResult   EQU $ff91
 
+hComplianceTestRun   EQU $ff92
+hComplianceErrors    EQU $ff93 ;3 bytes
+
 hTimesetSecond       EQU $ffe0
 hTimesetMinute       EQU $ffe1
 hTimesetHour         EQU $ffe2

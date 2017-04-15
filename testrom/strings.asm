@@ -88,6 +88,12 @@ RTCSetTestingString::
 ParenthesisMaxBankString::
 	db "(max bank: <@>"
 
+MaxROMBankString::
+	db "Max ROM bank:<@>"
+
+MaxRAMBankString::
+	db "Max RAM bank:<@>"
+
 MemoryViewerDescriptionString::
 	db "Enter the address<LF>"
 	db " that you want to<LF>"
@@ -124,6 +130,7 @@ AboutString::
 	db "refer to the speci-<LF>"
 	db "   fication file.<LF>"
 	db "<LF>"
-	db "   TPPDevs - 2017<LF>"
-	db "<LF>"
-	db "       <A> Back<@>"
+	db "   TPPDevs - 2017<@>"
+
+AButtonBackString::
+	db "<A> Back<@>"

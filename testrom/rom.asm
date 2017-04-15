@@ -39,6 +39,7 @@ INCLUDE "math.asm"
 INCLUDE "random.asm"
 INCLUDE "printnum.asm"
 INCLUDE "error_count.asm"
+INCLUDE "showinfo.asm"
 
 INCLUDE "menudata.asm"
 INCLUDE "strings.asm"

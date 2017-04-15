@@ -487,8 +487,11 @@ RAMBankReadWriteScreen:
 	call Textbox
 	ld a, 3
 	rst DelayFrames
+	ld hl, MaxRAMBankString
+	decoord 1, 2
+	rst CopyString
 	pop de
-	hlcoord 1, 2
+	hlcoord 1, 4
 	rst PrintString
 	ld a, [hRAMBanks]
 	hlcoord 15, 2
@@ -525,12 +528,8 @@ TestRAMBankRangeReadWriteOption::
 	jr .retry
 
 .screen_text
-	db "Max RAM bank:<LF>"
-	db "<LF>"
-	db "Initial bank:<LF>"
-	db "<LF>"
-	db "Final bank:<LF>"
-	db "<LF>"
+	db "Initial bank:<LF><LF>"
+	db "Final bank:<LF><LF>"
 	db "Step:<@>"
 
 .hex_input
@@ -563,8 +562,6 @@ TestOneRAMBankReadWriteOption::
 	jr TestRAMBankRangeReadWrite
 
 .screen_text
-	db "Max RAM bank:<LF>"
-	db "<LF>"
 	db "Bank to test:<@>"
 
 .hex_input

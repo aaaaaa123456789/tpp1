@@ -75,8 +75,11 @@ TestROMBankRangeOption::
 	call Textbox
 	ld a, 3
 	rst DelayFrames
+	ld hl, MaxROMBankString
+	decoord 1, 2
+	rst CopyString
 	ld de, .screen_text
-	hlcoord 1, 2
+	hlcoord 1, 4
 	rst PrintString
 	call GetMaxValidROMBank
 	hlcoord 15, 2
@@ -99,7 +102,6 @@ TestROMBankRangeOption::
 	jp TestROMBankRange
 
 .screen_text
-	db "Max ROM bank:<LF><LF>"
 	db "Initial bank:<LF>"
 	db "Final bank:<LF>"
 	db "Step:<@>"
@@ -110,7 +112,7 @@ TestROMBankRangeOption::
 	hex_input 17, 6, wBankStep
 	dw 0
 
-GetMaxValidROMBank:
+GetMaxValidROMBank::
 	; returns max bank in de, carry if the ROM size is invalid
 	ld a, [TPP1ROMSize]
 	cp 16

@@ -96,6 +96,17 @@ RunAllTests::
 	ld hl, .compliance_text
 	rst Print
 .no_compliance_message
+	ld a, [hComplianceTestRun]
+	add a, 1
+	sbc 0 ;avoids overflows
+	ld [hComplianceTestRun], a
+	ld hl, wErrorCount
+	ld a, [hli]
+	ld [hComplianceErrors], a
+	ld a, [hli]
+	ld [hComplianceErrors + 1], a
+	ld a, [hli]
+	ld [hComplianceErrors + 2], a
 	jp EndFullscreenTextbox
 
 .run_RAM_tests

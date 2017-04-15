@@ -219,13 +219,3 @@ FillRandomBuffer::
 	xor a
 	ld [rIF], a ;if we're in vblank, discard it
 	reti
-
-AboutBox::
-	call ClearScreen
-	ld de, TitleString
-	hlcoord 1, 0
-	rst PrintString
-	ld de, AboutString
-	hlcoord 0, 6
-	rst PrintString
-	jp WaitForAPress
