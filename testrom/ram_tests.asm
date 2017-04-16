@@ -755,11 +755,11 @@ TestRAMCrossBankAliasing:
 	ld [hCurrent], a
 	ld [rMR2w], a
 	call FillRandomBuffer
-	xor a
 	call GetRandomRAMAddress
 	ld bc, $40
 	ld h, d
 	ld l, e
+	xor a
 	rst FillByte
 	pop bc
 	ld a, c
