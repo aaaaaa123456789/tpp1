@@ -84,9 +84,10 @@ MRTestingMenu::
 	menu "MR register tests", MainTestingMenu
 	option "Run all tests", OPTION_TEST, RunAllMRTests
 	option "Mapping test", OPTION_TEST, MRMappingTest
-	option "Mirroring test", OPTION_TEST, MRMirroringTest
 	option "Reading test", OPTION_TEST, MRReadingTest
 	option "Writing test", OPTION_TEST, MRWritesTest
+	option "Mirroring test<COMMA> R", OPTION_TEST, MRMirroringReadTest
+	option "Mirroring test<COMMA> W", OPTION_TEST, MRMirroringWriteTest
 	option "Restore values", OPTION_EXEC, RestoreMRValues
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu

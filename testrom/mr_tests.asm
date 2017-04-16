@@ -209,7 +209,7 @@ PrintMRMismatch:
 	bigdw hCurrent + 1
 	db ")<@>"
 
-MRMirroringTest::
+MRMirroringReadTest::
 	ld hl, .initial_text
 	rst Print
 	ld hl, EmptyString
@@ -275,7 +275,7 @@ MRMirroringTest::
 
 .initial_text
 	db "Testing MR address<LF>"
-	db "mirroring...<@>"
+	db "read mirroring...<@>"
 
 .error_text
 	db "FAILED: address<LF>"
@@ -283,6 +283,72 @@ MRMirroringTest::
 	bigdw hCurrent + 1, hCurrent
 	db " did not<LF>"
 	db "match MR values<@>"
+
+MRMirroringWriteTest::
+	ld hl, .initial_text
+	rst Print
+	ld hl, EmptyString
+	rst Print
+	xor a
+	ld [rMR3w], a
+	ld a, 5
+	ld [hMax], a
+.loop
+	call Random
+	and $3f
+	ld h, a
+	call Random
+	and $fc
+	ld l, a
+	or h
+	jr z, .loop
+	call Random
+	ld c, a
+	ld [hli], a
+	call Random
+	ld b, a
+	ld [hli], a
+	call Random
+	ld [hld], a
+	dec hl
+	ld d, h
+	ld e, l
+	ld hl, rMR2r
+	cp [hl]
+	jr nz, .error
+	dec hl
+	ld a, [hld]
+	cp b
+	jr nz, .error
+	ld a, [hl]
+	cp c
+	jr z, .ok
+.error
+	ld a, e
+	ld [hCurrent], a
+	ld a, d
+	ld [hCurrent + 1], a
+	ld hl, .error_text
+	rst Print
+	call IncrementErrorCount
+.ok
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+	ld hl, EmptyString
+	rst Print
+	jp ReinitializeMRRegisters
+
+.initial_text
+	db "Testing MR address<LF>"
+	db "write mirroring...<@>"
+.error_text
+	db "FAILED: writing to<LF>"
+	db "address $"
+	bigdw hCurrent + 1, hCurrent
+	db " did<LF>"
+	db "not write to MR<LF>"
+	db "registers<@>"
 
 MRReadingTest::
 	ld hl, .initial_text
@@ -331,7 +397,8 @@ MRReadingTest::
 
 RunAllMRTests::
 	call MRMappingTest
-	call MRMirroringTest
 	call MRReadingTest
 	call MRWritesTest
+	call MRMirroringReadTest
+	call MRMirroringWriteTest
 	jp ReinitializeMRRegisters
