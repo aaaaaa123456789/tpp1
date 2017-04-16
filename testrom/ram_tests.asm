@@ -339,7 +339,6 @@ TestRAMWritesReadOnly:
 	ld [hCurrent], a
 	ld [rMR2w], a
 	call OverwriteInitializedRAMData
-	ld a, c
 	call TestReadContentsFromRAMBank
 	jr nc, .passed
 	ld a, MR3_MAP_SRAM_RW
@@ -421,7 +420,6 @@ TestRAMWritesDeselected:
 	call OverwriteInitializedRAMData
 	ld a, MR3_MAP_SRAM_RO
 	ld [rMR3w], a
-	ld a, c
 	call TestReadContentsFromRAMBank
 	ret nc
 	ld a, MR3_MAP_SRAM_RW
