@@ -452,8 +452,16 @@ TestSwapRAMBanksDeselected:
 	call .test
 	ld a, c
 	call .test
+	ld a, c
+	dec a
+	jr z, .selected_bank
+.resample_bank
 	call Random
 	and c
+	jr z, .resample_bank
+	cp c
+	jr z, .resample_bank
+.selected_bank
 	call .test
 	ld hl, EmptyString
 	rst Print
