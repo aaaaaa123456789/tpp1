@@ -204,7 +204,7 @@ TestRAMReadsReadWrite:
 	db "write mode test:<@>"
 
 TestReadContentsFromRAMBank:
-	; tests reading from RAM bank a
+	; tests reading from RAM bank c
 	; returns carry if failed
 	ld hl, $a000
 	ld a, [hli]
@@ -474,15 +474,17 @@ TestSwapRAMBanksDeselected:
 	db "with MR3 = 0 test:<@>"
 
 .test
+	push bc
 	ld [hCurrent], a
-	ld b, a
+	ld c, a
 	xor a ;ld a, MR3_MAP_REGS
 	ld hl, rMR3w
 	ld [hld], a
-	ld a, b
+	ld a, c
 	ld [hli], a
 	ld [hl], MR3_MAP_SRAM_RO
 	call TestReadContentsFromRAMBank
+	pop bc
 	ret nc
 	jr PrintRAMFailedAndIncrement
 
