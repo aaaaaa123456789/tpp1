@@ -250,11 +250,8 @@ MessageBox:
 	ret
 
 EndFullscreenTextbox::
-	ld hl, EmptyString
-	push hl
-	rst Print
-	pop hl
-	rst Print
+	call PrintEmptyString
+	call PrintEmptyString
 	ld hl, ContinueString
 	decoord 5, 16
 	rst CopyString

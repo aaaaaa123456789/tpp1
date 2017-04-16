@@ -47,8 +47,7 @@ SetRumble:
 TestRumbleMR4::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	call GetMaxRumbleSpeed
 	and a
 	ld c, a
@@ -76,11 +75,9 @@ TestRumbleMR4::
 	and a
 	jr nz, .loop
 .done
-	ld hl, EmptyString
-	rst Print
 	ld a, MR3_RUMBLE_OFF
 	ld [rMR3w], a
-	ret
+	jp PrintEmptyString
 
 .error
 	push hl

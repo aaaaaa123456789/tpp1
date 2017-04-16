@@ -21,6 +21,10 @@ UnknownMaxBankString::
 TestsPassedString::
 	db "All tests passed.<@>"
 
+TestingROMBankSwitchingSpeedString::
+	db "Testing ROM bank<LF>"
+	db "switching speed...<@>"
+
 TestingAmountOfRAMBanksString::
 	db "Testing RAM banks<LF>"
 	db "$00-$"

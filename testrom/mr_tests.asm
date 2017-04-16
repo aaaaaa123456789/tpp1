@@ -10,6 +10,8 @@ RestoreMRValues::
 	db "MR registers set<LF>"
 	db "to default values.<@>"
 
+PrintEmptyStringAndReinitializeMRRegisters::
+	call PrintEmptyString
 ReinitializeMRRegisters::
 	xor a
 	ld hl, rMR3w
@@ -22,8 +24,7 @@ ReinitializeMRRegisters::
 MRMappingTest::
 	ld hl, .initial_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	xor a ;ld a, MR3_MAP_REGS
 	ld [rMR3w], a
 	call .test_random
@@ -41,9 +42,7 @@ MRMappingTest::
 	inc hl
 	or [hl]
 	call nz, .error
-	ld hl, EmptyString
-	rst Print
-	ret
+	jp PrintEmptyString
 
 .initial_text
 	db "Testing default MR<LF>"
@@ -99,9 +98,7 @@ ClearMR4:
 MRWritesTest::
 	ld hl, .initial_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
-	call ReinitializeMRRegisters ;also maps regs to $a000
+	call PrintEmptyStringAndReinitializeMRRegisters ;also maps regs to $a000
 	call ClearMR4
 	ld bc, 1
 	ld e, b
@@ -156,9 +153,7 @@ MRWritesTest::
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_text
 	db "Testing writes on<LF>"
@@ -212,8 +207,7 @@ PrintMRMismatch:
 MRMirroringReadTest::
 	ld hl, .initial_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	call ClearMR4
 	ld a, 5
 	ld [hMax], a
@@ -258,9 +252,7 @@ MRMirroringReadTest::
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .error
 	ld a, e
@@ -287,8 +279,7 @@ MRMirroringReadTest::
 MRMirroringWriteTest::
 	ld hl, .initial_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	xor a
 	ld [rMR3w], a
 	ld a, 5
@@ -335,9 +326,7 @@ MRMirroringWriteTest::
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_text
 	db "Testing MR address<LF>"
@@ -353,8 +342,7 @@ MRMirroringWriteTest::
 MRReadingTest::
 	ld hl, .initial_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, 2
 	ld [hMax], a
 .loop
@@ -376,9 +364,7 @@ MRReadingTest::
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .error
 	ld a, b

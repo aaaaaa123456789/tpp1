@@ -20,8 +20,7 @@ ClearRTCOverflowOption::
 RTCOnOffTest::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, 3
 	ld [hMax], a
 .loop
@@ -39,9 +38,7 @@ RTCOnOffTest::
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .on_failed
 	push hl
@@ -103,8 +100,7 @@ RTCSetTest:
 	ld [hl], "<@>"
 	ld hl, wTextBuffer
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	pop af
 	ld [rMR3w], a
 	ld a, 5
@@ -151,9 +147,7 @@ RTCSetTest:
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .error_text
 	db "FAILED: could not<LF>"
@@ -163,8 +157,7 @@ RTCSetTest:
 RTCRolloversTest::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, MR3_RTC_ON
 	ld [rMR3w], a
 .resample_minute_rollover
@@ -219,9 +212,7 @@ RTCRolloversTest::
 	inc b
 	call WaitForRTCChange
 	call CheckRTCForValue
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_test_text
 	db "Testing RTC value<LF>"
@@ -230,8 +221,7 @@ RTCRolloversTest::
 RTCOverflowTest::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld hl, rMR3w
 	ld [hl], MR3_RTC_OFF
 	ld [hl], MR3_CLEAR_RTC_OVERFLOW
@@ -245,9 +235,7 @@ RTCOverflowTest::
 	rst Print
 	call IncrementErrorCount
 .overflow_is_off
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .set_and_check
 	ld [hl], MR3_MAP_RTC
@@ -307,8 +295,7 @@ RTCOverflowTest::
 RTCLatchTest::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, 3
 	ld [hMax], a
 .loop
@@ -358,9 +345,7 @@ RTCLatchTest::
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_test_text
 	db "Testing RTC<LF>"
@@ -369,8 +354,7 @@ RTCLatchTest::
 RTCRunningFlagTest::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, MR3_MAP_RTC
 	ld [rMR3w], a
 	xor a
@@ -402,9 +386,7 @@ RTCRunningFlagTest::
 	rst Print
 	call IncrementErrorCount
 .off
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_test_text
 	db "Testing MR4 RTC<LF>"
@@ -421,8 +403,7 @@ RTCRunningFlagTest::
 RTCTimingTest::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, MR3_RTC_ON
 	ld [rMR3w], a
 	ld a, 3
@@ -481,9 +462,7 @@ RTCTimingTest::
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .do_timing_test
 	call GetCurrentSpeed
@@ -525,8 +504,7 @@ RTCTimingTest::
 RTCWritingMR4Test::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld hl, rMR3w
 	ld de, rMR4r
 	ld [hl], MR3_RTC_OFF
@@ -565,9 +543,7 @@ RTCWritingMR4Test::
 	and $c
 	cp 4
 	call nz, .error
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .error
 	push hl
@@ -592,8 +568,7 @@ RTCWritingMR4Test::
 RTCUnmapLatchTest::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, MR3_RTC_OFF
 	ld [rMR3w], a
 	ld a, 5
@@ -624,9 +599,7 @@ RTCUnmapLatchTest::
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_test_text
 	db "Testing RTC value<LF>"
@@ -636,8 +609,7 @@ RTCUnmapLatchTest::
 RTCMirroringTestRead::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, MR3_MAP_RTC
 	ld [rMR3w], a
 	ld hl, rRTCW
@@ -658,9 +630,7 @@ RTCMirroringTestRead::
 	inc hl
 	bit 6, h
 	jr z, .loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_test_text
 	db "Testing RTC value<LF>"
@@ -670,8 +640,7 @@ RTCMirroringTestRead::
 RTCMirroringTestWrite::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, MR3_MAP_RTC
 	ld [rMR3w], a
 	ld a, 5
@@ -709,9 +678,7 @@ RTCMirroringTestWrite::
 	dec hl
 	dec [hl]
 	jr nz, .outer_loop
-	ld hl, EmptyString
-	rst Print
-	jp ReinitializeMRRegisters
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .generate_random_address
 	call Random

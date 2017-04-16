@@ -33,15 +33,13 @@ LoadRumbleTestingMenu::
 CheckInitialTests::
 	ld hl, .initial_test_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, [hInitialTestResult]
 	and $f
 	jr z, .initial_MR_passed
 	ld hl, .initial_MR_failed_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	call IncrementErrorCount
 .initial_MR_passed
 	ld a, [hInitialTestResult]
@@ -49,8 +47,7 @@ CheckInitialTests::
 	ret z
 	ld hl, .initial_bank_failed_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	jp IncrementErrorCount
 
 .initial_test_text
@@ -91,8 +88,7 @@ RunAllTests::
 	inc hl
 	or [hl]
 	jr nz, .no_compliance_message
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld hl, .compliance_text
 	rst Print
 .no_compliance_message
@@ -115,9 +111,7 @@ RunAllTests::
 	ld hl, NoRAMString
 .print_and_return
 	rst Print
-	ld hl, EmptyString
-	rst Print
-	ret
+	jp PrintEmptyString
 
 .run_RTC_tests
 	call CheckRTCAllowed

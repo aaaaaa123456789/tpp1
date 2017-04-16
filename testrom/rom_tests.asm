@@ -3,8 +3,7 @@ TestROMBankSampleOption::
 	call MakeFullscreenTextbox
 	ld hl, .testing_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	call GetMaxValidROMBank
 	jr nc, .valid_max
 	ld de, $ffff
@@ -58,8 +57,7 @@ TestROMBankSampleOption::
 	dec a
 	ld [hMax], a
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	call GenerateErrorCountString
 	rst Print
 	jp EndFullscreenTextbox
@@ -164,8 +162,7 @@ CheckLastROMBankExists:
 	ret nc
 	ld hl, UnknownLastROMBankString
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	call IncrementErrorCount
 	scf
 	ret
@@ -247,9 +244,7 @@ ROMBankRangeTest:
 	inc b
 	jr nz, .loop
 .done
-	ld hl, EmptyString
-	rst Print
-	ret
+	jp PrintEmptyString
 
 .testing_text
 	db "Testing ROM banks<LF>"
@@ -403,10 +398,9 @@ RunAllROMTests::
 	; fallthrough
 
 TestROMBankswitchSpeed::
-	ld hl, .initial_text
+	ld hl, TestingROMBankSwitchingSpeedString
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	call CheckLastROMBankExists
 	ret c
 	call GetMaxValidROMBank
@@ -451,16 +445,17 @@ TestROMBankswitchSpeed::
 	ld a, [hli]
 	ld b, [hl]
 	ld c, a
-	call .validate
+	call ValidateROMBankDataAt4004
 	pop de
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
+PrintEmptyString::
 	ld hl, EmptyString
 	rst Print
 	ret
 
-.validate
+ValidateROMBankDataAt4004:
 	ld a, [hCurrent]
 	ld l, a
 	ld a, [hCurrent + 1]
@@ -509,10 +504,6 @@ TestROMBankswitchSpeed::
 	ld [hli], a
 	ld [hl], $01
 	jr .do_validation
-
-.initial_text
-	db "Testing ROM bank<LF>"
-	db "switching speed...<@>"
 
 .error_text
 	db "FAILED: switching<LF>"

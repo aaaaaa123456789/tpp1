@@ -8,8 +8,7 @@ InitializeRAMBanks::
 DoRAMBankInitialization:
 	ld hl, .initial_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 .resample
 	call Random
 	and a
@@ -17,8 +16,7 @@ DoRAMBankInitialization:
 	ld [hRAMInitialized], a
 	ld hl, .selected_seed
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	call GetMaxValidRAMBank
 	ld a, c
 	ld [hRAMBanks], a
@@ -35,11 +33,7 @@ DoRAMBankInitialization:
 	jr nz, .loop
 	ld hl, .done_text
 	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ld hl, EmptyString
-	rst Print
-	ret
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_text
 	db "Initializing RAM,<LF>"
@@ -153,8 +147,7 @@ _CheckRAMStatusForTesting:
 	ld hl, UninitializedRAMString
 .failed
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	scf
 	ret
 
@@ -168,8 +161,7 @@ TestRAMReads:
 	ld [rMR3w], a
 	ld hl, TestingAmountOfRAMBanksString
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld c, -1
 .loop
 	inc c
@@ -185,11 +177,7 @@ TestRAMReads:
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ret
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 TestRAMReadsReadWrite:
 	call CheckRAMStatusForTesting
@@ -249,8 +237,7 @@ TestRAMWrites:
 	rst Print
 	ld hl, TestingAmountOfRAMBanksString
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
 	ld c, -1
@@ -268,11 +255,7 @@ TestRAMWrites:
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ret
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .test_description_text
 	db "RAM write and<LF>"
@@ -328,8 +311,7 @@ TestRAMWritesReadOnly:
 	rst Print
 	ld hl, TestingAmountOfRAMBanksString
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, MR3_MAP_SRAM_RO
 	ld [rMR3w], a
 	ld c, -1
@@ -353,11 +335,7 @@ TestRAMWritesReadOnly:
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
-	ld hl, EmptyString
-	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ret
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .test_description_text
 	db "RAM writes while<LF>"
@@ -390,8 +368,7 @@ TestRAMWritesDeselected:
 	rst Print
 	ld hl, TestingThreeBanksString
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	xor a
 	call .test
 	ld a, [hRAMBanks]
@@ -401,11 +378,7 @@ TestRAMWritesDeselected:
 	pop bc
 	and b
 	call .test
-	ld hl, EmptyString
-	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ret
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .test_description_text
 	db "RAM writes with<LF>"
@@ -437,8 +410,7 @@ TestSwapRAMBanksDeselected:
 	rst Print
 	ld hl, TestingThreeBanksString
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, [hRAMBanks]
 	ld c, a
 .resample
@@ -461,11 +433,7 @@ TestSwapRAMBanksDeselected:
 	jr z, .resample_bank
 .selected_bank
 	call .test
-	ld hl, EmptyString
-	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ret
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .test_description_text
 	db "RAM bank selection<LF>"
@@ -591,8 +559,7 @@ TestRAMBankRangeReadWrite:
 	call ClearErrorCount
 	ld hl, .test_description_text
 	rst Print
-	ld hl, EmptyString
-	rst Print
+	call PrintEmptyString
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
 	ld a, [wInitialBank]
@@ -621,10 +588,7 @@ TestRAMBankRangeReadWrite:
 	cp c
 	jr nc, .loop
 .done
-	ld hl, EmptyString
-	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
+	call PrintEmptyStringAndReinitializeMRRegisters
 	call GenerateErrorCountString
 	rst Print
 	jp EndFullscreenTextbox
@@ -672,11 +636,7 @@ TestRAMInBankAliasing:
 	ld a, [hRAMBanks]
 	and c
 	call .test
-	ld hl, EmptyString
-	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ret
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .test_description_text
 	db "RAM in-bank<LF>"
@@ -772,11 +732,7 @@ TestRAMCrossBankAliasing:
 	dec [hl]
 	jr nz, .loop
 .done_testing
-	ld hl, EmptyString
-	rst Print
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ret
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .two_banks
 	ld hl, TestingAmountOfRAMBanksString
@@ -844,9 +800,8 @@ RunAllRAMTests::
 	jr nc, .ok
 	ld hl, NoRAMString
 	rst Print
-	ld hl, EmptyString
-	rst Print
-	ret
+	jp PrintEmptyString
+
 .ok
 	call DoRAMBankInitialization
 	call TestRAMReadsReadOnly
