@@ -208,7 +208,8 @@ MRMirroringReadTest::
 	ld hl, .initial_text
 	rst Print
 	call PrintEmptyString
-	call ClearMR4
+	call ClearMR4 ;exits with hl = rMR3w
+	ld [hl], MR3_MAP_REGS
 	ld a, 5
 	ld [hMax], a
 .loop
@@ -280,7 +281,7 @@ MRMirroringWriteTest::
 	ld hl, .initial_text
 	rst Print
 	call PrintEmptyString
-	xor a
+	xor a ;ld a, MR3_MAP_REGS
 	ld [rMR3w], a
 	ld a, 5
 	ld [hMax], a
@@ -343,6 +344,8 @@ MRReadingTest::
 	ld hl, .initial_text
 	rst Print
 	call PrintEmptyString
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
 	ld a, 2
 	ld [hMax], a
 .loop
