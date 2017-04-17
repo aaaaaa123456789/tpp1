@@ -232,14 +232,13 @@ MRMirroringReadTest::
 	ld e, a
 	call Random
 	and $1f
-	ld c, a
-	or $a0
 	ld d, a
-	ld a, c
 	or e
 	jr z, .resample
+	set 7, d
+	set 5, d
 	pop hl
-	ld c, 4
+	ld c, 3
 .check_loop
 	ld a, [de]
 	inc de
@@ -248,12 +247,9 @@ MRMirroringReadTest::
 	jr nz, .error
 	dec c
 	jr nz, .check_loop
-.done_checking
-	ld hl, hMax
-	dec [hl]
-	jr nz, .loop
-	jp PrintEmptyStringAndReinitializeMRRegisters
-
+	ld a, [hl]
+	and $f
+	jr z, .done_checking
 .error
 	ld a, e
 	and $fc
@@ -263,7 +259,11 @@ MRMirroringReadTest::
 	ld hl, .error_text
 	rst Print
 	call IncrementErrorCount
-	jr .done_checking
+.done_checking
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_text
 	db "Testing MR address<LF>"
