@@ -1,22 +1,3 @@
-TurnRTCOff::
-	ld a, MR3_RTC_OFF
-	ld [rMR3w], a
-	ld hl, .text
-	ret
-
-.text
-	db "RTC turned off.<@>"
-
-ClearRTCOverflowOption::
-	ld a, MR3_CLEAR_RTC_OVERFLOW
-	ld [rMR3w], a
-	ld hl, .text
-	ret
-
-.text
-	db "RTC overflow flag<LF>"
-	db "cleared.<@>"
-
 RTCOnOffTest::
 	ld hl, .initial_test_text
 	rst Print

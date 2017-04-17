@@ -69,6 +69,73 @@ GenerateTimeString::
 	ret
 
 DisplayRTCState::
+	call ClearScreen
+	ld a, 3
+	rst DelayFrames
+	ld a, -1
+	ld [hVBlankLine], a
+	hlcoord 0, 0
+	lb de, SCREEN_WIDTH, 3
+	call Textbox
+	hlcoord 0, 3
+	lb de, SCREEN_WIDTH, 9
+	call Textbox
+	hlcoord 0, 12
+	lb de, SCREEN_WIDTH, 6
+	call Textbox
+	ld hl, .title_text
+	decoord 1, 1
+	rst CopyString
+	hlcoord 1, 6
+	ld de, .display_text
+	rst PrintString
+	hlcoord 2, 13
+	ld de, .options_text
+	rst PrintString
+	xor a
+	ld [hTimesetCursor], a
+	ld [hVBlankLine], a
+	call UpdateDisplayedRTCState
+	ld a, 2
+	rst DelayFrames
+.loop
+	call UpdateDisplayedRTCState
+	call DelayFrame
+	call GetMenuJoypad
+	jr z, .loop
+	cp MENU_LEFT
+	jr nc, .loop
+	call ProcessRTCDisplayJoypad
+	jr nc, .loop
+	jp ClearScreen
+
+.title_text
+	db "RTC status<@>"
+.display_text
+	db "Raw RTC values:<LF><LF><LF>"
+	db "RTC enabled:<LF>"
+	db "RTC overflow:<@>"
+.options_text
+	db "Turn on<LF>"
+	db "Turn off<LF>"
+	db "Clear overflow<LF>"
+	db "Back<@>"
+
+UpdateDisplayedRTCState:
+	hlcoord 1, 13
+	ld bc, SCREEN_WIDTH
+	ld e, b ;= 0
+	ld a, [hTimesetCursor]
+.cursor_loop
+	ld [hl], " "
+	cp e
+	jr nz, .not_selected
+	ld [hl], "<RIGHT>"
+.not_selected
+	add hl, bc
+	inc e
+	bit 2, e
+	jr z, .cursor_loop
 	call LatchMapRTC
 	ld hl, rRTCW
 	ld a, [hli]
@@ -78,11 +145,7 @@ DisplayRTCState::
 	ld a, [hli]
 	ld d, a
 	ld e, [hl]
-	xor a ;ld a, MR3_MAP_REGS
-	ld [rMR3w], a
-	ld a, [rMR4r]
-	push af
-	ld hl, wTextBuffer
+	hlcoord 11, 7
 	ld a, b
 	call PrintHexByte
 	ld a, c
@@ -91,45 +154,81 @@ DisplayRTCState::
 	call PrintHexByte
 	ld a, e
 	call PrintHexByte
-	pop af
-	rra
-	rra
-	rra
-	push af
-	ld a, " "
-	ld [hli], a
-	ld a, "o"
-	ld [hli], a
-	jr c, .on
-	ld a, "f"
-	ld [hli], a
-	ld [hli], a
-	jr .printed_on_off
-.on
-	ld a, "n"
-	ld [hli], a
-	ld a, " "
-	ld [hli], a
-.printed_on_off
-	pop af
-	rra
-	jr nc, .no_overflow
-	push de
-	ld d, h
-	ld e, l
-	ld hl, .overflow_text
-	rst CopyString
-	ld h, d
-	ld l, e
-	pop de
-.no_overflow
-	ld a, "<LF>"
-	ld [hli], a
-	call GenerateTimeString
-	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
 	ld hl, wTextBuffer
-	jp MessageBox
+	push hl
+	call GenerateTimeString
+	pop hl
+	decoord 1, 4
+	rst CopyString
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ld a, [rMR4r]
+	swap a
+	add a, a
+	hlcoord 18, 10
+	push af
+	call .print_yes_no
+	pop af
+	add a, a
+	hlcoord 18, 9
+.print_yes_no
+	jr c, .print_yes
+	ld a, "o"
+	ld [hld], a
+	dec a
+	ld [hld], a
+	ld [hl], " "
+	ret
+.print_yes
+	ld a, "s"
+	ld [hld], a
+	ld a, "e"
+	ld [hld], a
+	ld [hl], "y"
+	ret
 
-.overflow_text
-	db " ovflw<@>"
+ProcessRTCDisplayJoypad:
+	dec a
+	jr nz, .not_a
+	ld a, [hTimesetCursor]
+	and a
+	jr z, .turn_on
+	dec a
+	jr z, .turn_off
+	dec a
+	jr nz, .exit
+	ld a, MR3_CLEAR_RTC_OVERFLOW
+	jr .MR3_action
+
+.not_a
+	dec a
+	jr nz, .not_b
+.exit
+	scf
+	ret
+
+.not_b
+	dec a
+	jr nz, .not_up
+	ld a, [hTimesetCursor]
+	dec a
+	jr .set_cursor
+
+.not_up
+	ld a, [hTimesetCursor]
+	inc a
+.set_cursor
+	and 3
+	ld [hTimesetCursor], a
+	ret
+
+.turn_on
+	ld a, MR3_RTC_ON
+	jr .MR3_action
+
+.turn_off
+	ld a, MR3_RTC_OFF
+.MR3_action
+	ld [rMR3w], a
+	and a
+	ret

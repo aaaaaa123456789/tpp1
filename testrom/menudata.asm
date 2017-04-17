@@ -57,8 +57,6 @@ RTCTestingMenu::
 	option "Mirroring test<COMMA> R", OPTION_TEST, RTCMirroringTestRead
 	option "Mirroring test<COMMA> W", OPTION_TEST, RTCMirroringTestWrite
 	option "Set RTC manually", OPTION_EXEC, Timeset
-	option "Turn RTC off", OPTION_CHECK, TurnRTCOff
-	option "Clear overflow", OPTION_CHECK, ClearRTCOverflowOption
 	option "View RTC status", OPTION_EXEC, DisplayRTCState
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
