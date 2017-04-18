@@ -287,6 +287,7 @@ MemoryEditor:
 	ld a, -1
 	ld [hVBlankLine], a
 	call ClearScreen
+	hlcoord 0, 0
 	lb de, SCREEN_WIDTH, 3
 	call Textbox
 	ld hl, .title_text
