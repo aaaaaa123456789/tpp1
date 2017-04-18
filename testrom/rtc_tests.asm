@@ -141,11 +141,13 @@ RTCRolloversTest::
 	call PrintEmptyString
 	ld a, MR3_RTC_ON
 	ld [rMR3w], a
-.resample_minute_rollover
+	ld a, 4
+	ld [hMax], a
+.loop
 	call GenerateRandomRTCSetting
 	ld a, d
 	cp 59
-	jr nc, .resample_minute_rollover
+	jr nc, .loop
 	ld e, 59
 	call SetRTCToValue
 	inc d
@@ -166,11 +168,11 @@ RTCRolloversTest::
 	call CheckRTCForValue
 .resample_day_rollover
 	call Random
-	or $1f
+	and $e0
+	cp $c0
+	jr nc, .resample_day_rollover
+	add a, 23
 	ld c, a
-	inc a
-	jr z, .resample_day_rollover
-	res 3, c
 	call Random
 	ld b, a
 	lb de, 59, 59
@@ -193,6 +195,9 @@ RTCRolloversTest::
 	inc b
 	call WaitForRTCChange
 	call CheckRTCForValue
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
 	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_test_text
