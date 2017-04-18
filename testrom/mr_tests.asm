@@ -248,7 +248,7 @@ MRMirroringReadTest::
 	jr nz, .error
 	dec c
 	jr nz, .check_loop
-	ld a, [hl]
+	ld a, [de]
 	and $f
 	jr z, .done_checking
 .error
