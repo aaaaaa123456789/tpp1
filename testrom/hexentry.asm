@@ -215,7 +215,7 @@ UpdateHexEntryCursor:
 
 .not_left
 	dec a
-	ret nz
+	jr nz, .done
 	ld a, [hHexEntryColumn]
 	inc a
 	cp 6
