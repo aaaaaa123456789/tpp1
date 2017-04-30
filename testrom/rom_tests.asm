@@ -494,15 +494,15 @@ ValidateROMBankDataAt4004:
 	jp IncrementErrorCount
 
 .validate_home
-	; the ROM begins with di ($f3), xor a ($af), ld sp, $d000 ($31 $00 $d0), jp $0154 ($c3 $54 $01)
+	; the ROM begins with di ($f3), xor a ($af), ld sp, $d000 ($31 $00 $d0), jp Restart ($c3 $e5 $02)
 	ld hl, hProduct ;just use it as storage for the "correct" values
 	ld a, $d0
 	ld [hli], a
 	ld a, $c3
 	ld [hli], a
-	ld a, $54
+	ld a, Restart & $ff
 	ld [hli], a
-	ld [hl], $01
+	ld [hl], Restart >> 8
 	jr .do_validation
 
 .error_text
