@@ -343,14 +343,6 @@ TestRAMWritesReadOnly:
 	db "test:<@>"
 
 OverwriteInitializedRAMData:
-	ld hl, $a000
-	ld a, $ff
-	ld [hli], a
-	ld [hli], a
-	call Random
-	ld [hli], a
-	call Random
-	ld [hl], a
 	ld hl, $bffc
 	call Random
 	ld [hli], a
@@ -359,6 +351,14 @@ OverwriteInitializedRAMData:
 	xor a
 	ld [hli], a
 	ld [hli], a
+	ld h, $a0
+	dec a
+	ld [hli], a
+	ld [hli], a
+	call Random
+	ld [hli], a
+	call Random
+	ld [hl], a
 	ret
 
 TestRAMWritesDeselected:
