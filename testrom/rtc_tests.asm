@@ -386,10 +386,52 @@ RTCRunningFlagTest::
 	db "flag is on while<LF>"
 	db "stopped<@>"
 
-RTCTimingTest::
+RTCSingleSpeedTiming::
+	call GetCurrentSpeed
+	ld hl, .error_text
+	ret nc
+	ldopt hl, OPTION_TEST, RTCSingleSpeedTimingTest
+	ret
+
+.error_text
+	db "This test requires<LF>"
+	db "double speed mode.<@>"
+
+RTCSingleSpeedTimingTest:
 	ld hl, .initial_test_text
 	rst Print
 	call PrintEmptyString
+	ld hl, .switching_speeds_text
+	rst Print
+	call PrintEmptyString
+	call DoSpeedSwitch
+	ld hl, .testing_text
+	rst Print
+	call PrintEmptyString
+	call RTCTimingTest_NoInitialBanner
+	ld hl, .restoring_text
+	rst Print
+	call PrintEmptyString
+	jp DoSpeedSwitch
+	
+.initial_test_text
+	db "Testing RTC latch<LF>"
+	db "timing in single<LF>"
+	db "speed CPU mode...<@>"
+.switching_speeds_text
+	db "Switching CPU<LF>"
+	db "speeds...<@>"
+.testing_text
+	db "Testing...<@>"
+.restoring_text
+	db "Restoring double<LF>"
+	db "speed mode...<@>"
+
+RTCTimingTest::
+	ld hl, RTCTimingInitialTestString
+	rst Print
+	call PrintEmptyString
+RTCTimingTest_NoInitialBanner:
 	ld a, MR3_RTC_ON
 	ld [rMR3w], a
 	ld a, 3
@@ -482,10 +524,6 @@ RTCTimingTest::
 	ld b, [hl]
 	ld c, a
 	ret
-
-.initial_test_text
-	db "Testing RTC latch<LF>"
-	db "timing...<@>"
 
 RTCWritingMR4Test::
 	ld hl, .initial_test_text
@@ -728,6 +766,8 @@ RunAllRTCTests::
 	call RTCRolloversTest
 	call RTCOverflowTest
 	call RTCTimingTest
+	call GetCurrentSpeed
+	call c, RTCSingleSpeedTimingTest
 	call RTCLatchTest
 	call RTCRunningFlagTest
 	call RTCWritingMR4Test

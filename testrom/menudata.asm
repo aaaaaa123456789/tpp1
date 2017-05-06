@@ -50,6 +50,7 @@ RTCTestingMenu::
 	option "Rollovers test", OPTION_TEST, RTCRolloversTest
 	option "Overflow test", OPTION_TEST, RTCOverflowTest
 	option "Access time test", OPTION_TEST, RTCTimingTest
+	option "Timing<COMMA> 1x speed", OPTION_CHECK, RTCSingleSpeedTiming
 	option "Latching test", OPTION_TEST, RTCLatchTest
 	option "Running flag test", OPTION_TEST, RTCRunningFlagTest
 	option "MR4 writing test", OPTION_TEST, RTCWritingMR4Test

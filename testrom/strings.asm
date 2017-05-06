@@ -31,6 +31,10 @@ TestingAmountOfRAMBanksString::
 	bigdw hRAMBanks
 	db "...<@>"
 
+RTCTimingInitialTestString::
+	db "Testing RTC latch<LF>"
+	db "timing...<@>"
+
 RAMBankFailedString::
 	db "FAILED: RAM bank<LF>"
 	db "$"

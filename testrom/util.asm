@@ -136,6 +136,7 @@ DoubleSpeed::
 	ld a, [rKEY1]
 	cp $80
 	ret nc
+DoSpeedSwitch::
 	; otherwise, prepare a speed switch
 	or 1
 	ld [rKEY1], a
