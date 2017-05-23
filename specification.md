@@ -40,7 +40,7 @@ This specification supports the following features in the cartridge:
 
 ## Address blocks
 
-This mapper uses the address blocks assigned to the cartridge for its own functioning, besides their regular purposes. In particular, the three address blocks that are used as the following ones:
+This mapper uses the address blocks assigned to the cartridge for its own functioning, besides their regular purposes. In particular, the three address blocks that the mapper uses are the following ones:
 
 * **0000-3FFF:** ROM home bank block. ROM bank 0 is always mapped to this area, and it cannot be changed. Writing to this area writes to the mapper registers.
 * **4000-7FFF:** ROM banking block. Any ROM bank can be mapped to this area, as selected by the MR0 and MR1 registers, as it will be explained later in this document. Writes to this area pass through to the ROM itself (the full address being partially specified by the MR0 and MR1 registers as well as the actual address accessed) — this is normally a dummy write with no effect, but it can be used for controlling hardware such as flash cartridges.
