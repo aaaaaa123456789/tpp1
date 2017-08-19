@@ -76,17 +76,6 @@ InitializeRAMBank:
 	ld [hl], a
 	ret
 
-CheckRAMPresent::
-	; prints an error box if there is no SRAM
-	call GetMaxValidRAMBank
-	ret nc
-	ld hl, NoRAMString
-	call MessageBox
-	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
-	scf
-	ret
-
 GetMaxValidRAMBank::
 	; returns the max valid RAM bank in c
 	; returns carry if invalid/zero (i.e., no SRAM)
@@ -110,6 +99,16 @@ GetMaxValidRAMBank::
 	and a
 	ret
 
+CheckRAMPresent::
+	; prints an error box if there is no SRAM
+	call GetMaxValidRAMBank
+	ret nc
+	ld hl, NoRAMString
+ShowErrorMessageBoxAndCarry::
+	call MessageBox
+	scf
+	jp UpdateMenuScreen
+
 CheckRAMInitialized:
 	call CheckRAMPresent
 	ret c
@@ -117,11 +116,7 @@ CheckRAMInitialized:
 	and a
 	ret nz
 	ld hl, UninitializedRAMString
-	call MessageBox
-	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
-	scf
-	ret
+	jr ShowErrorMessageBoxAndCarry
 
 CheckRAMStatusForTesting:
 	ld b, 0

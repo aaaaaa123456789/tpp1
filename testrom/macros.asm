@@ -61,7 +61,11 @@ ENDM
 option: MACRO
 	option_label {option_number}
 option_number = option_number + 1
-	option_link {option_number}
+	if _NARG > 3
+		dw \4
+	else
+		option_link {option_number}
+	endc
 	dw (\3) | ((\2) << 14)
 	db \1, "<@>"
 ENDM

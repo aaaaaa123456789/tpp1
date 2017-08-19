@@ -49,9 +49,8 @@ GenerateErrorCountString::
 	ld e, l
 	ld hl, .error_text
 	rst CopyString
-	ld h, d
-	ld l, e
-	ld [hl], "<@>"
+	ld a, "<@>"
+	ld [de], a
 	pop hl
 .done
 	pop de

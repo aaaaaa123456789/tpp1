@@ -15,11 +15,12 @@ MainTestingMenu::
 
 ROMTestingMenu::
 	menu "ROM bank tests", MainTestingMenu
-	option "Run both tests", OPTION_TEST, RunAllROMTests
+	option "Run all tests", OPTION_TEST, RunAllROMTests
 	option "Test bank sample", OPTION_EXEC, TestROMBankSampleOption
 	option "Test bank range", OPTION_EXEC, TestROMBankRangeOption
 	option "Test all banks", OPTION_TEST, TestAllROMBanks
-	option "Bankswitch speed", OPTION_TEST, TestROMBankswitchSpeed
+	option "Bankswitch speed", OPTION_TEST, TestROMBankswitchSpeed, GoBackOption
+GoBackOption:
 	option "Back", OPTION_MENU, MainTestingMenu
 	end_menu
 
@@ -37,9 +38,7 @@ RAMTestingMenu::
 	option "R/W test (range)", OPTION_EXEC, TestRAMBankRangeReadWriteOption
 	option "R/W test (all)", OPTION_EXEC, TestAllRAMBanksReadWriteOption
 	option "In-bank aliasing", OPTION_TEST, TestRAMInBankAliasing
-	option "Cross-bank alias.", OPTION_TEST, TestRAMCrossBankAliasing
-	option "Back", OPTION_MENU, MainTestingMenu
-	end_menu
+	option "Cross-bank alias.", OPTION_TEST, TestRAMCrossBankAliasing, GoBackOption
 
 RTCTestingMenu::
 	menu "RTC tests", MainTestingMenu
@@ -58,16 +57,12 @@ RTCTestingMenu::
 	option "Mirroring test<COMMA> R", OPTION_TEST, RTCMirroringTestRead
 	option "Mirroring test<COMMA> W", OPTION_TEST, RTCMirroringTestWrite
 	option "Set RTC manually", OPTION_EXEC, Timeset
-	option "View RTC status", OPTION_EXEC, DisplayRTCState
-	option "Back", OPTION_MENU, MainTestingMenu
-	end_menu
+	option "View RTC status", OPTION_EXEC, DisplayRTCState, GoBackOption
 
 RumbleTestingMenu::
 	menu "Rumble tests", MainTestingMenu
 	option "Test MR4", OPTION_TEST, TestRumbleMR4
-	option "Manual testing", OPTION_MENU, ManualRumbleSelection
-	option "Back", OPTION_MENU, MainTestingMenu
-	end_menu
+	option "Manual testing", OPTION_MENU, ManualRumbleSelection, GoBackOption
 
 ManualRumbleSelection::
 	menu "Rumble controls", RumbleTestingMenu
@@ -87,13 +82,9 @@ MRTestingMenu::
 	option "Writing test", OPTION_TEST, MRWritesTest
 	option "Mirroring test<COMMA> R", OPTION_TEST, MRMirroringReadTest
 	option "Mirroring test<COMMA> W", OPTION_TEST, MRMirroringWriteTest
-	option "Restore values", OPTION_EXEC, RestoreMRValues
-	option "Back", OPTION_MENU, MainTestingMenu
-	end_menu
+	option "Restore values", OPTION_EXEC, RestoreMRValues, GoBackOption
 
 MemoryViewerMenu::
 	menu "Memory viewer", MainTestingMenu
 	option "ROM viewer", OPTION_CHECK, ROMViewer
-	option "RAM viewer/editor", OPTION_CHECK, RAMViewer
-	option "Back", OPTION_MENU, MainTestingMenu
-	end_menu
+	option "RAM viewer/editor", OPTION_CHECK, RAMViewer, GoBackOption

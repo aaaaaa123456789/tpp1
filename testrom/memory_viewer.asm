@@ -49,10 +49,9 @@ MemoryViewer_UpdateScreen:
 	jr c, .RAM
 	ld a, [hMemoryBank + 1]
 	call PrintHexByte
-	jr .go
+	dec hl ;compensate the "inc hl" right after
 .RAM
 	inc hl
-.go
 	ld a, [hMemoryBank]
 	call PrintHexByte
 	ld a, ":"
@@ -220,10 +219,9 @@ MemoryViewer_EditMode_ProcessJoypad:
 	cp $a0
 	jr nz, .not_first
 	ld a, [hMemoryAddress]
-	and a
-	jr nz, .not_first
+	ld l, a
 	ld a, [hMemoryCursor]
-	and a
+	or l
 	jr z, .error
 .not_first
 	ld a, [hMemoryAddress + 1]
@@ -258,23 +256,21 @@ MemoryViewer_EditMode_ProcessJoypad:
 
 .not_edit
 	dec a
-	jr nz, .not_cancel
 	scf
-	ret
+	ret z
 
 .not_cancel
 	dec a
 	jr nz, .not_up
 	ld a, [hMemoryCursor]
 	dec a
-	and $f
-	ld [hMemoryCursor], a
-	ret
+	jr .set_cursor
 
 .not_up
 	; must be down
 	ld a, [hMemoryCursor]
 	inc a
+.set_cursor
 	and $f
 	ld [hMemoryCursor], a
 	ret

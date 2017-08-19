@@ -55,13 +55,14 @@ HexadecimalEntry::
 CountHexDataEntries:
 	ld de, 3
 	ld c, d
+	jr .handle_loop
 .loop
-	ld a, [hli]
-	or [hl]
-	jr z, .done
 	inc c
 	add hl, de
-	jr .loop
+.handle_loop
+	ld a, [hli]
+	or [hl]
+	jr nz, .loop
 .done
 	ld a, c
 	ret
@@ -84,13 +85,13 @@ DrawHexEntryMenu:
 UpdateHexDigits:
 	xor a
 	ld [hVBlankLine], a
+	ld c, a
 	ld a, [hHexEntryByte]
 	ld b, a
 	ld hl, hHexEntryData
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld c, 0
 	jr .handle_initial_loop
 .initial_loop
 	call .print_byte
@@ -249,7 +250,7 @@ CalculateCurrentCursorValue:
 	ld c, a
 	ld a, [hHexEntryRow]
 	add a, c
-	sla c
+	add a, c
 	add a, c
 	ret
 

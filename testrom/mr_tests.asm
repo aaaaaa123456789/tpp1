@@ -2,9 +2,7 @@ RestoreMRValues::
 	call ReinitializeMRRegisters
 	ld hl, .text
 	call MessageBox
-	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
-	ret
+	jp UpdateMenuScreen
 
 .text
 	db "MR registers set<LF>"
@@ -185,11 +183,9 @@ PrintMRMismatch:
 	ld hl, .mismatch_string
 	rst CopyString
 	pop af
-	add a, "0"
-	cp "3"
-	jr nz, .not_three
-	inc a
-.not_three
+	cp 3
+	ccf
+	adc "0"
 	ld [wTextBuffer + 10], a
 	ld hl, wTextBuffer
 	rst Print

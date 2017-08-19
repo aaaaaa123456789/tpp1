@@ -356,6 +356,7 @@ ExecuteSelectedOption:
 	or l
 	ret z
 	call MessageBox
+UpdateMenuScreen::
 	ld a, ACTION_UPDATE
 	ld [hNextMenuAction], a
 	ret

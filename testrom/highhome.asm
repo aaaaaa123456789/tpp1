@@ -49,14 +49,14 @@ VBlankBusyWait::
 CopyBytesUntilMatch::
 	push bc
 	ld c, a
+	jr .handle_loop
 .loop
-	ld a, [hli]
-	cp c
-	jr z, .done
 	ld [de], a
 	inc de
-	jr .loop
-.done
+.handle_loop
+	ld a, [hli]
+	cp c
+	jr nz, .loop
 	pop bc
 	ret
 
