@@ -30,8 +30,7 @@ RTCOnOffTest::
 	push hl
 	ld hl, .off_error_text
 .continue_error_message
-	rst Print
-	call IncrementErrorCount
+	call PrintAndIncrementErrorCount
 	pop hl
 	ret
 

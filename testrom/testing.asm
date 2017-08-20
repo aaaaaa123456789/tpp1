@@ -36,19 +36,13 @@ CheckInitialTests::
 	call PrintEmptyString
 	ld a, [hInitialTestResult]
 	and $f
-	jr z, .initial_MR_passed
 	ld hl, .initial_MR_failed_text
-	rst Print
-	call PrintEmptyString
-	call IncrementErrorCount
-.initial_MR_passed
+	call nz, PrintAndIncrementErrorCount
 	ld a, [hInitialTestResult]
 	and $10
-	ret z
 	ld hl, .initial_bank_failed_text
-	rst Print
-	call PrintEmptyString
-	jp IncrementErrorCount
+	call nz, PrintAndIncrementErrorCount
+	jp PrintEmptyString
 
 .initial_test_text
 	db "Checking initial<LF>"

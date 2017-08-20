@@ -218,9 +218,8 @@ ROMBankRangeTest:
 	and b
 	or e
 	jr z, .valid_bank
-	call .increment_error_count
 	ld hl, InvalidBankString
-	rst Print
+	call PrintAndIncrementErrorCount
 	jr .handle_loop
 .valid_bank
 	ld hl, rMR0w
@@ -232,10 +231,8 @@ ROMBankRangeTest:
 	ld c, a
 	ld a, [hCurrent + 1]
 	ld b, a
-	jr nc, .handle_loop
-	call .increment_error_count
 	ld hl, BankFailedString
-	rst Print
+	call c, PrintAndIncrementErrorCount
 .handle_loop
 	ld a, [wBankStep]
 	add a, c
@@ -271,15 +268,14 @@ ROMBankRangeTest:
 	ld [hCurrent], a
 	ld [hCurrent + 1], a
 	ld hl, BankFailedString
-	rst Print
-.increment_error_count
-	jp IncrementErrorCount
+	jr PrintAndIncrementErrorCount
 
 .unknown_max_bank
 	ld de, $ffff
 	ld hl, UnknownMaxBankString
+PrintAndIncrementErrorCount::
 	rst Print
-	jr .increment_error_count
+	jp IncrementErrorCount
 
 TestROMHomeBank:
 	; test ROM bank 0 in $4000-$7fff
