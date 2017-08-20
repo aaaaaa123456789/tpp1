@@ -52,15 +52,12 @@ CheckInitialTests::
 
 .initial_test_text
 	db "Checking initial<LF>"
-	db "tests... (note:<LF>"
-	db "the tests will not<LF>"
-	db "be run again)<@>"
+	db "test results...<@>"
 .initial_MR_failed_text
 	db "FAILED: initial<LF>"
 	db "values for MR<LF>"
-	db "registers did not<LF>"
-	db "match the expected<LF>"
-	db "values<@>"
+	db "registers were not<LF>"
+	db "the expected ones<@>"
 .initial_bank_failed_text
 	db "FAILED: ROM bank<LF>"
 	db "$0001 was not<LF>"
