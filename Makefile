@@ -13,6 +13,7 @@ all: padder.c testrom/charmap.asm testrom/error_count.asm testrom/font.asm testr
 	${RGBDS}/rgblink -o testrom.gb -p 0xff -n testrom.sym testrom.o
 	./padder testrom.gb ${ROMSIZE}
 	${RGBDS}/rgbfix -cjv -p 0xff -x 0x100 -r ${RAMSIZE} -m ${REAL_ROMFLAGS} -l 0x33 -k TP -t TPP1TESTROM -i TPP1 testrom.gb
+	sort testrom.sym -o testrom.sym
 
 clean:
 	rm -rf testrom.o testrom.gb testrom.sym padder
