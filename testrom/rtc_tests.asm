@@ -552,7 +552,7 @@ RTCWritingMR4Test::
 	call nz, .write_error
 	ld [hl], MR3_RTC_ON
 	ld a, [de]
-	xor c
+	xor $c
 	ld [de], a
 	ld a, [de]
 	and $c
