@@ -11,16 +11,16 @@ vTilesHigh:: ds $800
 vBGMap:: ds $400
 vWindowMap:: ds $400
 
-SECTION "RSTs", ROM0[0]
+SECTION "RSTs", ROM0[$0000]
 
 INCLUDE "rst.asm"
 
-SECTION "Interrupts", ROM0[$40]
+SECTION "Interrupts", ROM0[$0040]
 
 INCLUDE "interrupt.asm"
 INCLUDE "highhome.asm"
 
-SECTION "Header", ROM0[$100]
+SECTION "Header", ROM0[$0100]
 	ld [hGBType], a
 	db $18, $50 ; jr $0154, but rgbds doesn't like compiling a jr across section boundaries
 	
@@ -28,7 +28,7 @@ SECTION "Header", ROM0[$100]
 		db $00
 	endr
 
-SECTION "Main", ROM0[$154]
+SECTION "Main", ROM0[$0154]
 
 INCLUDE "main.asm"
 INCLUDE "menu.asm"

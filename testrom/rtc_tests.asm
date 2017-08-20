@@ -209,11 +209,7 @@ RTCOverflowTest::
 	ld [hl], MR3_CLEAR_RTC_OVERFLOW
 	ld a, [rMR4r]
 	and 8
-	jr z, .overflow_is_off
-	ld hl, .overflow_off_error_text
-	rst Print
-	call IncrementErrorCount
-.overflow_is_off
+	call nz, PrintAndIncrementErrorCount
 	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .set_and_check
@@ -239,20 +235,15 @@ RTCOverflowTest::
 	or [hl]
 	inc hl
 	or [hl]
-	jr z, .time_OK
 	ld hl, .time_error_text
-	rst Print
-	call IncrementErrorCount
-.time_OK
+	call nz, PrintAndIncrementErrorCount
 	pop hl
 	ld [hl], MR3_MAP_REGS
 	ld a, [rMR4r]
 	and 8
-	ret nz
 	push hl
 	ld hl, .overflow_on_error_text
-	rst Print
-	call IncrementErrorCount
+	call z, PrintAndIncrementErrorCount
 	pop hl
 	ret
 
@@ -351,21 +342,16 @@ RTCRunningFlagTest::
 	ld [hl], MR3_RTC_ON
 	ld a, [de]
 	and 4
-	jr nz, .on
 	push hl
 	ld hl, .on_error_text
-	rst Print
-	call IncrementErrorCount
+	call z, PrintAndIncrementErrorCount
 	pop hl
-.on
 	ld [hl], MR3_RTC_OFF
 	ld a, [de]
 	and 4
-	jr z, .off
 	ld hl, .off_error_text
 	rst Print
-	call IncrementErrorCount
-.off
+	call nz, PrintAndIncrementErrorCount
 	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_test_text

@@ -146,29 +146,29 @@ _CheckRAMStatusForTesting:
 	scf
 	ret
 
+HandleRAMTestSetup:
+	ld [rMR3w], a
+	rst Print
+	ld hl, TestingAmountOfRAMBanksString
+	rst Print
+	ld c, -1
+	jp PrintEmptyString
+
 TestRAMReadsReadOnly:
 	call CheckRAMStatusForTesting
 	ret c
 	ld hl, RAMReadOnlyTestDescriptionString
-	rst Print
 	ld a, MR3_MAP_SRAM_RO
 TestRAMReads:
-	ld [rMR3w], a
-	ld hl, TestingAmountOfRAMBanksString
-	rst Print
-	call PrintEmptyString
-	ld c, -1
+	call HandleRAMTestSetup ;exits with c = -1
 .loop
 	inc c
 	ld a, c
 	ld [hCurrent], a
 	ld [rMR2w], a
 	call TestReadContentsFromRAMBank
-	jr nc, .not_failed
 	ld hl, RAMBankFailedString
-	rst Print
-	call IncrementErrorCount
-.not_failed
+	call c, PrintAndIncrementErrorCount
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
@@ -178,7 +178,6 @@ TestRAMReadsReadWrite:
 	call CheckRAMStatusForTesting
 	ret c
 	ld hl, .test_description_string
-	rst Print
 	ld a, MR3_MAP_SRAM_RW
 	jr TestRAMReads
 
@@ -219,8 +218,7 @@ TestReadContentsFromRAMBank:
 	ld a, [hli]
 	and [hl]
 	inc a
-	jr nz, .failed
-	ret
+	ret z
 .failed
 	scf
 	ret
@@ -229,24 +227,16 @@ TestRAMWrites:
 	call CheckRAMStatusForTesting
 	ret c
 	ld hl, .test_description_text
-	rst Print
-	ld hl, TestingAmountOfRAMBanksString
-	rst Print
-	call PrintEmptyString
 	ld a, MR3_MAP_SRAM_RW
-	ld [rMR3w], a
-	ld c, -1
+	call HandleRAMTestSetup ;exits with c = -1
 .loop
 	inc c
 	ld a, c
 	ld [hCurrent], a
 	ld [rMR2w], a
 	call WriteAndVerifyRAMBank
-	jr nc, .succeeded
-	call IncrementErrorCount
 	ld hl, RAMBankFailedString
-	rst Print
-.succeeded
+	call c, PrintAndIncrementErrorCount
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
@@ -272,15 +262,13 @@ WriteAndVerifyRAMBank:
 .compare_loop
 	ld a, [de]
 	cp [hl]
-	jr nz, .failed
+	scf
+	ret nz
 	inc de
 	inc hl
 	dec b
 	jr nz, .compare_loop
-	; carry is clear here
-	ret
-.failed
-	scf
+	and a
 	ret
 
 GetRandomRAMAddress:
@@ -303,13 +291,8 @@ TestRAMWritesReadOnly:
 	call CheckRAMStatusForTesting
 	ret c
 	ld hl, .test_description_text
-	rst Print
-	ld hl, TestingAmountOfRAMBanksString
-	rst Print
-	call PrintEmptyString
 	ld a, MR3_MAP_SRAM_RO
-	ld [rMR3w], a
-	ld c, -1
+	call HandleRAMTestSetup ;exits with c = -1
 .loop
 	inc c
 	ld a, c
@@ -564,17 +547,11 @@ TestRAMBankRangeReadWrite:
 	ld [hCurrent], a
 	ld [rMR2w], a
 	call TestReadContentsFromRAMBank
-	jr nc, .read_success
-	call IncrementErrorCount
 	ld hl, .read_failed_text
-	rst Print
-.read_success
+	call c, PrintAndIncrementErrorCount
 	call WriteAndVerifyRAMBank
-	jr nc, .write_success
-	call IncrementErrorCount
 	ld hl, .write_failed_text
-	rst Print
-.write_success
+	call c, PrintAndIncrementErrorCount
 	ld a, [wBankStep]
 	add a, c
 	jr c, .done

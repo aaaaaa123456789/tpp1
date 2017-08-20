@@ -86,7 +86,7 @@ Timeset_UpdateScreen:
 	hlcoord 1, 5
 	add hl, bc
 	ld [hl], "<UP>"
-	ld bc, 2 * SCREEN_WIDTH
+	ld c, 2 * SCREEN_WIDTH
 	add hl, bc
 	ld [hl], "<DOWN>"
 	ret
@@ -254,35 +254,31 @@ Timeset_IncrementSeconds:
 	inc a
 Timeset_CheckSecondsAfterIncrement:
 	ld [hTimesetSecond], a
-	cp 60
-	ret c
 	sub 60
+	ret c
 	ld [hTimesetSecond], a
 Timeset_IncrementMinutes:
 	ld a, [hTimesetMinute]
 	inc a
 Timeset_CheckMinutesAfterIncrement:
 	ld [hTimesetMinute], a
-	cp 60
-	ret c
 	sub 60
+	ret c
 	ld [hTimesetMinute], a
 Timeset_IncrementHours:
 	ld a, [hTimesetHour]
 	inc a
 Timeset_CheckHoursAfterIncrement:
 	ld [hTimesetHour], a
-	cp 24
-	ret c
 	sub 24
+	ret c
 	ld [hTimesetHour], a
 Timeset_IncrementDay:
 	ld a, [hTimesetDay]
 	inc a
 	ld [hTimesetDay], a
-	cp 7
-	ret c
 	sub 7
+	ret c
 	ld [hTimesetDay], a
 Timeset_IncrementWeek:
 	ld a, [hTimesetWeek]
@@ -328,34 +324,34 @@ Timeset_SubtractTenHours:
 
 Timeset_DecrementSeconds:
 	ld a, [hTimesetSecond]
-	sub 1
+	dec a
 Timeset_CheckSecondsAfterDecrement:
 	ld [hTimesetSecond], a
-	ret nc
 	add a, 60
+	ret nc
 	ld [hTimesetSecond], a
 Timeset_DecrementMinutes:
 	ld a, [hTimesetMinute]
-	sub 1
+	dec a
 Timeset_CheckMinutesAfterDecrement:
 	ld [hTimesetMinute], a
-	ret nc
 	add a, 60
+	ret nc
 	ld [hTimesetMinute], a
 Timeset_DecrementHours:
 	ld a, [hTimesetHour]
-	sub 1
+	dec a
 Timeset_CheckHoursAfterDecrement:
 	ld [hTimesetHour], a
-	ret nc
 	add a, 24
+	ret nc
 	ld [hTimesetHour], a
 Timeset_DecrementDay:
 	ld a, [hTimesetDay]
-	sub 1
+	dec a
 	ld [hTimesetDay], a
-	ret nc
 	add a, 7
+	ret nc
 	ld [hTimesetDay], a
 Timeset_DecrementWeek:
 	ld a, [hTimesetWeek]
