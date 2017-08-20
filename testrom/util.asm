@@ -169,35 +169,23 @@ GetCurrentSpeed::
 	add a, a
 	ret
 
-LoadPalettes::
-	; only load them if we're on a GBC
-	ld a, [hGBType]
-	cp $11
-	ret nz
-	; initialize the register to a convenient location
-	ld a, $be
-	ld [rBGPI], a
-	; and load all palettes just in case, so we don't have to care about a dirty attribute map
-	lb bc, 8, rBGPD & $ff
-.loop
-	; we load an actual four-shade grayscale just in case some code eventually uses shades 1 and 2
+ClearMemory::
+	ld hl, $c000
+	ld bc, Stack - $c000 ; don't touch the stack, we don't care about it
+	;(also, stack must be aligned to $100 for this code to work nicely)
 	xor a
-	ld [c], a
-	ld [c], a
-	dec a
-	ld [c], a
-	ld [c], a
-	ld a, $b5
-	ld [c], a
-	ld a, $56
-	ld [c], a
-	ld a, $4a
-	ld [c], a
-	ld a, $29
-	ld [c], a
+.loop
+	ld [hli], a
+	dec c
+	jr nz, .loop
 	dec b
 	jr nz, .loop
-	ret
+	ld c, $81 ;skip hGBType
+.hram_loop
+	ld [c], a
+	inc c
+	jr nz, .hram_loop
+	reti ;this also clears rIE, so we just return with interrupts on after that
 
 FillRandomBuffer::
 	push bc
