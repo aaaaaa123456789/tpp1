@@ -532,7 +532,7 @@ RTCWritingMR4Test::
 	ld [hl], MR3_CLEAR_RTC_OVERFLOW
 	ld [hl], MR3_MAP_RTC
 	push hl
-	ld h, $a0 ;hl = rRTCS
+	ld h, d ;hl = rRTCS
 	xor a
 	ld [hld], a
 	ld [hld], a
@@ -540,22 +540,16 @@ RTCWritingMR4Test::
 	ld [hl], a
 	pop hl
 	ld [hl], MR3_SET_RTC
-	ld [hl], MR3_MAP_REGS
+	ld [hl], a ;MR3_MAP_REGS
 	ld a, [de]
 	and $c
-	jr z, .initial_state_OK
-	push hl
-	ld hl, .initial_state_error_text
-	rst Print
-	call IncrementErrorCount
-	pop hl
-.initial_state_OK
+	call nz, .initial_error
 	ld a, [de]
 	xor $c
 	ld [de], a
 	ld a, [de]
 	and $c
-	call nz, .error
+	call nz, .write_error
 	ld [hl], MR3_RTC_ON
 	ld a, [de]
 	xor c
@@ -563,12 +557,18 @@ RTCWritingMR4Test::
 	ld a, [de]
 	and $c
 	cp 4
-	call nz, .error
+	call nz, .write_error
 	jp PrintEmptyStringAndReinitializeMRRegisters
 
-.error
+.initial_error
+	push hl
+	ld hl, .initial_state_error_text
+	jr .continue_error
+
+.write_error
 	push hl
 	ld hl, .error_text
+.continue_error
 	rst Print
 	call IncrementErrorCount
 	pop hl
