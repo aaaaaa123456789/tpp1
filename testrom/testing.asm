@@ -73,9 +73,7 @@ RunAllTests::
 	call .run_rumble_test
 	call RunAllMRTests
 	call CheckInitialTests
-	ld hl, rMR3w
-	ld [hl], MR3_RTC_OFF
-	ld [hl], MR3_RUMBLE_OFF
+	call ClearMR4 ;exits with hl = rMR3w
 	ld [hl], MR3_MAP_REGS
 	call GenerateErrorCountString
 	rst Print
@@ -98,7 +96,7 @@ RunAllTests::
 	ld [hComplianceErrors], a
 	ld a, [hli]
 	ld [hComplianceErrors + 1], a
-	ld a, [hli]
+	ld a, [hl]
 	ld [hComplianceErrors + 2], a
 	jp EndFullscreenTextbox
 

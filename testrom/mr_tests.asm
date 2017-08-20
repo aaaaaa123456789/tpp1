@@ -86,7 +86,7 @@ MRMappingTest::
 	rst Print
 	jp IncrementErrorCount
 
-ClearMR4:
+ClearMR4::
 	ld hl, rMR3w
 	ld [hl], MR3_RUMBLE_OFF
 	ld [hl], MR3_RTC_OFF

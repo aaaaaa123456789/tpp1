@@ -105,6 +105,8 @@ SetRTCRandomly:
 	pop bc
 	ret
 
+CheckRTCForNewValue::
+	call WaitForRTCChange
 CheckRTCForValue::
 	call LatchMapRTC
 CheckRTCLatchForValue::

@@ -24,14 +24,12 @@ RTCOnOffTest::
 .on_failed
 	push hl
 	ld hl, .on_error_text
-	rst Print
-	call IncrementErrorCount
-	pop hl
-	ret
+	jr .continue_error_message
 
 .off_failed
 	push hl
 	ld hl, .off_error_text
+.continue_error_message
 	rst Print
 	call IncrementErrorCount
 	pop hl
@@ -145,27 +143,23 @@ RTCRolloversTest::
 	ld [hMax], a
 .loop
 	call GenerateRandomRTCSetting
-	ld a, d
-	cp 59
-	jr nc, .loop
 	ld e, 59
+	ld a, d
+	cp e
+	jr nc, .loop
 	call SetRTCToValue
 	inc d
 	ld e, 0
-	call WaitForRTCChange
-	call CheckRTCForValue
+	call CheckRTCForNewValue
 .resample_hour_rollover
 	call GenerateRandomRTCSetting
 	ld a, c
 	and $1f
 	cp 23
 	jr nc, .resample_hour_rollover
-	lb de, 59, 59
-	call SetRTCToValue
+	call .do_day_rollover_settings
 	inc c
-	ld de, 0
-	call WaitForRTCChange
-	call CheckRTCForValue
+	call CheckRTCForNewValue
 .resample_day_rollover
 	call Random
 	and $e0
@@ -175,26 +169,20 @@ RTCRolloversTest::
 	ld c, a
 	call Random
 	ld b, a
-	lb de, 59, 59
-	call SetRTCToValue
+	call .do_day_rollover_settings
 	set 3, c
 	inc c
-	ld de, 0
-	call WaitForRTCChange
-	call CheckRTCForValue
+	call CheckRTCForNewValue
 .resample_week_rollover
 	call Random
 	ld b, a
 	inc a
 	jr z, .resample_week_rollover
 	ld c, (6 << 5) | 23
-	lb de, 59, 59
-	call SetRTCToValue
-	ld de, 0
+	call .do_day_rollover_settings
 	ld c, d
 	inc b
-	call WaitForRTCChange
-	call CheckRTCForValue
+	call CheckRTCForNewValue
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
@@ -203,6 +191,12 @@ RTCRolloversTest::
 .initial_test_text
 	db "Testing RTC value<LF>"
 	db "rollovers...<@>"
+
+.do_day_rollover_settings
+	lb de, 59, 59
+	call SetRTCToValue
+	ld de, 0
+	ret
 
 RTCOverflowTest::
 	ld hl, .initial_test_text
@@ -293,7 +287,7 @@ RTCLatchTest::
 	ld [rMR3w], a
 	call SetRTCToValue ;exits with hl = rRTCW
 	push hl
-	pop hl
+	pop hl ;delay
 	call Random
 	ld [hli], a
 	call Random
@@ -320,12 +314,11 @@ RTCLatchTest::
 	pop de
 	pop bc
 	inc e
-	inc e
 	call LatchMapRTC
 	ld a, [rRTCS]
 	cp e
 	jr z, .seconds_match
-	dec e
+	inc e
 .seconds_match
 	call CheckRTCLatchForValue
 	ld hl, hMax
@@ -350,12 +343,14 @@ RTCRunningFlagTest::
 	ld [hli], a
 	ld [hl], a
 	; hl = $a003
+	ld d, h
+	ld e, l
 	ld h, a
-	; hl = $0003
+	; hl = $0003, de = $a003
 	ld [hl], MR3_SET_RTC
 	ld [hl], a ;a = MR3_MAP_REGS
 	ld [hl], MR3_RTC_ON
-	ld a, [rMR4r]
+	ld a, [de]
 	and 4
 	jr nz, .on
 	push hl
@@ -365,7 +360,7 @@ RTCRunningFlagTest::
 	pop hl
 .on
 	ld [hl], MR3_RTC_OFF
-	ld a, [rMR4r]
+	ld a, [de]
 	and 4
 	jr z, .off
 	ld hl, .off_error_text
