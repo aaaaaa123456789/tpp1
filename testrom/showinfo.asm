@@ -38,12 +38,13 @@ DisplaySystemInformation::
 	rst PrintString
 	hlcoord 0, 8
 	lb de, SCREEN_WIDTH, 4
+	push de
 	call Textbox
 	ld de, .hardware_text
 	hlcoord 1, 8
 	rst PrintString
 	hlcoord 0, 12
-	lb de, SCREEN_WIDTH, 4
+	pop de
 	call Textbox
 	hlcoord 1, 12
 	ld de, .compliance_text
@@ -116,11 +117,11 @@ DisplaySystemInformation::
 	hlcoord 18, 9
 	ld a, [hGBType]
 	cp $11
-	jr nz, .not_GBC
 	ld a, "C"
+	jr nz, .not_GBC
 	ld [hld], a
 .not_GBC
-	ld a, "B"
+	dec a
 	ld [hld], a
 	ld [hl], "G"
 	call GetCurrentSpeed
@@ -130,10 +131,10 @@ DisplaySystemInformation::
 	ld [hli], a
 	ld [hl], "x"
 	ld a, [hComplianceTestRun]
-	and a
-	jr z, .never_tested_compliance
-	cp 1
+	dec a
 	jr z, .tested_once
+	inc a
+	jr z, .never_tested_compliance
 	hlcoord 10, 13
 	lb bc, 3, $ff
 	call PrintByte
