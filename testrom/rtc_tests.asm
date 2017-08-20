@@ -350,7 +350,6 @@ RTCRunningFlagTest::
 	ld a, [de]
 	and 4
 	ld hl, .off_error_text
-	rst Print
 	call nz, PrintAndIncrementErrorCount
 	jp PrintEmptyStringAndReinitializeMRRegisters
 
