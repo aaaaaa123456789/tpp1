@@ -468,8 +468,10 @@ RTCTimingTest_NoInitialBanner:
 	ld a, [hli]
 	cp d
 	jr nz, .error
-	ld a, [hl]
-	cp e
+	ld a, e
+	sub [hl]
+	jr z, .ok
+	dec a
 	jr z, .ok
 .error
 	ld hl, wDataBuffer
