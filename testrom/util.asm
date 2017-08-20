@@ -44,7 +44,6 @@ Load1bpp::
 	ld c, 8
 .loop
 	ld a, [de]
-	call InvertByte
 	ld [hli], a
 	ld [hli], a
 	inc de

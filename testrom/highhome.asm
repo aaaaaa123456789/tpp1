@@ -59,15 +59,3 @@ CopyBytesUntilMatch::
 	jr nz, .loop
 	pop bc
 	ret
-
-InvertByte::
-	push bc
-	lb bc, 0, 8
-.loop
-	add a, a
-	rr b
-	dec c
-	jr nz, .loop
-	ld a, b
-	pop bc
-	ret
