@@ -32,7 +32,6 @@ _DelayFrames::
 	; @ = 18
 	and a
 	ret z
-_LoopDelayFrames:
 	push af
 	call DelayFrame
 	jr _ContinueDelayFrames

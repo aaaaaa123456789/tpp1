@@ -1,9 +1,5 @@
 Timeset::
-	call ClearScreen
-	ld a, 3
-	rst DelayFrames
-	ld a, -1
-	ld [hVBlankLine], a
+	call ClearScreenAndStopUpdates
 	hlcoord 0, 0
 	lb de, SCREEN_WIDTH, 3
 	call Textbox

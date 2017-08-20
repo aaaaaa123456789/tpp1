@@ -9,7 +9,7 @@ LatchMapRTC:
 	ld hl, rMR3w
 	ld [hl], MR3_LATCH_RTC
 	push hl
-	pop hl
+	pop hl ;delay
 	ld [hl], MR3_MAP_RTC
 	ret
 
@@ -18,34 +18,34 @@ WaitForRTCChange:
 	push hl
 	push de
 	push bc
-	call LatchMapRTC
-	ld hl, rRTCW
-	ld a, [hli]
-	ld b, a
-	ld a, [hli]
-	ld c, a
-	ld a, [hli]
+	call LatchMapRTC ;exits with hl = rMR3w
+	ld h, rRTCS >> 8
+	ld a, [hld]
+	ld e, a
+	ld a, [hld]
 	ld d, a
-	ld e, [hl]
+	ld a, [hld]
+	ld c, a
+	ld b, [hl]
 	ld hl, WaitingString
 	rst Print
 	xor a
 .loop
 	push af
 	call DelayFrame
-	call LatchMapRTC
-	ld hl, rRTCW
-	ld a, [hli]
-	cp b
+	call LatchMapRTC ;exits with hl = rMR3w
+	ld h, rRTCS >> 8
+	ld a, [hld]
+	cp e
 	jr nz, .changed
-	ld a, [hli]
-	cp c
-	jr nz, .changed
-	ld a, [hli]
+	ld a, [hld]
 	cp d
 	jr nz, .changed
+	ld a, [hld]
+	cp c
+	jr nz, .changed
 	ld a, [hl]
-	cp e
+	cp b
 	jr nz, .changed
 	pop af
 	inc a
@@ -76,15 +76,15 @@ GenerateRandomRTCSetting:
 .resample_minutes
 	call Random
 	and $3f
-	ld d, a
 	cp 60
 	jr nc, .resample_minutes
+	ld d, a
 .resample_seconds
 	call Random
 	and $3f
-	ld e, a
 	cp 60
 	jr nc, .resample_seconds
+	ld e, a
 	ret
 
 SetRTCRandomly:
@@ -156,6 +156,7 @@ SetRTCToValue::
 	ret
 
 ValidateRTCTime::
+	; carry if invalid
 	ld a, 59
 	cp e
 	ret c

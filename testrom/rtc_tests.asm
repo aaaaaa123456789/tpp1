@@ -611,10 +611,10 @@ RTCUnmapLatchTest::
 	call Random
 	ld [hl], a
 	pop hl
-	ld [hl], MR3_MAP_REGS
+	ld [hl], h ;MR3_MAP_REGS
 	ld [hl], MR3_LATCH_RTC
 	push hl
-	pop hl
+	pop hl ;delay
 	ld [hl], MR3_MAP_RTC
 	call CheckRTCLatchForValue
 	ld hl, hMax

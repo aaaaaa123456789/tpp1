@@ -50,18 +50,19 @@ GenerateTimeString::
 	cp 60
 	jr nc, .minute_second_overflow
 	ld c, "0"
+	add a, c
+	jr .handle_division_loop
 .division_loop
-	cp 10
-	jr c, .done_dividing
-	inc c
 	sub 10
-	jr .division_loop
-.done_dividing
+	inc c
+.handle_division_loop
+	cp "0" + 10
+	jr nc, .division_loop
 	ld [hl], c
 	inc hl
-	add a, "0"
 	ld [hli], a
 	ret
+
 .minute_second_overflow
 	ld a, "?"
 	ld [hli], a
@@ -69,11 +70,7 @@ GenerateTimeString::
 	ret
 
 DisplayRTCState::
-	call ClearScreen
-	ld a, 3
-	rst DelayFrames
-	ld a, -1
-	ld [hVBlankLine], a
+	call ClearScreenAndStopUpdates
 	hlcoord 0, 0
 	lb de, SCREEN_WIDTH, 3
 	call Textbox

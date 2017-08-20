@@ -5,6 +5,14 @@ ClearScreen::
 	rst FillByte
 	ret
 
+ClearScreenAndStopUpdates::
+	call ClearScreen
+	ld a, 3
+	rst DelayFrames
+	ld a, -1
+	ld [hVBlankLine], a
+	ret
+
 CopyBytesFunctionLoop:
 	ld a, [hli]
 	ld [de], a

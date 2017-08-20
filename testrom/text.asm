@@ -27,8 +27,8 @@ Textbox::
 	push bc
 	ld c, SCREEN_WIDTH
 	push hl
-	ld [hl], "<TL>"
-	inc hl
+	ld a, "<TL>"
+	ld [hli], a
 	ld b, d
 	ld a, "<->"
 	jr .handle_top_loop
@@ -37,13 +37,14 @@ Textbox::
 .handle_top_loop
 	dec b
 	jr nz, .top_loop
+	; b = 0
 	ld [hl], "<TR>"
 	pop hl
 	jr .handle_line_loop
 .line_loop
 	push hl
-	ld [hl], "<|>"
-	inc hl
+	ld a, "<|>"
+	ld [hli], a
 	ld b, d
 	ld a, " "
 	jr .handle_inner_loop
@@ -52,14 +53,15 @@ Textbox::
 .handle_inner_loop
 	dec b
 	jr nz, .inner_loop
+	; b = 0
 	ld [hl], "<|>"
 	pop hl
 .handle_line_loop
 	add hl, bc
 	dec e
 	jr nz, .line_loop
-	ld [hl], "<BL>"
-	inc hl
+	ld a, "<BL>"
+	ld [hli], a
 	ld a, "<->"
 	jr .handle_bottom_loop
 .bottom_loop
@@ -91,10 +93,11 @@ PrintStringFunction:
 	jr .loop
 
 .done
-	add sp, 2
+	pop af ;dummy pop
 	ret
 
 ScrollTextbox::
+	; returns hTextboxLine if nonzero
 	push hl
 	push de
 	push bc
@@ -163,10 +166,7 @@ PrintFunction::
 .print_line
 	ld a, [hTextboxLine]
 	cp b
-	jr c, .go
-	call ScrollTextbox
-	jr .print_line
-.go
+	call nc, ScrollTextbox
 	push bc
 	ld c, a
 	ld a, [hTextboxPointer]
