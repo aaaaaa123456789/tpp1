@@ -129,6 +129,15 @@ Main::
 	rst CopyString
 	call WaitForAPress
 	call DoubleSpeed
+	ld hl, wRandomSeed
+	ld e, 8
+.random_reseed_loop
+	ld a, [rDIV]
+	xor [hl]
+	ld [hli], a
+	call Random
+	dec e
+	jr nz, .random_reseed_loop
 	jp MainMenu
 
 .handle_pass_fail_from_zero

@@ -481,7 +481,7 @@ ValidateROMBankDataAt4004:
 	jp PrintAndIncrementErrorCount
 
 .validate_home
-	; the ROM begins with di ($f3), xor a ($af), ld sp, $d000 ($31 $00 $d0), jp Restart ($c3 $e4 $02)
+	; the ROM begins with di ($f3), xor a ($af), ld sp, $d000 ($31 $00 $d0), jp Restart ($c3 $f3 $02)
 	ld hl, hProduct ;just use it as storage for the "correct" values
 	ld a, $d0
 	ld [hli], a
