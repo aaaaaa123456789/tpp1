@@ -36,14 +36,14 @@ Init::
 	ld hl, vTilesLow tile $10
 	ld a, $c
 	call Load1bpp
-	ld a, $ff
+	xor a
+	ld [rSTAT], a
+	dec a
 	ld bc, $a0
 	ld hl, $fe00
 	ld [rWY], a
 	ld [rWX], a
 	rst FillByte
-	xor a
-	ld [rSTAT], a
 	call ClearScreen
 	ld hl, vBGMap
 	ld bc, $400

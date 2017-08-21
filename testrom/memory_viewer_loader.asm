@@ -12,11 +12,9 @@ ROMViewer::
 	ld l, e
 	pop de
 	push de
-	ld a, e
-	push af
 	ld a, d
 	call PrintHexByte
-	pop af
+	ld a, e
 	call PrintHexByte
 	ld [hl], ")"
 	ld hl, .address_text

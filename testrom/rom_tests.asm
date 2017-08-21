@@ -7,23 +7,19 @@ TestROMBankSampleOption::
 	call GetMaxValidROMBank
 	jr nc, .valid_max
 	ld de, $ffff
-	call IncrementErrorCount
 	ld hl, UnknownMaxBankString
-	rst Print
+	call PrintAndIncrementErrorCount
 .valid_max
 	xor a
 	ld [hCurrent], a
 	ld [hCurrent + 1], a
-	ld b, a
-	ld c, a
-	ld [bc], a ; MR0 = 0
-	ld [rMR1w], a
+	ld h, a
+	ld l, a
+	ld [hli], a ; MR0 = 0
+	ld [hl], a
 	call TestROMHomeBank
-	jr nc, .home_passed
-	call IncrementErrorCount
 	ld hl, BankFailedString
-	rst Print
-.home_passed
+	call c, PrintAndIncrementErrorCount
 	ld bc, 0
 	call CountLeadingZeros
 	cpl
@@ -48,19 +44,14 @@ TestROMBankSampleOption::
 	ld a, b
 	ld [hCurrent + 1], a
 	call TestROMBank
-	jr nc, .passed
-	call IncrementErrorCount
 	ld hl, BankFailedString
-	rst Print
-.passed
+	call c, PrintAndIncrementErrorCount
 	ld a, [hMax]
 	dec a
 	ld [hMax], a
 	jr nz, .loop
 	call PrintEmptyString
-	call GenerateErrorCountString
-	rst Print
-	jp EndFullscreenTextbox
+	jp PrintErrorCountAndEnd
 
 .testing_text
 	db "Testing random ROM<LF>"
@@ -263,6 +254,7 @@ ROMBankRangeTest:
 	call TestROMHomeBank
 	ld a, [wBankStep]
 	ld c, a
+	ld b, 0
 	ret nc
 	xor a
 	ld [hCurrent], a
@@ -486,11 +478,10 @@ ValidateROMBankDataAt4004:
 	ld [hli], a
 	ld [hl], b
 	ld hl, .error_text
-	rst Print
-	jp IncrementErrorCount
+	jp PrintAndIncrementErrorCount
 
 .validate_home
-	; the ROM begins with di ($f3), xor a ($af), ld sp, $d000 ($31 $00 $d0), jp Restart ($c3 $e5 $02)
+	; the ROM begins with di ($f3), xor a ($af), ld sp, $d000 ($31 $00 $d0), jp Restart ($c3 $e4 $02)
 	ld hl, hProduct ;just use it as storage for the "correct" values
 	ld a, $d0
 	ld [hli], a

@@ -46,9 +46,6 @@ RAMReadOnlyTestDescriptionString::
 	db "RAM reads in read-<LF>"
 	db "only mode test:<@>"
 
-TestingThreeBanksString::
-	db "Testing 3 banks...<@>"
-
 RAMBankOutOfRangeString::
 	db "The selected RAM<LF>"
 	db "bank is too high!<@>"

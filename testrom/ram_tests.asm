@@ -339,14 +339,20 @@ OverwriteInitializedRAMData:
 	ld [hl], a
 	ret
 
+PrintTestDescriptionAndThreeBanksMessage:
+	rst Print
+	ld hl, .three_banks_text
+	rst Print
+	jp PrintEmptyString
+
+.three_banks_text
+	db "Testing 3 banks...<@>"
+
 TestRAMWritesDeselected:
 	call CheckRAMStatusForTesting
 	ret c
 	ld hl, .test_description_text
-	rst Print
-	ld hl, TestingThreeBanksString
-	rst Print
-	call PrintEmptyString
+	call PrintTestDescriptionAndThreeBanksMessage
 	xor a
 	call .test
 	ld a, [hRAMBanks]
@@ -360,7 +366,7 @@ TestRAMWritesDeselected:
 
 .test_description_text
 	db "RAM writes with<LF>"
-	db "MR3 = $00 test:<@>"
+	db "MR3 = 0 test:<@>"
 
 .test
 	ld [rMR2w], a
@@ -385,10 +391,7 @@ TestSwapRAMBanksDeselected:
 	call CheckRAMStatusForTesting_RequireTwoBanks
 	ret c
 	ld hl, .test_description_text
-	rst Print
-	ld hl, TestingThreeBanksString
-	rst Print
-	call PrintEmptyString
+	call PrintTestDescriptionAndThreeBanksMessage
 	ld a, [hRAMBanks]
 	ld c, a
 .resample
@@ -475,8 +478,7 @@ TestRAMBankRangeReadWriteOption::
 	ld a, [hRAMBanks]
 	cp c
 	ld hl, RAMBankOutOfRangeString
-	jr c, .error
-	jp TestRAMBankRangeReadWrite
+	jp nc, TestRAMBankRangeReadWrite
 .error
 	call MessageBox
 	jr .retry
@@ -561,9 +563,7 @@ TestRAMBankRangeReadWrite:
 	jr nc, .loop
 .done
 	call PrintEmptyStringAndReinitializeMRRegisters
-	call GenerateErrorCountString
-	rst Print
-	jp EndFullscreenTextbox
+	jp PrintErrorCountAndEnd
 	
 .test_description_text
 	db "Testing RAM banks<LF>"
@@ -594,9 +594,7 @@ TestRAMInBankAliasing:
 	call CheckRAMStatusForTesting
 	ret c
 	ld hl, .test_description_text
-	rst Print
-	ld hl, TestingThreeBanksString
-	rst Print
+	call PrintTestDescriptionAndThreeBanksMessage
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
 	xor a
@@ -654,8 +652,7 @@ TestRAMInBankAliasing:
 
 .failed
 	ld hl, .failed_text
-	rst Print
-	jp IncrementErrorCount
+	jp PrintAndIncrementErrorCount
 
 .failed_text
 	db "FAILED: aliasing<LF>"
@@ -693,11 +690,12 @@ TestRAMCrossBankAliasing:
 	ld c, a
 	call Random
 	and c
+.resample
 	ld b, a
 	call Random
 	and c
 	cp b
-	jr z, .loop
+	jr z, .resample
 	ld c, a
 	call .test
 	ld hl, hMax
@@ -729,18 +727,19 @@ TestRAMCrossBankAliasing:
 	call FillRandomBuffer
 	call GetRandomRAMAddress
 	ld bc, $40
+	push bc
 	ld h, d
 	ld l, e
 	xor a
 	rst FillByte
 	pop bc
-	ld a, c
+	pop hl
+	ld a, l
 	ld [hCurrent + 1], a
 	ld [rMR2w], a
-	push bc
+	push hl
 	push de
 	ld hl, wRandomBuffer
-	ld bc, $40
 	rst CopyBytes
 	pop hl
 	pop af
@@ -755,8 +754,7 @@ TestRAMCrossBankAliasing:
 	ret
 .failed
 	ld hl, .failed_text
-	rst Print
-	jp IncrementErrorCount
+	jp PrintAndIncrementErrorCount
 
 .failed_text
 	db "FAILED: aliasing<LF>"

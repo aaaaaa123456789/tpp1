@@ -4,6 +4,7 @@ ExecuteTest::
 	call ClearErrorCount
 	pop hl
 	call _hl_
+PrintErrorCountAndEnd::
 	call GenerateErrorCountString
 	rst Print
 	jp EndFullscreenTextbox
