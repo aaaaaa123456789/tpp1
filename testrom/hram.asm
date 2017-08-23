@@ -7,6 +7,7 @@ hButtonsLast         EQU $ff83
 hProduct             EQU $ff84 ;4 bytes
 
 hCurrent             EQU $ff88 ;2 bytes
+hCurrentTest         EQU $ff89 ;overlapping with previous
 hMax                 EQU $ff8a ;2 bytes
 
 hMemoryBank          EQU $ff8c ;2 bytes

@@ -38,7 +38,8 @@ RAMTestingMenu::
 	option "R/W test (range)", OPTION_EXEC, TestRAMBankRangeReadWriteOption
 	option "R/W test (all)", OPTION_EXEC, TestAllRAMBanksReadWriteOption
 	option "In-bank aliasing", OPTION_TEST, TestRAMInBankAliasing
-	option "Cross-bank alias.", OPTION_TEST, TestRAMCrossBankAliasing, GoBackOption
+	option "Cross-bank alias.", OPTION_TEST, TestRAMCrossBankAliasing
+	option "Bankswitch & map", OPTION_TEST, TestRAMBankswitchAndMap, GoBackOption
 
 RTCTestingMenu::
 	menu "RTC tests", MainTestingMenu

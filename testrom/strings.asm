@@ -35,13 +35,6 @@ RTCTimingInitialTestString::
 	db "Testing RTC latch<LF>"
 	db "timing...<@>"
 
-RAMBankFailedString::
-	db "FAILED: RAM bank<LF>"
-	db "$"
-	bigdw hCurrent
-	db " did not match<LF>"
-	db "the expected data<@>"
-
 RAMReadOnlyTestDescriptionString::
 	db "RAM reads in read-<LF>"
 	db "only mode test:<@>"

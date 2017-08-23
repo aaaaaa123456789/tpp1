@@ -167,8 +167,7 @@ TestRAMReads:
 	ld [hCurrent], a
 	ld [rMR2w], a
 	call TestReadContentsFromRAMBank
-	ld hl, RAMBankFailedString
-	call c, PrintAndIncrementErrorCount
+	call c, PrintRAMFailedAndIncrement
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
@@ -235,8 +234,7 @@ TestRAMWrites:
 	ld [hCurrent], a
 	ld [rMR2w], a
 	call WriteAndVerifyRAMBank
-	ld hl, RAMBankFailedString
-	call c, PrintAndIncrementErrorCount
+	call c, PrintRAMFailedAndIncrement
 	ld a, [hRAMBanks]
 	cp c
 	jr nz, .loop
@@ -247,6 +245,7 @@ TestRAMWrites:
 	db "verify test:<@>"
 
 WriteAndVerifyRAMBank:
+	; return carry if failed
 	call FillRandomBuffer
 	ld hl, wRandomBuffer
 	call GetRandomRAMAddress
@@ -306,9 +305,7 @@ TestRAMWritesReadOnly:
 	call InitializeRAMBank
 	ld a, MR3_MAP_SRAM_RO
 	ld [rMR3w], a
-	call IncrementErrorCount
-	ld hl, RAMBankFailedString
-	rst Print
+	call PrintRAMFailedAndIncrement
 .passed
 	ld a, [hRAMBanks]
 	cp c
@@ -383,9 +380,15 @@ TestRAMWritesDeselected:
 	ld [rMR3w], a
 	call InitializeRAMBank
 PrintRAMFailedAndIncrement:
-	ld hl, RAMBankFailedString
-	rst Print
-	jp IncrementErrorCount
+	ld hl, .failed_text
+	jp PrintAndIncrementErrorCount
+
+.failed_text
+	db "FAILED: RAM bank<LF>"
+	db "$"
+	bigdw hCurrent
+	db " did not match<LF>"
+	db "the expected data<@>"
 
 TestSwapRAMBanksDeselected:
 	call CheckRAMStatusForTesting_RequireTwoBanks
@@ -433,7 +436,7 @@ TestSwapRAMBanksDeselected:
 	call TestReadContentsFromRAMBank
 	pop bc
 	ret nc
-	jr PrintRAMFailedAndIncrement
+	jp PrintRAMFailedAndIncrement
 
 RAMBankReadWriteScreen:
 	push hl
@@ -785,5 +788,71 @@ RunAllRAMTests::
 	call nz, TestSwapRAMBanksDeselected
 	call TestRAMInBankAliasing
 	pop af
-	call nz, TestRAMCrossBankAliasing
+	ret z
+	call TestRAMCrossBankAliasing
+	; fallthrough
+
+TestRAMBankswitchAndMap::
+	call CheckRAMStatusForTesting_RequireTwoBanks
+	ret c
+	ld hl, .test_description_text
+	rst Print
+	call PrintEmptyString
+	ld hl, .testing_reads_text
+	ld a, MR3_MAP_SRAM_RO
+	call .do_test
+	ld hl, .testing_writes_text
+	ld a, MR3_MAP_SRAM_RW
+	call .do_test
+	jp PrintEmptyStringAndReinitializeMRRegisters
+
+.do_test
+	ld [hCurrentTest], a
+	rst Print
+	ld a, 3
+	ld [hMax], a
+.loop
+	xor a ;ld a, MR3_MAP_REGS
+	ld [rMR3w], a
+	ld a, [hRAMBanks]
+	ld c, a
+	ld a, [hCurrent] ;uninitialized for the first iteration, but that doesn't matter
+	ld b, a
+.resample
+	call Random
+	and c
+	cp b
+	jr z, .resample
+	ld c, a
+	ld [hCurrent], a
+	ld a, [hCurrentTest]
+	ld b, a
+	di
+	ld hl, sp + 0
+	ld sp, rMR2w + 2
+	push bc
+	ld sp, hl
+	ei
+	ld hl, TestReadContentsFromRAMBank
+	dec b
+	dec b ; MR3_MAP_SRAM_RO = 2
+	jr z, .selected_check
+	ld hl, WriteAndVerifyRAMBank
+.selected_check
+	call _hl_
+	call c, PrintRAMFailedAndIncrement
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
 	ret
+
+.test_description_text
+	db "Testing MR2 and<LF>"
+	db "MR3 simultaneous<LF>"
+	db "writes via push...<@>"
+
+.testing_reads_text
+	db "Testing reads...<@>"
+
+.testing_writes_text
+	db "Testing writes...<@>"
