@@ -97,7 +97,7 @@ MemoryViewerDescriptionString::
 	db " that you want to<LF>"
 	db " view. An area of<LF>"
 	db "memory containing<LF>"
-	db "your address will<LF>"
+	db "that address will<LF>"
 	db "be loaded. Use the<LF>"
 	db " arrow buttons to<LF>"
 	db " move around the<LF>"
