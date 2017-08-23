@@ -2,8 +2,7 @@ TestROMBankSampleOption::
 	call ClearErrorCount
 	call MakeFullscreenTextbox
 	ld hl, .testing_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	call GetMaxValidROMBank
 	jr nc, .valid_max
 	ld de, $ffff
@@ -152,8 +151,7 @@ CheckLastROMBankExists:
 	call GetMaxValidROMBank
 	ret nc
 	ld hl, UnknownLastROMBankString
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	call IncrementErrorCount
 	scf
 	ret
@@ -387,8 +385,7 @@ RunAllROMTests::
 
 TestROMBankswitchSpeed::
 	ld hl, TestingROMBankSwitchingSpeedString
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	call CheckLastROMBankExists
 	ret c
 	call GetMaxValidROMBank
@@ -438,10 +435,7 @@ TestROMBankswitchSpeed::
 	ld hl, hMax
 	dec [hl]
 	jr nz, .loop
-PrintEmptyString::
-	ld hl, EmptyString
-	rst Print
-	ret
+	jp PrintEmptyString
 
 ValidateROMBankDataAt4004:
 	ld a, [hCurrent]

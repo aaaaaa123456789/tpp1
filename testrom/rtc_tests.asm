@@ -1,7 +1,6 @@
 RTCOnOffTest::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld a, 3
 	ld [hMax], a
 .loop
@@ -75,8 +74,7 @@ RTCSetTest:
 	ld [hli], a
 	ld [hl], "<@>"
 	ld hl, wTextBuffer
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	pop af
 	ld [rMR3w], a
 	ld a, 5
@@ -132,8 +130,7 @@ RTCSetTest:
 
 RTCRolloversTest::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld a, MR3_RTC_ON
 	ld [rMR3w], a
 	ld a, 4
@@ -197,8 +194,7 @@ RTCRolloversTest::
 
 RTCOverflowTest::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld hl, rMR3w
 	ld [hl], MR3_RTC_OFF
 	ld [hl], MR3_CLEAR_RTC_OVERFLOW
@@ -262,8 +258,7 @@ RTCOverflowTest::
 
 RTCLatchTest::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld a, 3
 	ld [hMax], a
 .loop
@@ -320,8 +315,7 @@ RTCLatchTest::
 
 RTCRunningFlagTest::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld a, MR3_MAP_RTC
 	ld [rMR3w], a
 	xor a
@@ -376,19 +370,15 @@ RTCSingleSpeedTiming::
 
 RTCSingleSpeedTimingTest:
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld hl, .switching_speeds_text
-	rst Print
-	call PrintEmptyString
-	call DoSpeedSwitch
+	call .print_message_and_switch
 	ld hl, .testing_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	call RTCTimingTest_NoInitialBanner
 	ld hl, .restoring_text
-	rst Print
-	call PrintEmptyString
+.print_message_and_switch
+	call PrintWithBlankLine
 	jp DoSpeedSwitch
 	
 .initial_test_text
@@ -406,8 +396,7 @@ RTCSingleSpeedTimingTest:
 
 RTCTimingTest::
 	ld hl, RTCTimingInitialTestString
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 RTCTimingTest_NoInitialBanner:
 	ld a, MR3_RTC_ON
 	ld [rMR3w], a
@@ -506,8 +495,7 @@ RTCTimingTest_NoInitialBanner:
 
 RTCWritingMR4Test::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld hl, rMR3w
 	ld de, rMR4r
 	ld [hl], MR3_RTC_OFF
@@ -570,8 +558,7 @@ RTCWritingMR4Test::
 
 RTCUnmapLatchTest::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld a, MR3_RTC_OFF
 	ld [rMR3w], a
 	ld a, 5
@@ -611,8 +598,7 @@ RTCUnmapLatchTest::
 
 RTCMirroringTestRead::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld a, MR3_MAP_RTC
 	ld [rMR3w], a
 	ld hl, rRTCW
@@ -642,8 +628,7 @@ RTCMirroringTestRead::
 
 RTCMirroringTestWrite::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld a, MR3_MAP_RTC
 	ld [rMR3w], a
 	ld a, 5

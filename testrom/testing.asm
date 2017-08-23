@@ -33,8 +33,7 @@ LoadRumbleTestingMenu::
 
 CheckInitialTests::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld a, [hInitialTestResult]
 	and $f
 	ld hl, .initial_MR_failed_text
@@ -100,8 +99,7 @@ RunAllTests::
 	jp nc, RunAllRAMTests
 	ld hl, NoRAMString
 .print_and_return
-	rst Print
-	jp PrintEmptyString
+	jp PrintWithBlankLine
 
 .run_RTC_tests
 	call CheckRTCAllowed

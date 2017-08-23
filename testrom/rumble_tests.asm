@@ -46,8 +46,7 @@ SetRumble:
 
 TestRumbleMR4::
 	ld hl, .initial_test_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	call GetMaxRumbleSpeed
 	and a
 	ld c, a

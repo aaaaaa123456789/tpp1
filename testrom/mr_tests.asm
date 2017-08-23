@@ -21,8 +21,7 @@ ReinitializeMRRegisters::
 
 MRMappingTest::
 	ld hl, .initial_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	xor a ;ld a, MR3_MAP_REGS
 	ld [rMR3w], a
 	call .test_random
@@ -202,8 +201,7 @@ PrintMRMismatch:
 
 MRMirroringReadTest::
 	ld hl, .initial_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	call ClearMR4 ;exits with hl = rMR3w
 	ld [hl], MR3_MAP_REGS
 	ld a, 5
@@ -275,8 +273,7 @@ MRMirroringReadTest::
 
 MRMirroringWriteTest::
 	ld hl, .initial_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	xor a ;ld a, MR3_MAP_REGS
 	ld [rMR3w], a
 	ld a, 5
@@ -338,8 +335,7 @@ MRMirroringWriteTest::
 
 MRReadingTest::
 	ld hl, .initial_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	xor a ;ld a, MR3_MAP_REGS
 	ld [rMR3w], a
 	ld a, 2

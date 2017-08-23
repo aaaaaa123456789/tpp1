@@ -256,3 +256,10 @@ EndFullscreenTextbox::
 	decoord 5, 16
 	rst CopyString
 	jp WaitForAPress
+
+PrintWithBlankLine::
+	rst Print
+PrintEmptyString::
+	ld hl, EmptyString
+	rst Print
+	ret

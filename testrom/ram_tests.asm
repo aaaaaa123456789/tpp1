@@ -141,8 +141,7 @@ _CheckRAMStatusForTesting:
 	call IncrementErrorCount
 	ld hl, UninitializedRAMString
 .failed
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	scf
 	ret
 
@@ -541,8 +540,7 @@ TestRAMBankRangeReadWrite:
 	call MakeFullscreenTextbox
 	call ClearErrorCount
 	ld hl, .test_description_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
 	ld a, [wInitialBank]
@@ -770,12 +768,8 @@ TestRAMCrossBankAliasing:
 
 RunAllRAMTests::
 	call GetMaxValidRAMBank
-	jr nc, .ok
 	ld hl, NoRAMString
-	rst Print
-	jp PrintEmptyString
-
-.ok
+	jp c, PrintWithBlankLine
 	call DoRAMBankInitialization
 	call TestRAMReadsReadOnly
 	call TestRAMReadsReadWrite
@@ -796,8 +790,7 @@ TestRAMBankswitchAndMap::
 	call CheckRAMStatusForTesting_RequireTwoBanks
 	ret c
 	ld hl, .test_description_text
-	rst Print
-	call PrintEmptyString
+	call PrintWithBlankLine
 	ld hl, .testing_reads_text
 	ld a, MR3_MAP_SRAM_RO
 	call .do_test
