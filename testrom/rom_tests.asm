@@ -55,7 +55,7 @@ TestROMBankSampleOption::
 
 .testing_text
 	db "Testing random ROM<LF>"
-	db "banks in range...<@>"
+	db "banks in range<...><@>"
 
 TestROMBankRangeOption::
 	call ClearScreen
@@ -243,7 +243,7 @@ ROMBankRangeTest:
 	db ", every<LF>"
 	db "$"
 	bigdw wBankStep
-	db " bank(s)...<@>"
+	db " bank(s)<...><@>"
 
 .test_home_bank
 	xor a

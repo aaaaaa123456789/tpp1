@@ -93,7 +93,7 @@ TestRumbleMR4::
 .initial_test_text
 	db "Testing rumble<LF>"
 	db "speeds and MR4<LF>"
-	db "register values...<@>"
+	db "register values<...><@>"
 .device_will_rumble_text
 	db "WARNING: device<LF>"
 	db "may vibrate during<LF>"

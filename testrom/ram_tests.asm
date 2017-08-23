@@ -37,7 +37,7 @@ DoRAMBankInitialization:
 
 .initial_text
 	db "Initializing RAM,<LF>"
-	db "please wait...<@>"
+	db "please wait<...><@>"
 
 .selected_seed
 	db "Selected seed $"
@@ -343,7 +343,7 @@ PrintTestDescriptionAndThreeBanksMessage:
 	jp PrintEmptyString
 
 .three_banks_text
-	db "Testing 3 banks...<@>"
+	db "Testing 3 banks<...><@>"
 
 TestRAMWritesDeselected:
 	call CheckRAMStatusForTesting
@@ -578,7 +578,7 @@ TestRAMBankRangeReadWrite:
 	db "$"
 	bigdw wBankStep
 	db ") for reading<LF>"
-	db "and writing...<@>"
+	db "and writing<...><@>"
 
 .read_failed_text
 	db "FAILED: reading<LF>"
@@ -720,7 +720,7 @@ TestRAMCrossBankAliasing:
 
 .testing_five_pairs_text
 	db "Testing five<LF>"
-	db "pairs of banks...<@>"
+	db "pairs of banks<...><@>"
 
 .test
 	push bc
@@ -848,10 +848,10 @@ TestRAMBankswitchAndMap::
 
 .test_description_text
 	db "Testing MR2 & MR3<LF>"
-	db "writes via push...<@>"
+	db "writes via push<...><@>"
 
 .testing_reads_text
-	db "Testing reads...<@>"
+	db "Testing reads<...><@>"
 
 .testing_writes_text
-	db "Testing writes...<@>"
+	db "Testing writes<...><@>"

@@ -14,4 +14,6 @@
 	db $00, $00, $FE, $FE, $7C, $38, $10, $00 ;arrow pointing down
 	db $00, $00, $00, $18, $18, $00, $00, $00 ;middle dot
 	db $3C, $42, $99, $A5, $BD, $A5, $42, $3C ;A button
+	db $00, $00, $00, $00, $00, $00, $a8, $00 ;ellipsis
+
 ;	db $3C, $42, $81, $81, $81, $81, $42, $3C ;button

@@ -45,7 +45,7 @@ MRMappingTest::
 .initial_text
 	db "Testing default MR<LF>"
 	db "register mapping<LF>"
-	db "addresses...<@>"
+	db "addresses<...><@>"
 
 .error_text
 	db "FAILED: MR values<LF>"
@@ -156,7 +156,7 @@ MRWritesTest::
 .initial_text
 	db "Testing writes on<LF>"
 	db "MR read-only<LF>"
-	db "addresses...<@>"
+	db "addresses<...><@>"
 
 .select_value
 	ld a, c
@@ -264,7 +264,7 @@ MRMirroringReadTest::
 
 .initial_text
 	db "Testing MR address<LF>"
-	db "read mirroring...<@>"
+	db "read mirroring<...><@>"
 
 .error_text
 	db "FAILED: address<LF>"
@@ -327,7 +327,7 @@ MRMirroringWriteTest::
 
 .initial_text
 	db "Testing MR address<LF>"
-	db "write mirroring...<@>"
+	db "write mirroring<...><@>"
 .error_text
 	db "FAILED: writing to<LF>"
 	db "address $"
@@ -378,7 +378,7 @@ MRReadingTest::
 
 .initial_text
 	db "Testing MR reading<LF>"
-	db "speed...<@>"
+	db "speed<...><@>"
 
 RunAllMRTests::
 	call MRMappingTest

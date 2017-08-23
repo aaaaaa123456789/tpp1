@@ -36,7 +36,7 @@ RTCOnOffTest::
 
 .initial_test_text
 	db "Testing RTC on/off<LF>"
-	db "controls...<@>"
+	db "controls<...><@>"
 
 .on_error_text
 	db "FAILED: RTC stood<LF>"
@@ -71,9 +71,7 @@ RTCSetTest:
 	push af
 	ld a, ")"
 	ld [hli], a
-	ld a, "."
-	ld [hli], a
-	ld [hli], a
+	ld a, "<...>"
 	ld [hli], a
 	ld [hl], "<@>"
 	ld hl, wTextBuffer
@@ -189,7 +187,7 @@ RTCRolloversTest::
 
 .initial_test_text
 	db "Testing RTC value<LF>"
-	db "rollovers...<@>"
+	db "rollovers<...><@>"
 
 .do_day_rollover_settings
 	lb de, 59, 59
@@ -250,7 +248,7 @@ RTCOverflowTest::
 .initial_test_text
 	db "Testing RTC<LF>"
 	db "overflow behavior<LF>"
-	db "and flag...<@>"
+	db "and flag<...><@>"
 .time_error_text
 	db "FAILED: RTC value<LF>"
 	db "did not fully<LF>"
@@ -318,7 +316,7 @@ RTCLatchTest::
 
 .initial_test_text
 	db "Testing RTC<LF>"
-	db "latching...<@>"
+	db "latching<...><@>"
 
 RTCRunningFlagTest::
 	ld hl, .initial_test_text
@@ -355,7 +353,7 @@ RTCRunningFlagTest::
 
 .initial_test_text
 	db "Testing MR4 RTC<LF>"
-	db "on/off flag...<@>"
+	db "on/off flag<...><@>"
 .on_error_text
 	db "FAILED: MR4 RTC<LF>"
 	db "flag is off while<LF>"
@@ -396,15 +394,15 @@ RTCSingleSpeedTimingTest:
 .initial_test_text
 	db "Testing RTC latch<LF>"
 	db "timing in single<LF>"
-	db "speed CPU mode...<@>"
+	db "speed CPU mode<...><@>"
 .switching_speeds_text
 	db "Switching CPU<LF>"
-	db "speeds...<@>"
+	db "speeds<...><@>"
 .testing_text
-	db "Testing...<@>"
+	db "Testing<...><@>"
 .restoring_text
 	db "Restoring double<LF>"
-	db "speed mode...<@>"
+	db "speed mode<...><@>"
 
 RTCTimingTest::
 	ld hl, RTCTimingInitialTestString
@@ -561,7 +559,7 @@ RTCWritingMR4Test::
 .initial_test_text
 	db "Testing MR4 RTC-<LF>"
 	db "related fields for<LF>"
-	db "writing...<@>"
+	db "writing<...><@>"
 .initial_state_error_text
 	db "FAILED: initial<LF>"
 	db "MR4 state was<LF>"
@@ -609,7 +607,7 @@ RTCUnmapLatchTest::
 .initial_test_text
 	db "Testing RTC value<LF>"
 	db "latching while<LF>"
-	db "unmapped...<@>"
+	db "unmapped<...><@>"
 
 RTCMirroringTestRead::
 	ld hl, .initial_test_text
@@ -640,7 +638,7 @@ RTCMirroringTestRead::
 .initial_test_text
 	db "Testing RTC value<LF>"
 	db "mirroring when<LF>"
-	db "reading...<@>"
+	db "reading<...><@>"
 
 RTCMirroringTestWrite::
 	ld hl, .initial_test_text
@@ -698,11 +696,11 @@ RTCMirroringTestWrite::
 .initial_test_text
 	db "Testing RTC value<LF>"
 	db "mirroring after<LF>"
-	db "writing...<@>"
+	db "writing<...><@>"
 .writing_to_text
 	db "Writing: $"
 	bigdw hCurrent + 1, hCurrent
-	db "...<@>"
+	db "<...><@>"
 
 TestRTCMirroring:
 	ld a, [hli]

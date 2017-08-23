@@ -34,7 +34,7 @@ Init::
 	call Load1bpp
 	ld de, ExtendedFont
 	ld hl, vTilesLow tile $10
-	ld a, $c
+	ld a, $d
 	call Load1bpp
 	xor a
 	ld [rSTAT], a
@@ -166,7 +166,7 @@ Main::
 
 .testing_initial_values
 	db "Testing initial<LF>"
-	db "values...<@>"
+	db "values<...><@>"
 
 .pass_string
 	db "PASS<@>"

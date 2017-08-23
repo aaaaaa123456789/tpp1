@@ -23,17 +23,17 @@ TestsPassedString::
 
 TestingROMBankSwitchingSpeedString::
 	db "Testing ROM bank<LF>"
-	db "switching speed...<@>"
+	db "switching speed<...><@>"
 
 TestingAmountOfRAMBanksString::
 	db "Testing RAM banks<LF>"
 	db "$00-$"
 	bigdw hRAMBanks
-	db "...<@>"
+	db "<...><@>"
 
 RTCTimingInitialTestString::
 	db "Testing RTC latch<LF>"
-	db "timing...<@>"
+	db "timing<...><@>"
 
 RAMReadOnlyTestDescriptionString::
 	db "RAM reads in read-<LF>"
@@ -76,7 +76,7 @@ NoRTCString::
 	db "the RTC disabled.<@>"
 
 WaitingString::
-	db "Waiting...<@>"
+	db "Waiting<...><@>"
 
 RTCSetTestingString::
 	db "Testing setting<LF>"

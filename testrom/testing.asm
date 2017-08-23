@@ -47,7 +47,7 @@ CheckInitialTests::
 
 .initial_test_text
 	db "Checking initial<LF>"
-	db "test results...<@>"
+	db "test results<...><@>"
 .initial_MR_failed_text
 	db "FAILED: initial<LF>"
 	db "values for MR<LF>"
