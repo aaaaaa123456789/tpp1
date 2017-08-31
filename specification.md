@@ -48,7 +48,7 @@ This mapper uses the address blocks assigned to the cartridge for its own functi
 
 ## Mapper registers
 
-Five internal registers control the functioning of the mapper. These registers, identified as MR0 through 4, serve the following purposes:
+Five byte-sized internal registers control the functioning of the mapper. These registers, identified as MR0 through 4, serve the following purposes:
 
 * **MR0:** ROM bank, low byte
 * **MR1:** ROM bank, high byte
@@ -61,6 +61,8 @@ Registers MR0, MR1, MR2 and MR3 can be written to directly, via the lower half o
 Registers MR0, MR1, MR2 and MR4 can be read; the way that this can be done is explained later in this document. (Reading from addresses in the 0000-3FFF range will naturally return ROM contents, not the contents of these registers.)
 
 Note that there is no way to read MR3, nor to write to MR4 directly. This is intentional and by design.
+
+The registers are byte-sized, and all eight bits are readable or writable as specified above. This is particularly significant for MR0, MR1 and MR2: the registers preserve all eight bits of the values written to them when read, even when there are more available bits than needed to address actual hardware.
 
 ### MR0 and MR1: ROM bank selection
 
