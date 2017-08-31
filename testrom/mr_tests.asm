@@ -65,11 +65,10 @@ PrintMRReadErrorAndIncrementCount:
 .error_text
 	db "FAILED: MR values<LF>"
 	db "did not match<LF>"
-	db "expected (ROM bank<LF>"
-	db "$"
+	db "(ROM bank $"
 	bigdw hSelectedROMBank + 1, hSelectedROMBank
-	db ", RAM<LF>"
-	db "bank $"
+	db ",<LF>"
+	db "RAM bank $"
 	bigdw hSelectedRAMBank
 	db ")<@>"
 
