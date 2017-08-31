@@ -840,8 +840,8 @@ TestRAMBankswitchAndMap::
 	ret
 
 .test_description_text
-	db "Testing MR2 & MR3<LF>"
-	db "writes via push<...><@>"
+	db "Testing bankswitch<LF>"
+	db "and map via push<...><@>"
 
 .testing_reads_text
 	db "Testing reads<...><@>"
