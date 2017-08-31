@@ -95,9 +95,9 @@ TestROMBankRangeOption::
 	db "Step:<@>"
 
 .inputs
-	hex_input_dw 15, 4, wInitialBank
-	hex_input_dw 15, 5, wFinalBank
-	hex_input 17, 6, wBankStep
+	hex_input_dw 15, 4, hInitialBank
+	hex_input_dw 15, 5, hFinalBank
+	hex_input 17, 6, hBankStep
 	dw 0
 
 GetMaxValidROMBank::
@@ -120,11 +120,11 @@ GetMaxValidROMBank::
 	ret
 
 TestROMBankRange:
-	ld a, [wBankStep]
+	ld a, [hBankStep]
 	ld hl, ZeroStepString
 	and a
 	jr z, .message_box
-	ld hl, wInitialBank
+	ld hl, hInitialBank
 	ld a, [hli]
 	ld c, a
 	ld a, [hli]
@@ -160,7 +160,7 @@ TestAllROMBanks::
 	call CheckLastROMBankExists
 	ret c
 	xor a
-	ld hl, wInitialBank
+	ld hl, hInitialBank
 	ld [hli], a
 	ld [hli], a
 	ld a, e
@@ -178,19 +178,18 @@ ROMBankRangeTest:
 	ld [hMax], a
 	ld a, d
 	ld [hMax + 1], a
-	ld hl, wInitialBank
+	ld hl, hInitialBank
 	ld a, [hli]
 	ld c, a
 	ld b, [hl]
 	or b
 	call z, .test_home_bank
 .loop
-	ld hl, wFinalBank + 1
-	ld a, [hld]
+	ld a, [hFinalBank + 1]
 	cp b
 	jr c, .done
 	jr nz, .in_range
-	ld a, [hl]
+	ld a, [hFinalBank]
 	cp c
 	jr c, .done
 .in_range
@@ -223,7 +222,7 @@ ROMBankRangeTest:
 	ld hl, BankFailedString
 	call c, PrintAndIncrementErrorCount
 .handle_loop
-	ld a, [wBankStep]
+	ld a, [hBankStep]
 	add a, c
 	ld c, a
 	jr nc, .loop
@@ -235,12 +234,12 @@ ROMBankRangeTest:
 .testing_text
 	db "Testing ROM banks<LF>"
 	db "$"
-	bigdw wInitialBank + 1, wInitialBank
+	bigdw hInitialBank + 1, hInitialBank
 	db "-$"
-	bigdw wFinalBank + 1, wFinalBank
+	bigdw hFinalBank + 1, hFinalBank
 	db ", every<LF>"
 	db "$"
-	bigdw wBankStep
+	bigdw hBankStep
 	db " bank(s)<...><@>"
 
 .test_home_bank
@@ -250,7 +249,7 @@ ROMBankRangeTest:
 	ld [hli], a
 	ld [hl], a
 	call TestROMHomeBank
-	ld a, [wBankStep]
+	ld a, [hBankStep]
 	ld c, a
 	ld b, 0
 	ret nc

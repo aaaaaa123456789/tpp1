@@ -20,8 +20,12 @@ hInitialTestResult   EQU $ff91
 hComplianceTestRun   EQU $ff92
 hComplianceErrors    EQU $ff93 ;3 bytes
 
-hSelectedROMBank     EQU $ff96 ;2 bytes
-hSelectedRAMBank     EQU $ff98
+hInitialBank         EQU $ff96 ;2 bytes
+hFinalBank           EQU $ff98 ;2 bytes
+hBankStep            EQU $ff9a
+
+hSelectedRAMBank     EQU $ff9b
+hSelectedROMBank     EQU $ff9c ;2 bytes
 
 hTimesetSecond       EQU $ffe0
 hTimesetMinute       EQU $ffe1

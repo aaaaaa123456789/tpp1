@@ -466,13 +466,13 @@ TestRAMBankRangeReadWriteOption::
 	ld de, .screen_text
 	call RAMBankReadWriteScreen
 	ret c
-	ld a, [wBankStep]
+	ld a, [hBankStep]
 	and a
 	ld hl, ZeroStepString
 	jr z, .error
-	ld a, [wInitialBank]
+	ld a, [hInitialBank]
 	ld c, a
-	ld a, [wFinalBank]
+	ld a, [hFinalBank]
 	cp c
 	ld hl, NoBanksSelectedString
 	jr c, .error
@@ -491,9 +491,9 @@ TestRAMBankRangeReadWriteOption::
 	db "Step:<@>"
 
 .hex_input
-	hex_input 15, 4, wInitialBank
-	hex_input 15, 6, wFinalBank
-	hex_input 15, 8, wBankStep
+	hex_input 15, 4, hInitialBank
+	hex_input 15, 6, hFinalBank
+	hex_input 15, 8, hBankStep
 	dw 0
 
 TestOneRAMBankReadWriteOption::
@@ -504,7 +504,7 @@ TestOneRAMBankReadWriteOption::
 	ld de, .screen_text
 	call RAMBankReadWriteScreen
 	ret c
-	ld a, [wInitialBank]
+	ld a, [hInitialBank]
 	ld c, a
 	ld a, [hRAMBanks]
 	cp c
@@ -514,27 +514,27 @@ TestOneRAMBankReadWriteOption::
 	jr .retry
 .go
 	ld a, c
-	ld [wFinalBank], a
+	ld [hFinalBank], a
 	ld a, 1
-	ld [wBankStep], a
+	ld [hBankStep], a
 	jr TestRAMBankRangeReadWrite
 
 .screen_text
 	db "Bank to test:<@>"
 
 .hex_input
-	hex_input 15, 4, wInitialBank
+	hex_input 15, 4, hInitialBank
 	dw 0
 
 TestAllRAMBanksReadWriteOption::
 	call CheckRAMInitialized
 	ret c
 	xor a
-	ld [wInitialBank], a
+	ld [hInitialBank], a
 	inc a
-	ld [wBankStep], a
+	ld [hBankStep], a
 	ld a, [hRAMBanks]
-	ld [wFinalBank], a
+	ld [hFinalBank], a
 TestRAMBankRangeReadWrite:
 	; do not run this test via ExecuteTest!
 	call MakeFullscreenTextbox
@@ -543,7 +543,7 @@ TestRAMBankRangeReadWrite:
 	call PrintWithBlankLine
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
-	ld a, [wInitialBank]
+	ld a, [hInitialBank]
 	ld c, a
 .loop
 	ld a, c
@@ -555,11 +555,11 @@ TestRAMBankRangeReadWrite:
 	call WriteAndVerifyRAMBank
 	ld hl, .write_failed_text
 	call c, PrintAndIncrementErrorCount
-	ld a, [wBankStep]
+	ld a, [hBankStep]
 	add a, c
 	jr c, .done
 	ld c, a
-	ld a, [wFinalBank]
+	ld a, [hFinalBank]
 	cp c
 	jr nc, .loop
 .done
@@ -569,12 +569,12 @@ TestRAMBankRangeReadWrite:
 .test_description_text
 	db "Testing RAM banks<LF>"
 	db "$"
-	bigdw wInitialBank
+	bigdw hInitialBank
 	db "-$"
-	bigdw wFinalBank
+	bigdw hFinalBank
 	db " (step<LF>"
 	db "$"
-	bigdw wBankStep
+	bigdw hBankStep
 	db ") for reading<LF>"
 	db "and writing<...><@>"
 

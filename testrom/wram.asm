@@ -11,10 +11,7 @@ wSavedScreenData:: ds SCREEN_WIDTH * 4 ;c170
 wTextBuffer:: ds 45 ;c1c0
 wDigitsBuffer:: ds 11 ;c1ed
 
-wValueBuffer::
-wInitialBank:: ds 2 ;c1f8
-wFinalBank:: ds 2 ;c1fa
-wBankStep:: ds 1 ;c1fc
+wValueBuffer:: ds 5 ;c1f8
 
 wErrorCount:: ds 3 ;c1fd
 
