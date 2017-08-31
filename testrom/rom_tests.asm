@@ -385,9 +385,8 @@ RunAllROMTests::
 TestROMBankswitchSpeed::
 	ld hl, TestingROMBankSwitchingSpeedString
 	call PrintWithBlankLine
-	call CheckLastROMBankExists
+	call CheckLastROMBankExists ;returns max valid ROM bank in de
 	ret c
-	call GetMaxValidROMBank
 	ld a, 5
 	ld [hMax], a
 	xor a

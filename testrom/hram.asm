@@ -1,4 +1,4 @@
-hGBType              EQU $ff80
+hGBType              EQU $ff80 ;do not relocate
 
 hButtonsHeld         EQU $ff81
 hButtonsPressed      EQU $ff82
