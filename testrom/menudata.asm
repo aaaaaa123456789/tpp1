@@ -83,6 +83,7 @@ MRTestingMenu::
 	option "Writing test", OPTION_TEST, MRWritesTest
 	option "Mirroring test<COMMA> R", OPTION_TEST, MRMirroringReadTest
 	option "Mirroring test<COMMA> W", OPTION_TEST, MRMirroringWriteTest
+	option "Popping test", OPTION_TEST, MRPoppingTest
 	option "Restore values", OPTION_EXEC, RestoreMRValues, GoBackOption
 
 MemoryViewerMenu::

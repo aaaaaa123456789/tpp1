@@ -28,17 +28,17 @@ MRMappingTest::
 	call .test_random
 	call .test_random
 	call ReinitializeMRRegisters ;exits with a = hl = 0
-	ld [hCurrent + 2], a
-	ld [hCurrent + 1], a
+	ld [hSelectedRAMBank], a
+	ld [hSelectedROMBank + 1], a
 	inc a
-	ld [hCurrent], a
+	ld [hSelectedROMBank], a
 	ld h, rMR0r >> 8
 	ld a, [hli]
 	dec a
 	or [hl]
 	inc hl
 	or [hl]
-	call nz, .error
+	call nz, PrintMRReadErrorAndIncrementCount
 	jp PrintEmptyString
 
 .initial_text
@@ -46,44 +46,32 @@ MRMappingTest::
 	db "register mapping<LF>"
 	db "addresses<...><@>"
 
+.test_random
+	call GenerateRandomMRValues
+	ld hl, rMR2r
+	cp [hl]
+	jr nz, PrintMRReadErrorAndIncrementCount
+	dec hl
+	ld a, [hld]
+	cp b
+	jr nz, PrintMRReadErrorAndIncrementCount
+	ld a, [hl]
+	cp c
+	ret z
+PrintMRReadErrorAndIncrementCount:
+	ld hl, .error_text
+	jp PrintAndIncrementErrorCount
+
 .error_text
 	db "FAILED: MR values<LF>"
 	db "did not match<LF>"
 	db "expected (ROM bank<LF>"
 	db "$"
-	bigdw hCurrent + 1, hCurrent
+	bigdw hSelectedROMBank + 1, hSelectedROMBank
 	db ", RAM<LF>"
 	db "bank $"
-	bigdw hCurrent + 2
+	bigdw hSelectedRAMBank
 	db ")<@>"
-
-.test_random
-	ld hl, rMR0w
-	call Random
-	ld [hli], a
-	ld [hCurrent], a
-	ld c, a
-	call Random
-	ld [hli], a
-	ld [hCurrent + 1], a
-	ld b, a
-	call Random
-	ld [hl], a
-	ld [hCurrent + 2], a
-	ld hl, rMR2r
-	cp [hl]
-	jr nz, .error
-	dec hl
-	ld a, [hld]
-	cp b
-	jr nz, .error
-	ld a, [hl]
-	cp c
-	ret z
-.error
-	ld hl, .error_text
-	rst Print
-	jp IncrementErrorCount
 
 ClearMR4::
 	ld hl, rMR3w
@@ -103,16 +91,7 @@ MRWritesTest::
 	ld [hMax], a
 	jr .check
 .loop
-	ld hl, rMR0w
-	call Random
-	ld [hli], a
-	ld c, a
-	call Random
-	ld [hli], a
-	ld b, a
-	call Random
-	ld [hl], a
-	ld e, a
+	call GenerateRandomMRValues
 .check
 	ld hl, rMR0r
 	call Random
@@ -168,6 +147,22 @@ MRWritesTest::
 	dec l
 	ret z
 	xor a
+	ret
+
+GenerateRandomMRValues:
+	ld hl, rMR0w
+	call Random
+	ld [hli], a
+	ld [hSelectedROMBank], a
+	ld c, a
+	call Random
+	ld [hli], a
+	ld [hSelectedROMBank + 1], a
+	ld b, a
+	call Random
+	ld [hl], a
+	ld [hSelectedRAMBank], a
+	ld e, a
 	ret
 
 PrintMRMismatch:
@@ -376,10 +371,55 @@ MRReadingTest::
 	db "Testing MR reading<LF>"
 	db "speed<...><@>"
 
+MRPoppingTest::
+	ld hl, .initial_text
+	call PrintWithBlankLine
+	call ClearMR4 ;exits with hl = rMR3w
+	ld [hl], MR3_MAP_REGS
+	ld a, 3
+	ld [hMax], a
+.loop
+	call GenerateRandomMRValues
+	call .test_values
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+	jp PrintEmptyStringAndReinitializeMRRegisters
+
+.initial_text
+	db "Testing popping<LF>"
+	db "MR registers<...><@>"
+
+.test_values
+	di
+	ld hl, sp + 0
+	ld sp, rMR0r
+	pop de
+	ld a, c
+	cp e
+	jr nz, .error
+	ld a, b
+	cp d
+	jr nz, .error
+	pop de
+	ld a, [hSelectedRAMBank]
+	cp e
+	jr nz, .error
+	ld a, d
+	and $f
+	jr nz, .error
+	ld sp, hl
+	reti
+.error
+	ld sp, hl
+	ei
+	jp PrintMRReadErrorAndIncrementCount
+
 RunAllMRTests::
 	call MRMappingTest
 	call MRReadingTest
 	call MRWritesTest
 	call MRMirroringReadTest
 	call MRMirroringWriteTest
+	call MRPoppingTest
 	jp ReinitializeMRRegisters
