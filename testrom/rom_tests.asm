@@ -316,6 +316,12 @@ TestROMHomeBank:
 	jr .done
 .end
 
+TestAnyROMBank:
+	ld a, b
+	or c
+	jr z, TestROMHomeBank
+	; fallthrough
+
 TestROMBank::
 	; test ROM bank bc; return carry if invalid (with hl containing the invalid address)
 	; assume that the bank is already selected (so we can test ROM bank 1 on boot)
@@ -378,10 +384,6 @@ TestROMBank::
 	inc hl
 	ret
 
-RunAllROMTests::
-	call TestAllROMBanks
-	; fallthrough
-
 TestROMBankswitchSpeed::
 	ld hl, TestingROMBankSwitchingSpeedString
 	call PrintWithBlankLine
@@ -397,24 +399,8 @@ TestROMBankswitchSpeed::
 	ld [hCurrent], a
 	ld [hCurrent + 1], a
 .loop
-	call Random
-	and e
-	ld c, a
-	call Random
-	and d
-	ld b, a
-	ld a, [hCurrent]
-	cp c
-	jr nz, .go
-	ld a, [hCurrent + 1]
-	cp b
-	jr z, .loop
-.go
+	call SelectNewRandomROMBank
 	push de
-	ld a, c
-	ld [hCurrent], a
-	ld a, b
-	ld [hCurrent + 1], a
 	ld hl, $4004
 	ld de, rMR0w
 	ld a, b
@@ -496,3 +482,55 @@ ValidateROMBankDataAt4004:
 	db "$"
 	bigdw wDataBuffer + 3, wDataBuffer + 2, wDataBuffer + 1, wDataBuffer
 	db ")<@>"
+
+SelectNewRandomROMBank:
+	call Random
+	and e
+	ld c, a
+	call Random
+	and d
+	ld b, a
+	ld a, [hCurrent]
+	cp c
+	jr nz, .selected
+	ld a, [hCurrent + 1]
+	cp b
+	jr z, SelectNewRandomROMBank
+.selected
+	ld a, c
+	ld [hCurrent], a
+	ld a, b
+	ld [hCurrent + 1], a
+	ret
+
+RunAllROMTests::
+	call TestAllROMBanks
+	call TestROMBankswitchSpeed
+	; fallthrough
+
+TestROMPushBankswitch::
+	ld hl, .initial_text
+	call PrintWithBlankLine
+	call CheckLastROMBankExists ;returns max valid ROM bank in de
+	ret c
+	ld a, 5
+	ld [hMax], a
+.loop
+	call SelectNewRandomROMBank
+	di
+	ld hl, sp + 0
+	ld sp, rMR0w + 2
+	push bc
+	ld sp, hl
+	ei
+	call TestAnyROMBank
+	ld hl, BankFailedString
+	call c, PrintAndIncrementErrorCount
+	ld hl, hMax
+	dec [hl]
+	jr nz, .loop
+	jp PrintEmptyString
+
+.initial_text
+	db "Testing ROM bank<LF>"
+	db "switching by push<...><@>"
