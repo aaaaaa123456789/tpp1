@@ -397,23 +397,21 @@ MRPoppingTest::
 	pop de
 	ld a, c
 	cp e
-	jr nz, .error
+	jr nz, .done
 	ld a, b
 	cp d
-	jr nz, .error
+	jr nz, .done
 	pop de
 	ld a, [hSelectedRAMBank]
 	cp e
-	jr nz, .error
+	jr nz, .done
 	ld a, d
 	and $f
-	jr nz, .error
-	ld sp, hl
-	reti
-.error
+.done
 	ld sp, hl
 	ei
-	jp PrintMRReadErrorAndIncrementCount
+	jp nz, PrintMRReadErrorAndIncrementCount
+	ret
 
 RunAllMRTests::
 	call MRMappingTest
