@@ -28,16 +28,15 @@ MemoryViewer::
 MemoryViewer_PrepareBanks:
 	ld a, [hMemoryAddress + 1]
 	add a, a
-	jr c, .RAM
 	ld hl, rMR0w
 	ld a, [hMemoryBank]
+	jr c, .RAM
 	ld [hli], a
 	ld a, [hMemoryBank + 1]
 	ld [hl], a
 	ret
 .RAM
-	ld a, [hMemoryBank]
-	ld hl, rMR2w
+	ld l, rMR2w ;h is already correct
 	ld [hli], a
 	ld [hl], MR3_MAP_SRAM_RO
 	ret
@@ -45,13 +44,12 @@ MemoryViewer_PrepareBanks:
 MemoryViewer_UpdateScreen:
 	ld a, [hMemoryAddress + 1]
 	add a, a
-	hlcoord 2, 0
+	hlcoord 3, 0
 	jr c, .RAM
+	dec hl
 	ld a, [hMemoryBank + 1]
 	call PrintHexByte
-	dec hl ;compensate the "inc hl" right after
 .RAM
-	inc hl
 	ld a, [hMemoryBank]
 	call PrintHexByte
 	ld a, ":"
@@ -95,13 +93,13 @@ PrintMemoryLine:
 	ld [hli], a
 	push de
 	ld b, 4
-.digits_loop
+.bytes_loop
 	inc hl
 	ld a, [de]
 	inc de
 	call PrintHexByte
 	dec b
-	jr nz, .digits_loop
+	jr nz, .bytes_loop
 	pop de
 	inc hl
 	ld b, 4
@@ -143,8 +141,7 @@ MemoryViewer_ProcessJoypad:
 
 .not_edit
 	ld hl, hMemoryAddress
-	dec a
-	dec a
+	sub 2
 	jr nz, .not_up
 	ld a, [hl]
 	sub $40
@@ -188,11 +185,9 @@ MemoryViewer_EditMode:
 	cp MENU_LEFT
 	jr nc, .loop
 	call MemoryViewer_EditMode_ProcessJoypad
-	jr c, .done
+	jp c, ClearScreen
 	call MemoryViewer_EditMode_UpdateCursor
 	jr .loop
-.done
-	jp ClearScreen
 
 MemoryViewer_EditMode_UpdateCursor:
 	hlcoord 3, 2
@@ -261,14 +256,11 @@ MemoryViewer_EditMode_ProcessJoypad:
 
 .not_cancel
 	dec a
-	jr nz, .not_up
 	ld a, [hMemoryCursor]
-	dec a
-	jr .set_cursor
-
+	jr nz, .not_up
+	sub 2 ;compensate for the inc a
 .not_up
 	; must be down
-	ld a, [hMemoryCursor]
 	inc a
 .set_cursor
 	and $f
