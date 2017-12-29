@@ -101,8 +101,7 @@ DisplayRTCState::
 	call GetMenuJoypad
 	jr z, .loop
 	cp MENU_LEFT
-	jr nc, .loop
-	call ProcessRTCDisplayJoypad
+	call c, ProcessRTCDisplayJoypad
 	jr nc, .loop
 	jp ClearScreen
 

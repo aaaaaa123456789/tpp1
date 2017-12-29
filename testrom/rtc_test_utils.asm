@@ -133,8 +133,7 @@ RTCMismatchError::
 	pop de
 	call GenerateTimeString
 	ld hl, wTextBuffer
-	rst Print
-	jp IncrementErrorCount
+	jp PrintAndIncrementErrorCount
 
 .error_text
 	db "FAILED: RTC value<LF>"

@@ -78,17 +78,6 @@ TestRumbleMR4::
 	ld [rMR3w], a
 	jp PrintEmptyString
 
-.error
-	push hl
-	ld [hCurrent], a
-	ld a, c
-	ld [hMax], a
-	ld hl, .error_text
-	rst Print
-	call IncrementErrorCount
-	pop hl
-	ret
-
 .initial_test_text
 	db "Testing rumble<LF>"
 	db "speeds and MR4<LF>"
@@ -105,3 +94,14 @@ TestRumbleMR4::
 	bigdw hMax
 	db "<LF>"
 	db "was requested<@>"
+
+.error
+	push hl
+	ld [hCurrent], a
+	ld a, c
+	ld [hMax], a
+	ld hl, .error_text
+PrintAndIncrementErrorCount_HLPushed::
+	call PrintAndIncrementErrorCount
+	pop hl
+	ret

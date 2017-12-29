@@ -29,9 +29,7 @@ RTCOnOffTest::
 	push hl
 	ld hl, .off_error_text
 .continue_error_message
-	call PrintAndIncrementErrorCount
-	pop hl
-	ret
+	jp PrintAndIncrementErrorCount_HLPushed
 
 .initial_test_text
 	db "Testing RTC on/off<LF>"
@@ -115,8 +113,7 @@ RTCSetTest:
 	pop de
 	call GenerateTimeString
 	ld hl, wTextBuffer
-	rst Print
-	call IncrementErrorCount
+	call PrintAndIncrementErrorCount
 .ok
 	ld hl, hMax
 	dec [hl]
@@ -539,10 +536,7 @@ RTCWritingMR4Test::
 	push hl
 	ld hl, .error_text
 .continue_error
-	rst Print
-	call IncrementErrorCount
-	pop hl
-	ret
+	jp PrintAndIncrementErrorCount_HLPushed
 
 .initial_test_text
 	db "Testing MR4 RTC-<LF>"
@@ -710,10 +704,7 @@ TestRTCMirroring:
 	ld [hCurrent + 1], a
 	push hl
 	ld hl, .error_text
-	rst Print
-	call IncrementErrorCount
-	pop hl
-	ret
+	jp PrintAndIncrementErrorCount_HLPushed
 
 .error_text
 	db "FAILED: address<LF>"

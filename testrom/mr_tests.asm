@@ -246,8 +246,7 @@ MRMirroringReadTest::
 	ld a, d
 	ld [hCurrent + 1], a
 	ld hl, .error_text
-	rst Print
-	call IncrementErrorCount
+	call PrintAndIncrementErrorCount
 .done_checking
 	ld hl, hMax
 	dec [hl]
@@ -308,8 +307,7 @@ MRMirroringWriteTest::
 	ld a, d
 	ld [hCurrent + 1], a
 	ld hl, .error_text
-	rst Print
-	call IncrementErrorCount
+	call PrintAndIncrementErrorCount
 .ok
 	ld hl, hMax
 	dec [hl]
