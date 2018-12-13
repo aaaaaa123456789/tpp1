@@ -157,6 +157,9 @@ StableRandom::
 	call .advance_selector_register
 	ld e, a
 	pop hl
+	inc hl
+	ld a, b
+	ld [hld], a ;only b needs to be written back, since the rest will be handled by the main function
 	ret
 
 .advance_right_register
