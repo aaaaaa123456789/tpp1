@@ -115,9 +115,7 @@ Timeset_DoJoypadAction:
 	ld [hl], MR3_RTC_ON
 	ld [hl], MR3_MAP_REGS
 	ld hl, .time_set_text
-	call MessageBox
-	scf
-	ret
+	jp MessageBox
 
 .not_confirm
 	dec a

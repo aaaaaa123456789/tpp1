@@ -220,6 +220,7 @@ PrintFunction::
 	jr .handle_loop
 
 MessageBox:
+	; always sets carry
 	push bc
 	push de
 	push hl
@@ -247,6 +248,7 @@ MessageBox:
 	rst DelayFrames
 	pop de
 	pop bc
+	scf
 	ret
 
 EndFullscreenTextbox::

@@ -56,14 +56,14 @@ InitializeRAMBank:
 	; initializes RAM bank c; destroys b and hl
 	ld hl, $a000
 	xor a
+	ld b, a
 	ld [hli], a
 	ld [hli], a
 	ld a, [hRAMInitialized]
 	ld [hli], a
 	ld [hl], c
-	ld hl, 0
-	ld b, h
-	ld a, [hRAMInitialized]
+	ld h, b
+	ld l, b
 	rst AddNTimes
 	ld b, h
 	ld a, l
@@ -87,11 +87,10 @@ GetMaxValidRAMBank::
 	ccf
 	ret c
 	ld c, a
-	ld a, 1
-	jr .handle_loop
+	xor a
+	scf
 .loop
-	add a, a
-.handle_loop
+	adc a
 	dec c
 	jr nz, .loop
 	ld c, a
@@ -106,7 +105,6 @@ CheckRAMPresent::
 	ld hl, NoRAMString
 ShowErrorMessageBoxAndCarry::
 	call MessageBox
-	scf
 	jp UpdateMenuScreen
 
 CheckRAMInitialized:
@@ -642,16 +640,13 @@ TestRAMInBankAliasing:
 	ld hl, wRandomBuffer
 	rst CopyBytes
 	pop hl
-	ld c, $40
+	ld c, $41
 .loop
+	dec c
+	ret z
 	ld a, [hli]
 	and a
-	jr nz, .failed
-	dec c
-	jr nz, .loop
-	ret
-
-.failed
+	jr z, .loop
 	ld hl, .failed_text
 	jp PrintAndIncrementErrorCount
 
@@ -745,15 +740,13 @@ TestRAMCrossBankAliasing:
 	pop hl
 	pop af
 	ld [rMR2w], a
-	ld c, $40
+	ld c, $41
 .testing_loop
+	dec c
+	ret z
 	ld a, [hli]
 	and a
-	jr nz, .failed
-	dec c
-	jr nz, .testing_loop
-	ret
-.failed
+	jr z, .testing_loop
 	ld hl, .failed_text
 	jp PrintAndIncrementErrorCount
 
@@ -809,17 +802,16 @@ TestRAMBankswitchAndMap::
 	ld [rMR3w], a
 	ld a, [hRAMBanks]
 	ld c, a
-	ld a, [hCurrent] ;uninitialized for the first iteration, but that doesn't matter
-	ld b, a
+	ld hl, hCurrent ;uninitialized for the first iteration, but that doesn't matter
 .resample
 	call Random
 	and c
-	cp b
+	cp [hl]
 	jr z, .resample
 	ld c, a
-	ld [hCurrent], a
-	ld a, [hCurrentTest]
-	ld b, a
+	ld [hli], a
+	; hl = hCurrentTest
+	ld b, [hl]
 	di
 	ld hl, sp + 0
 	ld sp, rMR2w + 2

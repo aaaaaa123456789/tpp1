@@ -74,7 +74,7 @@ Main::
 	ld a, 5
 	rst DelayFrames
 	ld a, [rMR0r]
-	cp 1
+	dec a
 	decoord 15, 10
 	call .handle_pass_fail_from_zero
 	ld a, 10
@@ -142,10 +142,9 @@ Main::
 
 .handle_pass_fail_from_zero
 	push af
-	ld a, [hInitialTestNumber]
-	inc a
-	ld b, a
-	ld [hInitialTestNumber], a
+	ld hl, hInitialTestNumber
+	inc [hl]
+	ld b, [hl]
 	pop af
 	ld hl, .pass_string
 	jr z, .print
@@ -155,10 +154,9 @@ Main::
 	rla
 	dec b
 	jr nz, .flag_loop
-	ld b, a
-	ld a, [hInitialTestResult]
-	or b
-	ld [hInitialTestResult], a
+	ld hl, hInitialTestResult
+	or [hl]
+	ld [hl], a
 	ld hl, .fail_string
 .print
 	rst CopyString

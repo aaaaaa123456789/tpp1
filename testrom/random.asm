@@ -53,6 +53,7 @@ StableRandom::
 	push de
 	push hl
 	call .advance_left_register
+	call .check_right_register_cycles
 	call .advance_right_register
 	inc hl
 	inc hl
@@ -162,6 +163,90 @@ StableRandom::
 	ld [hld], a ;only b needs to be written back, since the rest will be handled by the main function
 	ret
 
+.check_right_register_cycles
+	; in: hl: pointer to right register
+	; out: hl preserved
+	inc hl
+	inc hl
+	ld a, [hld]
+	ld c, a
+	ld a, [hld]
+	ld d, a
+	or c
+	ld e, [hl]
+	push hl
+	jr z, .check_long_cycles
+	ld hl, .right_register_short_cycles - 1
+	ld b, (.right_register_short_cycles_end - .right_register_short_cycles) / 3 + 1
+.short_cycle_handle_loop
+	inc hl
+	dec b
+	jr z, .pop_ret
+.short_cycle_loop
+	ld a, [hli]
+	cp c
+	ld a, [hli]
+	jr nz, .short_cycle_handle_loop
+	cp d
+	jr nz, .short_cycle_handle_loop
+	ld a, e
+	cp [hl]
+	jr nz, .short_cycle_handle_loop
+	inc hl
+.copy_right_register_state
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	ld b, [hl]
+	pop hl
+	inc hl
+	ld [hli], a
+	ld a, c
+	ld [hld], a
+	dec hl
+	ld [hl], b
+	ret
+
+.check_long_cycles
+	ld hl, .right_register_long_cycles
+.long_cycle_loop
+	ld a, [hli]
+	and a
+	jr z, .pop_ret
+	cp e
+	jr nz, .long_cycle_loop
+	ld a, [hl]
+	and a
+	jr z, .start_short_cycles
+	pop hl
+	ld [hl], a
+	ret
+
+.start_short_cycles
+	pop hl
+	push hl
+	inc hl
+	inc hl
+	inc hl
+	call .advance_selector_register
+	ld hl, .right_register_short_cycles
+	jr .copy_right_register_state
+
+.pop_ret
+	pop hl
+	ret
+
+.right_register_short_cycles
+	db $72, $4f, $9f
+	db $7b, $1a, $7b
+	db $84, $e5, $56
+	db $8d, $b0, $32
+.right_register_short_cycles_end
+	db 0, 0
+.right_register_long_cycles
+	db 1, 2, 4, 8, 13, 17, 23, 26, 29, 58
+	db 0
+
 .advance_right_register
 	; in: hl: pointer to right register
 	; out: hl preserved
@@ -210,6 +295,10 @@ StableRandom::
 	ld c, a
 	call .advance_selector_register
 	ld d, a
+	sub 210
+	jr c, .carry_reseed_OK
+	ld d, a
+.carry_reseed_OK
 	call .advance_selector_register
 	ld e, a
 	dec hl

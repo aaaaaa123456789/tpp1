@@ -1,17 +1,11 @@
 MainMenu::
-	ld a, MainTestingMenu & $ff
-	ld [hSelectedMenu], a
-	ld a, MainTestingMenu >> 8
-	ld [hSelectedMenu + 1], a
-	ld a, ACTION_RELOAD
-	ld [hNextMenuAction], a
-	jr .loop_tail
+	ld hl, MainTestingMenu
+	call LoadMenu
 .loop
+	call RenderMenu
 	call DelayFrame
 	call GetMenuJoypad
 	call nz, UpdateMenuContents
-.loop_tail
-	call RenderMenu
 	jr .loop
 
 RenderMenu:
@@ -190,7 +184,7 @@ UpdateMenuContents:
 	; called with the last input in a; known to be non-zero
 	dec a
 	jr nz, .not_execute
-	ld a, -1
+	dec a ; a = -1
 	ld [hNextMenuAction], a
 	call ExecuteSelectedOption
 	ld a, [hNextMenuAction]
@@ -225,12 +219,10 @@ UpdateMenuContents:
 	ret z
 	dec a
 	ld [hSelectedOption], a
-	ld e, a
-	ld a, [hFirstOption]
-	cp e
-	jr c, .update_menu
-	ld a, e
-	ld [hFirstOption], a
+	ld hl, hFirstOption
+	cp [hl]
+	jr nc, .update_menu
+	ld [hl], a
 	jr .update_menu
 
 .not_up
@@ -316,13 +308,11 @@ ExecuteSelectedOption:
 	ld b, a
 	and $3f
 	ld h, a
-	xor a
-	sla b
-	rla
-	sla b
-	rla
+	ld a, b
+	rlca
+	rlca
+	and 3
 
-	and a
 	jr nz, .not_exec
 	push hl
 	ld a, [hFirstOption]

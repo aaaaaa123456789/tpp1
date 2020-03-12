@@ -1,3 +1,12 @@
+RunAllMRTests::
+	call MRMappingTest
+	call MRReadingTest
+	call MRWritesTest
+	call MRMirroringReadTest
+	call MRMirroringWriteTest
+	call MRPoppingTest
+	jr ReinitializeMRRegisters
+
 RestoreMRValues::
 	call ReinitializeMRRegisters
 	ld hl, .text
@@ -92,16 +101,15 @@ MRWritesTest::
 .loop
 	call GenerateRandomMRValues
 .check
-	ld hl, rMR0r
+	ld hl, rMR4r
 	call Random
-	ld [hli], a
+	ld [hld], a
 	call Random
-	ld [hli], a
+	ld [hld], a
 	call Random
-	ld [hli], a
+	ld [hld], a
 	call Random
 	ld [hl], a
-	ld l, rMR0r & $ff
 	ld a, [hli]
 	cp c
 	jr nz, .error
@@ -373,7 +381,7 @@ MRPoppingTest::
 	call PrintWithBlankLine
 	call ClearMR4 ;exits with hl = rMR3w
 	ld [hl], MR3_MAP_REGS
-	ld a, 3
+	ld a, l ;= 3
 	ld [hMax], a
 .loop
 	call GenerateRandomMRValues
@@ -409,12 +417,3 @@ MRPoppingTest::
 	ei
 	jp nz, PrintMRReadErrorAndIncrementCount
 	ret
-
-RunAllMRTests::
-	call MRMappingTest
-	call MRReadingTest
-	call MRWritesTest
-	call MRMirroringReadTest
-	call MRMirroringWriteTest
-	call MRPoppingTest
-	jp ReinitializeMRRegisters

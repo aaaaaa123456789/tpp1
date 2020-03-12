@@ -81,10 +81,11 @@ RunAllTests::
 	ld hl, .compliance_text
 	rst Print
 .no_compliance_message
-	ld a, [hComplianceTestRun]
-	add a, 1
-	sbc 0 ;avoids overflows
-	ld [hComplianceTestRun], a
+	ld hl, hComplianceTestRun
+	inc [hl]
+	jr nz, .no_compliance_overflow
+	dec [hl]
+.no_compliance_overflow
 	ld hl, wErrorCount
 	ld a, [hli]
 	ld [hComplianceErrors], a
