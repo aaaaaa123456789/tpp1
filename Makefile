@@ -8,8 +8,8 @@ RAMSIZE := 5
 RTC     := ON
 RUMBLE  := MULTI
 
-# This line simply sets the ROMFLAGS variable to a string like +RTC+MULTIRUMBLE to pass to RGBFIX.
-ROMFLAGS := $(if $(RTC),+RTC,)$(if $(RUMBLE),+$(and $(findstring $(RUMBLE),MULTI),$(findstring MULTI,$(RUMBLE)))RUMBLE,)
+# This line simply sets the ROMFLAGS variable to a string like +TIMER+MULTIRUMBLE to pass to RGBFIX.
+ROMFLAGS := $(if $(RTC),+TIMER,)$(if $(RUMBLE),+$(and $(findstring $(RUMBLE),MULTI),$(findstring MULTI,$(RUMBLE)))RUMBLE,)
 
 all: padder.c $(wildcard testrom/*.asm)
 	${CC} -O3 padder.c -o padder
