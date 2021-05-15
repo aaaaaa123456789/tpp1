@@ -4,6 +4,7 @@ DelayFrame::
 	ldh [hVBlankOccurred], a
 .loop
 	halt
+	nop
 	ldh a, [hVBlankOccurred]
 	and a
 	jr z, .loop
