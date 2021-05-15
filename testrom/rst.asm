@@ -1,12 +1,10 @@
-_Reset::
-	; @ = 0
+Reset::
 	di
 	xor a
 	ld sp, StackTop
 	jp Restart
 
-_CopyString::
-	; @ = 8
+CopyString::
 	push af
 	xor a
 	call CopyBytesUntilMatch
@@ -16,8 +14,7 @@ _CopyString::
 _hl_::
 	jp hl
 
-_FillByte::
-	; @ = 10
+FillByte::
 	jp FillByteFunction
 
 _FinishPopping:
@@ -27,17 +24,14 @@ _FinishPopping:
 _ContinueDelayFrames:
 	pop af
 	dec a
-
-_DelayFrames::
-	; @ = 18
+DelayFrames::
 	and a
 	ret z
 	push af
 	call DelayFrame
 	jr _ContinueDelayFrames
 
-_PrintString::
-	; @ = 20
+PrintString::
 	push bc
 	push af
 	call PrintStringFunction
@@ -46,8 +40,7 @@ _PopAFBC:
 	pop bc
 	ret
 
-_AddNTimes::
-	; @ = 28
+AddNTimes::
 	and a
 	ret z
 	push bc
@@ -55,8 +48,7 @@ _AddNTimes::
 	pop bc
 	ret
 
-_CopyBytes::
-	; @ = 30
+CopyBytes::
 	push af
 	inc b
 	inc c
@@ -64,8 +56,7 @@ _CopyBytes::
 	pop af
 	ret
 
-_Print::
-	; @ = 38
+PrintText::
 	push bc
 	push af
 	push de

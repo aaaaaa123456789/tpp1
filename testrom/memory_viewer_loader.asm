@@ -26,7 +26,7 @@ ROMViewer::
 	hlcoord 6, 0
 	ld [hl], ":"
 	ld a, ACTION_REDRAW
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	pop de
 .loop
 	ld hl, .hex_inputs
@@ -34,17 +34,17 @@ ROMViewer::
 	call HexadecimalEntry
 	pop de
 	jr c, ExitMemoryViewer
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	and $c0
 	cp $40
 	ld hl, InvalidAddressString
 	jr nz, .error
 	ld hl, BankTooHighString
-	ld a, [hMemoryBank + 1]
+	ldh a, [hMemoryBank + 1]
 	cp d
 	jr c, OpenMemoryViewer
 	jr nz, .error
-	ld a, [hMemoryBank]
+	ldh a, [hMemoryBank]
 	cp e
 	jr c, OpenMemoryViewer
 	jr z, OpenMemoryViewer
@@ -61,9 +61,9 @@ ROMViewer::
 	dw 0
 
 OpenMemoryViewer:
-	ld a, [hMemoryAddress]
+	ldh a, [hMemoryAddress]
 	and $c0
-	ld [hMemoryAddress], a
+	ldh [hMemoryAddress], a
 	call MemoryViewer
 ExitMemoryViewer:
 	ldopt hl, OPTION_MENU, MainTestingMenu
@@ -95,7 +95,7 @@ RAMViewer::
 	hlcoord 5, 0
 	ld [hl], ":"
 	ld a, ACTION_REDRAW
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	pop bc
 .loop
 	ld hl, .hex_inputs
@@ -103,12 +103,12 @@ RAMViewer::
 	call HexadecimalEntry
 	pop bc
 	jr c, ExitMemoryViewer
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	and $e0
 	cp $a0
 	ld hl, InvalidAddressString
 	jr nz, .error
-	ld a, [hMemoryBank]
+	ldh a, [hMemoryBank]
 	cp b
 	jr c, OpenMemoryViewer
 	jr z, OpenMemoryViewer

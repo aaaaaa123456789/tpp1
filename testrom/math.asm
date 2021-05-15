@@ -18,18 +18,18 @@ Multiply16::
 	srl d
 	rr e
 	jr nc, .next
-	ld a, [hProduct]
+	ldh a, [hProduct]
 	add a, c
-	ld [hProduct], a
-	ld a, [hProduct + 1]
+	ldh [hProduct], a
+	ldh a, [hProduct + 1]
 	adc b
-	ld [hProduct + 1], a
-	ld a, [hProduct + 2]
+	ldh [hProduct + 1], a
+	ldh a, [hProduct + 2]
 	adc l
-	ld [hProduct + 2], a
-	ld a, [hProduct + 3]
+	ldh [hProduct + 2], a
+	ldh a, [hProduct + 3]
 	adc h
-	ld [hProduct + 3], a
+	ldh [hProduct + 3], a
 .next
 	sla c
 	rl b

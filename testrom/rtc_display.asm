@@ -90,8 +90,8 @@ DisplayRTCState::
 	ld de, .options_text
 	rst PrintString
 	xor a
-	ld [hTimesetCursor], a
-	ld [hVBlankLine], a
+	ldh [hTimesetCursor], a
+	ldh [hVBlankLine], a
 	call UpdateDisplayedRTCState
 	ld a, 2
 	rst DelayFrames
@@ -121,7 +121,7 @@ UpdateDisplayedRTCState:
 	hlcoord 1, 13
 	ld bc, SCREEN_WIDTH
 	ld e, b ;= 0
-	ld a, [hTimesetCursor]
+	ldh a, [hTimesetCursor]
 .cursor_loop
 	ld [hl], " "
 	cp e
@@ -156,7 +156,8 @@ UpdateDisplayedRTCState:
 	pop hl
 	decoord 1, 4
 	rst CopyString
-	xor a ;ld a, MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	xor a
 	ld [rMR3w], a
 	ld a, [rMR4r]
 	swap a
@@ -186,7 +187,7 @@ UpdateDisplayedRTCState:
 ProcessRTCDisplayJoypad:
 	dec a
 	jr nz, .not_a
-	ld a, [hTimesetCursor]
+	ldh a, [hTimesetCursor]
 	and a
 	jr z, .turn_on
 	dec a
@@ -206,16 +207,16 @@ ProcessRTCDisplayJoypad:
 .not_b
 	dec a
 	jr nz, .not_up
-	ld a, [hTimesetCursor]
+	ldh a, [hTimesetCursor]
 	dec a
 	jr .set_cursor
 
 .not_up
-	ld a, [hTimesetCursor]
+	ldh a, [hTimesetCursor]
 	inc a
 .set_cursor
 	and 3
-	ld [hTimesetCursor], a
+	ldh [hTimesetCursor], a
 	ret
 
 .turn_on

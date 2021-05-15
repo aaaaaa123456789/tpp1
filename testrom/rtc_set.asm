@@ -16,26 +16,26 @@ Timeset::
 	hlcoord 1, 11
 	rst PrintString
 	call Timeset_ClearTime ;returns with a = 0
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	ld a, 3
 	rst DelayFrames
 	call Timeset_LoadTimeFromRTC
 .loop
 	call Timeset_UpdateScreen
 	ld a, 4
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	call DelayFrame
 	call GetMenuJoypad
 	jr z, .loop
 	call Timeset_DoJoypadAction
 	jr nc, .loop
 	xor a
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	call ClearScreen
 	ld a, 3
 	rst DelayFrames
 	ld a, ACTION_REDRAW
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	ret
 
 .title_string
@@ -79,7 +79,7 @@ Timeset_UpdateScreen:
 	rst FillByte
 	ld hl, Timeset_CursorPositions
 	ld bc, 5
-	ld a, [hTimesetCursor]
+	ldh a, [hTimesetCursor]
 	rst AddNTimes
 	ld c, [hl]
 	ld b, 0
@@ -97,18 +97,18 @@ Timeset_DoJoypadAction:
 	ld a, MR3_MAP_RTC
 	ld [rMR3w], a
 	ld hl, rRTCW
-	ld a, [hTimesetWeek]
+	ldh a, [hTimesetWeek]
 	ld [hli], a
-	ld a, [hTimesetDay]
+	ldh a, [hTimesetDay]
 	swap a
 	rlca
 	ld b, a
-	ld a, [hTimesetHour]
+	ldh a, [hTimesetHour]
 	or b
 	ld [hli], a
-	ld a, [hTimesetMinute]
+	ldh a, [hTimesetMinute]
 	ld [hli], a
-	ld a, [hTimesetSecond]
+	ldh a, [hTimesetSecond]
 	ld [hl], a
 	ld hl, rMR3w
 	ld [hl], MR3_SET_RTC
@@ -151,22 +151,22 @@ Timeset_DoJoypadAction:
 	ld hl, Timeset_CursorPositions + 3
 	jr Timeset_ExecuteCursor
 .left
-	ld a, [hTimesetCursor]
+	ldh a, [hTimesetCursor]
 	inc a
-	ld [hTimesetCursor], a
+	ldh [hTimesetCursor], a
 	cp 10
 	ccf
 	ret nc
 	xor a
-	ld [hTimesetCursor], a
+	ldh [hTimesetCursor], a
 	ret
 .right
-	ld a, [hTimesetCursor]
+	ldh a, [hTimesetCursor]
 	sub 1
-	ld [hTimesetCursor], a
+	ldh [hTimesetCursor], a
 	ret nc
 	ld a, 9
-	ld [hTimesetCursor], a
+	ldh [hTimesetCursor], a
 	and a
 	ret
 
@@ -175,7 +175,7 @@ Timeset_DoJoypadAction:
 
 Timeset_ExecuteCursor:
 	ld bc, 5
-	ld a, [hTimesetCursor]
+	ldh a, [hTimesetCursor]
 	rst AddNTimes
 	ld a, [hli]
 	ld h, [hl]
@@ -233,145 +233,145 @@ Timeset_CursorPositions:
 	dbww  2, Timeset_AddOneHundredWeeks, Timeset_SubtractOneHundredWeeks
 
 Timeset_AddTenSeconds:
-	ld a, [hTimesetSecond]
+	ldh a, [hTimesetSecond]
 	add a, 10
 	jr Timeset_CheckSecondsAfterIncrement
 
 Timeset_AddTenMinutes:
-	ld a, [hTimesetMinute]
+	ldh a, [hTimesetMinute]
 	add a, 10
 	jr Timeset_CheckMinutesAfterIncrement
 
 Timeset_AddTenHours:
-	ld a, [hTimesetHour]
+	ldh a, [hTimesetHour]
 	add a, 10
 	jr Timeset_CheckHoursAfterIncrement
 
 Timeset_IncrementSeconds:
-	ld a, [hTimesetSecond]
+	ldh a, [hTimesetSecond]
 	inc a
 Timeset_CheckSecondsAfterIncrement:
-	ld [hTimesetSecond], a
+	ldh [hTimesetSecond], a
 	sub 60
 	ret c
-	ld [hTimesetSecond], a
+	ldh [hTimesetSecond], a
 Timeset_IncrementMinutes:
-	ld a, [hTimesetMinute]
+	ldh a, [hTimesetMinute]
 	inc a
 Timeset_CheckMinutesAfterIncrement:
-	ld [hTimesetMinute], a
+	ldh [hTimesetMinute], a
 	sub 60
 	ret c
-	ld [hTimesetMinute], a
+	ldh [hTimesetMinute], a
 Timeset_IncrementHours:
-	ld a, [hTimesetHour]
+	ldh a, [hTimesetHour]
 	inc a
 Timeset_CheckHoursAfterIncrement:
-	ld [hTimesetHour], a
+	ldh [hTimesetHour], a
 	sub 24
 	ret c
-	ld [hTimesetHour], a
+	ldh [hTimesetHour], a
 Timeset_IncrementDay:
-	ld a, [hTimesetDay]
+	ldh a, [hTimesetDay]
 	inc a
-	ld [hTimesetDay], a
+	ldh [hTimesetDay], a
 	sub 7
 	ret c
-	ld [hTimesetDay], a
+	ldh [hTimesetDay], a
 Timeset_IncrementWeek:
-	ld a, [hTimesetWeek]
+	ldh a, [hTimesetWeek]
 	add a, 1
 Timeset_CheckWeeksAfterIncrement:
-	ld [hTimesetWeek], a
+	ldh [hTimesetWeek], a
 	ret nc
 	ld a, $ff
-	ld [hTimesetWeek], a
+	ldh [hTimesetWeek], a
 	ld a, 6
-	ld [hTimesetDay], a
+	ldh [hTimesetDay], a
 	ld a, 23
-	ld [hTimesetHour], a
+	ldh [hTimesetHour], a
 	ld a, 59
-	ld [hTimesetMinute], a
-	ld [hTimesetSecond], a
+	ldh [hTimesetMinute], a
+	ldh [hTimesetSecond], a
 	ret
 
 Timeset_AddTenWeeks:
-	ld a, [hTimesetWeek]
+	ldh a, [hTimesetWeek]
 	add a, 10
 	jr Timeset_CheckWeeksAfterIncrement
 
 Timeset_AddOneHundredWeeks:
-	ld a, [hTimesetWeek]
+	ldh a, [hTimesetWeek]
 	add a, 100
 	jr Timeset_CheckWeeksAfterIncrement
 
 Timeset_SubtractTenSeconds:
-	ld a, [hTimesetSecond]
+	ldh a, [hTimesetSecond]
 	sub 10
 	jr Timeset_CheckSecondsAfterDecrement
 
 Timeset_SubtractTenMinutes:
-	ld a, [hTimesetMinute]
+	ldh a, [hTimesetMinute]
 	sub 10
 	jr Timeset_CheckMinutesAfterDecrement
 
 Timeset_SubtractTenHours:
-	ld a, [hTimesetHour]
+	ldh a, [hTimesetHour]
 	sub 10
 	jr Timeset_CheckHoursAfterDecrement
 
 Timeset_DecrementSeconds:
-	ld a, [hTimesetSecond]
+	ldh a, [hTimesetSecond]
 	dec a
 Timeset_CheckSecondsAfterDecrement:
-	ld [hTimesetSecond], a
+	ldh [hTimesetSecond], a
 	add a, 60
 	ret nc
-	ld [hTimesetSecond], a
+	ldh [hTimesetSecond], a
 Timeset_DecrementMinutes:
-	ld a, [hTimesetMinute]
+	ldh a, [hTimesetMinute]
 	dec a
 Timeset_CheckMinutesAfterDecrement:
-	ld [hTimesetMinute], a
+	ldh [hTimesetMinute], a
 	add a, 60
 	ret nc
-	ld [hTimesetMinute], a
+	ldh [hTimesetMinute], a
 Timeset_DecrementHours:
-	ld a, [hTimesetHour]
+	ldh a, [hTimesetHour]
 	dec a
 Timeset_CheckHoursAfterDecrement:
-	ld [hTimesetHour], a
+	ldh [hTimesetHour], a
 	add a, 24
 	ret nc
-	ld [hTimesetHour], a
+	ldh [hTimesetHour], a
 Timeset_DecrementDay:
-	ld a, [hTimesetDay]
+	ldh a, [hTimesetDay]
 	dec a
-	ld [hTimesetDay], a
+	ldh [hTimesetDay], a
 	add a, 7
 	ret nc
-	ld [hTimesetDay], a
+	ldh [hTimesetDay], a
 Timeset_DecrementWeek:
-	ld a, [hTimesetWeek]
+	ldh a, [hTimesetWeek]
 	sub 1
 Timeset_CheckWeeksAfterDecrement:
-	ld [hTimesetWeek], a
+	ldh [hTimesetWeek], a
 	ret nc
 Timeset_ClearTime:
 	xor a
-	ld [hTimesetWeek], a
-	ld [hTimesetDay], a
-	ld [hTimesetHour], a
-	ld [hTimesetMinute], a
-	ld [hTimesetSecond], a
+	ldh [hTimesetWeek], a
+	ldh [hTimesetDay], a
+	ldh [hTimesetHour], a
+	ldh [hTimesetMinute], a
+	ldh [hTimesetSecond], a
 	ret
 
 Timeset_SubtractTenWeeks:
-	ld a, [hTimesetWeek]
+	ldh a, [hTimesetWeek]
 	sub 10
 	jr Timeset_CheckWeeksAfterDecrement
 
 Timeset_SubtractOneHundredWeeks:
-	ld a, [hTimesetWeek]
+	ldh a, [hTimesetWeek]
 	sub 100
 	jr Timeset_CheckWeeksAfterDecrement

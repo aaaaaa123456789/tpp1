@@ -31,17 +31,19 @@ ReinitializeMRRegisters::
 MRMappingTest::
 	ld hl, .initial_text
 	call PrintWithBlankLine
-	xor a ;ld a, MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	xor a
 	ld [rMR3w], a
 	call .test_random
 	call .test_random
 	call .test_random
 	call ReinitializeMRRegisters ;exits with a = hl = 0
-	ld [hSelectedRAMBank], a
-	ld [hSelectedROMBank + 1], a
+	ldh [hSelectedRAMBank], a
+	ldh [hSelectedROMBank + 1], a
 	inc a
-	ld [hSelectedROMBank], a
-	ld h, rMR0r >> 8
+	ldh [hSelectedROMBank], a
+	ld h, HIGH(rMR0r)
+	assert LOW(rMR0r) == 0
 	ld a, [hli]
 	dec a
 	or [hl]
@@ -90,13 +92,13 @@ ClearMR4::
 
 MRWritesTest::
 	ld hl, .initial_text
-	rst Print
+	rst PrintText
 	call PrintEmptyStringAndReinitializeMRRegisters ;also maps regs to $a000
 	call ClearMR4
 	ld bc, 1
 	ld e, b
 	ld a, 10
-	ld [hMax], a
+	ldh [hMax], a
 	jr .check
 .loop
 	call GenerateRandomMRValues
@@ -123,12 +125,12 @@ MRWritesTest::
 	and $f
 	jr z, .handle_loop
 .error
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld a, l
 	dec a
 	push af
 	call .select_value
-	ld [hCurrent + 1], a
+	ldh [hCurrent + 1], a
 	pop af
 	call PrintMRMismatch
 	call IncrementErrorCount
@@ -160,15 +162,15 @@ GenerateRandomMRValues:
 	ld hl, rMR0w
 	call Random
 	ld [hli], a
-	ld [hSelectedROMBank], a
+	ldh [hSelectedROMBank], a
 	ld c, a
 	call Random
 	ld [hli], a
-	ld [hSelectedROMBank + 1], a
+	ldh [hSelectedROMBank + 1], a
 	ld b, a
 	call Random
 	ld [hl], a
-	ld [hSelectedRAMBank], a
+	ldh [hSelectedRAMBank], a
 	ld e, a
 	ret
 
@@ -189,7 +191,7 @@ PrintMRMismatch:
 	adc "0"
 	ld [wTextBuffer + 10], a
 	ld hl, wTextBuffer
-	rst Print
+	rst PrintText
 	pop de
 	ret
 
@@ -207,7 +209,7 @@ MRMirroringReadTest::
 	call ClearMR4 ;exits with hl = rMR3w
 	ld [hl], MR3_MAP_REGS
 	ld a, 5
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	ld hl, wValueBuffer
 	push hl
@@ -250,9 +252,9 @@ MRMirroringReadTest::
 .error
 	ld a, e
 	and $fc
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld a, d
-	ld [hCurrent + 1], a
+	ldh [hCurrent + 1], a
 	ld hl, .error_text
 	call PrintAndIncrementErrorCount
 .done_checking
@@ -275,10 +277,11 @@ MRMirroringReadTest::
 MRMirroringWriteTest::
 	ld hl, .initial_text
 	call PrintWithBlankLine
-	xor a ;ld a, MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	xor a
 	ld [rMR3w], a
 	ld a, 5
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	call Random
 	and $3f
@@ -311,9 +314,9 @@ MRMirroringWriteTest::
 	jr z, .ok
 .error
 	ld a, e
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld a, d
-	ld [hCurrent + 1], a
+	ldh [hCurrent + 1], a
 	ld hl, .error_text
 	call PrintAndIncrementErrorCount
 .ok
@@ -336,12 +339,14 @@ MRMirroringWriteTest::
 MRReadingTest::
 	ld hl, .initial_text
 	call PrintWithBlankLine
-	xor a ;ld a, MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	xor a
 	ld [rMR3w], a
 	ld a, 2
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	ld hl, rMR0r
+	assert LOW(rMR0r) == 0
 	ld d, l
 	ld e, l
 .inner_loop
@@ -363,13 +368,13 @@ MRReadingTest::
 
 .error
 	ld a, b
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld a, c
-	ld [hCurrent + 1], a
+	ldh [hCurrent + 1], a
 	ld a, l
 	call PrintMRMismatch
 	ld l, e
-	ld h, rMR0r >> 8
+	ld h, HIGH(rMR0r)
 	jp IncrementErrorCount
 
 .initial_text
@@ -381,8 +386,9 @@ MRPoppingTest::
 	call PrintWithBlankLine
 	call ClearMR4 ;exits with hl = rMR3w
 	ld [hl], MR3_MAP_REGS
-	ld a, l ;= 3
-	ld [hMax], a
+	assert LOW(rMR3w) == 3
+	ld a, l
+	ldh [hMax], a
 .loop
 	call GenerateRandomMRValues
 	call .test_values
@@ -407,7 +413,7 @@ MRPoppingTest::
 	cp d
 	jr nz, .done
 	pop de
-	ld a, [hSelectedRAMBank]
+	ldh a, [hSelectedRAMBank]
 	cp e
 	jr nz, .done
 	ld a, d

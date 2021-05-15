@@ -19,7 +19,8 @@ WaitForRTCChange:
 	push de
 	push bc
 	call LatchMapRTC ;exits with hl = rMR3w
-	ld h, rRTCS >> 8
+	assert LOW(rMR3w) == LOW(rRTCS)
+	ld h, HIGH(rRTCS)
 	ld a, [hld]
 	ld e, a
 	ld a, [hld]
@@ -28,13 +29,14 @@ WaitForRTCChange:
 	ld c, a
 	ld b, [hl]
 	ld hl, WaitingString
-	rst Print
+	rst PrintText
 	xor a
 .loop
 	push af
 	call DelayFrame
 	call LatchMapRTC ;exits with hl = rMR3w
-	ld h, rRTCS >> 8
+	assert LOW(rMR3w) == LOW(rRTCS)
+	ld h, HIGH(rRTCS)
 	ld a, [hld]
 	cp e
 	jr nz, .changed

@@ -4,7 +4,8 @@ PrintNumber::
 	push de
 	push hl
 	ld hl, wDigitsBuffer + 10
-	xor a ;ld a, "<@>"
+	assert "<@>" == 0
+	xor a
 	ld [hld], a
 .loop
 	call DivideByTen
@@ -104,7 +105,7 @@ PrintByte::
 	ld a, c
 	and a
 	jr nz, .digit_OK
-	ld a, (" " - "0") & $ff
+	ld a, " " - "0"
 .digit_OK
 	add a, "0"
 	ld [hli], a

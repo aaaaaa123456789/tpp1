@@ -1,10 +1,10 @@
 lb: MACRO
-	ld \1, (((\2) & $ff) << 8) | ((\3) & $ff)
+	ld \1, (LOW(\2) << 8) | LOW(\3)
 ENDM
 
 bigdw: MACRO
 	rept _NARG
-		db (\1) >> 8, (\1) & $ff
+		db HIGH(\1), LOW(\1)
 		shift
 	endr
 ENDM
@@ -53,18 +53,18 @@ ENDM
 
 menu: MACRO
 option_number = 0
-	option_link {option_number}
+	option_link {d:option_number}
 	dw \2
 	db \1, "<@>"
 ENDM
 
 option: MACRO
-	option_label {option_number}
+	option_label {d:option_number}
 option_number = option_number + 1
 	if _NARG > 3
 		dw \4
 	else
-		option_link {option_number}
+		option_link {d:option_number}
 	endc
 	dw (\3) | ((\2) << 14)
 	db \1, "<@>"
@@ -75,7 +75,7 @@ ldopt: MACRO
 ENDM
 
 end_menu: MACRO
-	option_label {option_number}
+	option_label {d:option_number}
 	dw -1
 ENDM
 
@@ -134,13 +134,3 @@ SCREEN_HEIGHT EQU 18
 	const ACTION_RELOAD
 	const ACTION_REDRAW
 	const ACTION_UPDATE
-
-; RSTs
-Reset EQU $00
-CopyString EQU $08
-FillByte EQU $10
-DelayFrames EQU $18
-PrintString EQU $20
-AddNTimes EQU $28
-CopyBytes EQU $30
-Print EQU $38

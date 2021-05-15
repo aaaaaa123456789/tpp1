@@ -2,7 +2,7 @@ RTCOnOffTest::
 	ld hl, .initial_test_text
 	call PrintWithBlankLine
 	ld a, 3
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	ld hl, rMR3w
 	ld [hl], MR3_RTC_OFF
@@ -76,7 +76,7 @@ RTCSetTest:
 	pop af
 	ld [rMR3w], a
 	ld a, 5
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	ld a, MR3_MAP_RTC
 	ld [rMR3w], a
@@ -131,7 +131,7 @@ RTCRolloversTest::
 	ld a, MR3_RTC_ON
 	ld [rMR3w], a
 	ld a, 4
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	call GenerateRandomRTCSetting
 	ld e, 59
@@ -257,7 +257,7 @@ RTCLatchTest::
 	ld hl, .initial_test_text
 	call PrintWithBlankLine
 	ld a, 3
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	call GenerateRandomRTCSetting
 	ld a, e
@@ -282,7 +282,7 @@ RTCLatchTest::
 	pop de
 	pop bc
 	ld hl, WaitingString
-	rst Print
+	rst PrintText
 	ld hl, rMR3w
 	ld [hl], MR3_RTC_ON
 	ld a, 80
@@ -327,7 +327,8 @@ RTCRunningFlagTest::
 	ld h, a
 	; hl = $0003, de = $a003
 	ld [hl], MR3_SET_RTC
-	ld [hl], a ;a = MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	ld [hl], a
 	ld [hl], MR3_RTC_ON
 	ld a, [de]
 	and 4
@@ -398,7 +399,7 @@ RTCTimingTest_NoInitialBanner:
 	ld a, MR3_RTC_ON
 	ld [rMR3w], a
 	ld a, 3
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	call GenerateRandomRTCSetting
 	ld a, e
@@ -422,7 +423,8 @@ RTCTimingTest_NoInitialBanner:
 	ld [hli], a
 	call Random
 	ld [hl], a
-	xor a ;ld a, MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	xor a
 	ld bc, rMR3w
 	ld [bc], a
 	call .do_timing_test
@@ -499,6 +501,7 @@ RTCWritingMR4Test::
 	ld [hl], MR3_CLEAR_RTC_OVERFLOW
 	ld [hl], MR3_MAP_RTC
 	push hl
+	assert (HIGH(rRTCS) == HIGH(rMR4r)) && (LOW(rRTCS) == LOW(rMR3w))
 	ld h, d ;hl = rRTCS
 	xor a
 	ld [hld], a
@@ -507,7 +510,8 @@ RTCWritingMR4Test::
 	ld [hl], a
 	pop hl
 	ld [hl], MR3_SET_RTC
-	ld [hl], a ;MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	ld [hl], a
 	ld a, [de]
 	and $c
 	call nz, .initial_error
@@ -556,7 +560,7 @@ RTCUnmapLatchTest::
 	ld a, MR3_RTC_OFF
 	ld [rMR3w], a
 	ld a, 5
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	call GenerateRandomRTCSetting
 	call SetRTCToValue
@@ -564,7 +568,8 @@ RTCUnmapLatchTest::
 	inc hl ;ensure that there is enough delay
 	ld [hl], MR3_MAP_RTC
 	push hl
-	ld h, rRTCS >> 8 ;hl = rRTCS
+	assert LOW(rMR3w) == LOW(rRTCS)
+	ld h, HIGH(rRTCS)
 	call Random
 	ld [hld], a
 	call Random
@@ -574,7 +579,8 @@ RTCUnmapLatchTest::
 	call Random
 	ld [hl], a
 	pop hl
-	ld [hl], h ;MR3_MAP_REGS
+	assert MR3_MAP_REGS == HIGH(rMR3w)
+	ld [hl], h
 	ld [hl], MR3_LATCH_RTC
 	push hl
 	pop hl ;delay
@@ -626,16 +632,16 @@ RTCMirroringTestWrite::
 	ld a, MR3_MAP_RTC
 	ld [rMR3w], a
 	ld a, 5
-	ld [hMax], a
+	ldh [hMax], a
 .outer_loop
 	call .generate_random_address
 	ld a, l
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld a, h
-	ld [hCurrent + 1], a
+	ldh [hCurrent + 1], a
 	push hl
 	ld hl, .writing_to_text
-	rst Print
+	rst PrintText
 	pop hl
 	call Random
 	ld e, a
@@ -650,7 +656,7 @@ RTCMirroringTestWrite::
 	ld b, a
 	ld [hl], a
 	ld a, 5
-	ld [hMax + 1], a
+	ldh [hMax + 1], a
 .inner_loop
 	call .generate_random_address
 	call TestRTCMirroring
@@ -697,11 +703,11 @@ TestRTCMirroring:
 .error
 	ld a, l
 	and $fc
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	or 3
 	ld l, a
 	ld a, h
-	ld [hCurrent + 1], a
+	ldh [hCurrent + 1], a
 	push hl
 	ld hl, .error_text
 	jp PrintAndIncrementErrorCount_HLPushed

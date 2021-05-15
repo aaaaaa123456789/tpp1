@@ -1,11 +1,11 @@
 MemoryViewer::
 	ld a, -1
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	call MemoryViewer_PrepareBanks
 	call ClearScreen
 	call MemoryViewer_UpdateScreen
 	xor a
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	ld a, 2
 	rst DelayFrames
 .loop
@@ -26,38 +26,39 @@ MemoryViewer::
 	jp ReinitializeMRRegisters
 
 MemoryViewer_PrepareBanks:
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	add a, a
 	ld hl, rMR0w
-	ld a, [hMemoryBank]
+	ldh a, [hMemoryBank]
 	jr c, .RAM
 	ld [hli], a
-	ld a, [hMemoryBank + 1]
+	ldh a, [hMemoryBank + 1]
 	ld [hl], a
 	ret
 .RAM
-	ld l, rMR2w ;h is already correct
+	assert HIGH(rMR0w) == HIGH(rMR2w)
+	ld l, LOW(rMR2w)
 	ld [hli], a
 	ld [hl], MR3_MAP_SRAM_RO
 	ret
 
 MemoryViewer_UpdateScreen:
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	add a, a
 	hlcoord 3, 0
 	jr c, .RAM
 	dec hl
-	ld a, [hMemoryBank + 1]
+	ldh a, [hMemoryBank + 1]
 	call PrintHexByte
 .RAM
-	ld a, [hMemoryBank]
+	ldh a, [hMemoryBank]
 	call PrintHexByte
 	ld a, ":"
 	ld [hli], a
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	ld d, a
 	call PrintHexByte
-	ld a, [hMemoryAddress]
+	ldh a, [hMemoryAddress]
 	ld e, a
 	call PrintHexByte
 	inc hl
@@ -75,7 +76,7 @@ MemoryViewer_UpdateScreen:
 	call PrintMemoryLine
 	dec c
 	jr nz, .line_loop
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	add a, a
 	ret nc
 	decoord 7, 1
@@ -118,7 +119,7 @@ PrintMemoryLine:
 	ret
 
 MemoryViewer_WrapAddress:
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	cp $90
 	jr nc, .RAM
 	and $3f
@@ -128,13 +129,13 @@ MemoryViewer_WrapAddress:
 	and $1f
 	add a, $a0
 .done
-	ld [hMemoryAddress + 1], a
+	ldh [hMemoryAddress + 1], a
 	ret
 
 MemoryViewer_ProcessJoypad:
 	dec a
 	jr nz, .not_edit
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	add a, a
 	ret nc
 	jr MemoryViewer_EditMode
@@ -176,7 +177,7 @@ MemoryViewer_ProcessJoypad:
 
 MemoryViewer_EditMode:
 	xor a
-	ld [hMemoryCursor], a
+	ldh [hMemoryCursor], a
 	call MemoryViewer_EditMode_UpdateCursor
 .loop
 	call DelayFrame
@@ -191,7 +192,7 @@ MemoryViewer_EditMode:
 
 MemoryViewer_EditMode_UpdateCursor:
 	hlcoord 3, 2
-	ld a, [hMemoryCursor]
+	ldh a, [hMemoryCursor]
 	ld e, a
 	ld bc, SCREEN_WIDTH
 	xor a
@@ -210,36 +211,36 @@ MemoryViewer_EditMode_UpdateCursor:
 MemoryViewer_EditMode_ProcessJoypad:
 	dec a
 	jr nz, .not_edit
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	cp $a0
 	jr nz, .not_first
-	ld a, [hMemoryAddress]
+	ldh a, [hMemoryAddress]
 	ld l, a
-	ld a, [hMemoryCursor]
+	ldh a, [hMemoryCursor]
 	or l
 	jr z, .error
 .not_first
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	cp $bf
 	jr nz, .not_last
-	ld a, [hMemoryAddress]
+	ldh a, [hMemoryAddress]
 	cp $c0
 	jr nz, .not_last
-	ld a, [hMemoryCursor]
+	ldh a, [hMemoryCursor]
 	cp 15
 	jr z, .error
 .not_last
-	ld a, [hMemoryAddress]
+	ldh a, [hMemoryAddress]
 	ld b, a
-	ld a, [hMemoryCursor]
+	ldh a, [hMemoryCursor]
 	add a, a
 	add a, a
 	add a, b
-	ld [hMemoryAddress], a
+	ldh [hMemoryAddress], a
 	call MemoryEditor
-	ld a, [hMemoryAddress]
+	ldh a, [hMemoryAddress]
 	and $c0
-	ld [hMemoryAddress], a
+	ldh [hMemoryAddress], a
 	scf
 	ret
 
@@ -256,7 +257,7 @@ MemoryViewer_EditMode_ProcessJoypad:
 
 .not_cancel
 	dec a
-	ld a, [hMemoryCursor]
+	ldh a, [hMemoryCursor]
 	jr nz, .not_up
 	sub 2 ;compensate for the inc a
 .not_up
@@ -264,7 +265,7 @@ MemoryViewer_EditMode_ProcessJoypad:
 	inc a
 .set_cursor
 	and $f
-	ld [hMemoryCursor], a
+	ldh [hMemoryCursor], a
 	ret
 
 .error_text
@@ -273,7 +274,7 @@ MemoryViewer_EditMode_ProcessJoypad:
 
 MemoryEditor:
 	ld a, -1
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	call ClearScreen
 	hlcoord 0, 0
 	lb de, SCREEN_WIDTH, 3
@@ -288,13 +289,13 @@ MemoryEditor:
 	decoord 2, 8
 	rst CopyString
 	hlcoord 11, 8
-	ld a, [hMemoryBank]
+	ldh a, [hMemoryBank]
 	call PrintHexByte
 	ld a, ":"
 	ld [hli], a
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	call PrintHexByte
-	ld a, [hMemoryAddress]
+	ldh a, [hMemoryAddress]
 	call PrintHexByte
 .loop
 	call MemoryEditor_DisplayDataAndGetInputs
@@ -312,9 +313,9 @@ MemoryEditor:
 	jr c, .loop
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
-	ld a, [hMemoryAddress]
+	ldh a, [hMemoryAddress]
 	ld e, a
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	ld d, a
 	ld hl, wDataBuffer
 	ld bc, 4
@@ -342,11 +343,11 @@ MemoryEditor:
 
 MemoryEditor_DisplayDataAndGetInputs:
 	hlcoord 0, 10
-	ld a, [hMemoryAddress]
+	ldh a, [hMemoryAddress]
 	ld e, a
-	ld a, [hMemoryAddress + 1]
+	ldh a, [hMemoryAddress + 1]
 	ld d, a
-	ld a, [hMemoryCursor]
+	ldh a, [hMemoryCursor]
 	and a
 	jr z, .first_line
 	cp 15
@@ -426,7 +427,7 @@ MemoryEditor_UpdateDisplayedData:
 	ld de, wDataBuffer
 	hlcoord 16, 10
 	ld bc, SCREEN_WIDTH
-	ld a, [hMemoryCursor]
+	ldh a, [hMemoryCursor]
 	and a
 	jr z, .selected
 	add hl, bc

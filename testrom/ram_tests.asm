@@ -7,19 +7,19 @@ InitializeRAMBanks::
 
 DoRAMBankInitialization:
 	ld hl, .initial_text
-	rst Print
+	rst PrintText
 	call PrintEmptyString
 .resample
 	call Random
 	and a
 	jr z, .resample
-	ld [hRAMInitialized], a
+	ldh [hRAMInitialized], a
 	ld hl, .selected_seed
-	rst Print
+	rst PrintText
 	call PrintEmptyString
 	call GetMaxValidRAMBank
 	ld a, c
-	ld [hRAMBanks], a
+	ldh [hRAMBanks], a
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
 	ld c, -1
@@ -28,11 +28,11 @@ DoRAMBankInitialization:
 	ld a, c
 	ld [rMR2w], a
 	call InitializeRAMBank
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	cp c
 	jr nz, .loop
 	ld hl, .done_text
-	rst Print
+	rst PrintText
 	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .initial_text
@@ -59,7 +59,7 @@ InitializeRAMBank:
 	ld b, a
 	ld [hli], a
 	ld [hli], a
-	ld a, [hRAMInitialized]
+	ldh a, [hRAMInitialized]
 	ld [hli], a
 	ld [hl], c
 	ld h, b
@@ -110,7 +110,7 @@ ShowErrorMessageBoxAndCarry::
 CheckRAMInitialized:
 	call CheckRAMPresent
 	ret c
-	ld a, [hRAMInitialized]
+	ldh a, [hRAMInitialized]
 	and a
 	ret nz
 	ld hl, UninitializedRAMString
@@ -133,7 +133,7 @@ _CheckRAMStatusForTesting:
 	ld hl, OneRAMBankString
 	jr z, .failed
 .no_two_bank_testing
-	ld a, [hRAMInitialized]
+	ldh a, [hRAMInitialized]
 	and a
 	ret nz
 	call IncrementErrorCount
@@ -145,9 +145,9 @@ _CheckRAMStatusForTesting:
 
 HandleRAMTestSetup:
 	ld [rMR3w], a
-	rst Print
+	rst PrintText
 	ld hl, TestingAmountOfRAMBanksString
-	rst Print
+	rst PrintText
 	ld c, -1
 	jp PrintEmptyString
 
@@ -161,11 +161,11 @@ TestRAMReads:
 .loop
 	inc c
 	ld a, c
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld [rMR2w], a
 	call TestReadContentsFromRAMBank
 	call c, PrintRAMFailedAndIncrement
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	cp c
 	jr nz, .loop
 	jp PrintEmptyStringAndReinitializeMRRegisters
@@ -191,7 +191,7 @@ TestReadContentsFromRAMBank:
 	ld a, [hli]
 	and a
 	jr nz, .failed
-	ld a, [hRAMInitialized]
+	ldh a, [hRAMInitialized]
 	cp [hl]
 	jr nz, .failed
 	inc hl
@@ -200,7 +200,7 @@ TestReadContentsFromRAMBank:
 	jr nz, .failed
 	ld hl, 0
 	ld b, h
-	ld a, [hRAMInitialized]
+	ldh a, [hRAMInitialized]
 	rst AddNTimes
 	ld a, l
 	ld b, h
@@ -228,11 +228,11 @@ TestRAMWrites:
 .loop
 	inc c
 	ld a, c
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld [rMR2w], a
 	call WriteAndVerifyRAMBank
 	call c, PrintRAMFailedAndIncrement
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	cp c
 	jr nz, .loop
 	jp PrintEmptyStringAndReinitializeMRRegisters
@@ -292,7 +292,7 @@ TestRAMWritesReadOnly:
 .loop
 	inc c
 	ld a, c
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld [rMR2w], a
 	call OverwriteInitializedRAMData
 	call TestReadContentsFromRAMBank
@@ -304,7 +304,7 @@ TestRAMWritesReadOnly:
 	ld [rMR3w], a
 	call PrintRAMFailedAndIncrement
 .passed
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	cp c
 	jr nz, .loop
 	jp PrintEmptyStringAndReinitializeMRRegisters
@@ -334,9 +334,9 @@ OverwriteInitializedRAMData:
 	ret
 
 PrintTestDescriptionAndThreeBanksMessage:
-	rst Print
+	rst PrintText
 	ld hl, .three_banks_text
-	rst Print
+	rst PrintText
 	jp PrintEmptyString
 
 .three_banks_text
@@ -349,7 +349,7 @@ TestRAMWritesDeselected:
 	call PrintTestDescriptionAndThreeBanksMessage
 	xor a
 	call .test
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	push af
 	call .test
 	call Random
@@ -364,9 +364,10 @@ TestRAMWritesDeselected:
 
 .test
 	ld [rMR2w], a
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld c, a
-	xor a ;ld a, MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	xor a
 	ld [rMR3w], a
 	call OverwriteInitializedRAMData
 	ld a, MR3_MAP_SRAM_RO
@@ -392,7 +393,7 @@ TestSwapRAMBanksDeselected:
 	ret c
 	ld hl, .test_description_text
 	call PrintTestDescriptionAndThreeBanksMessage
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	ld c, a
 .resample
 	call Random
@@ -422,9 +423,10 @@ TestSwapRAMBanksDeselected:
 
 .test
 	push bc
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld c, a
-	xor a ;ld a, MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	xor a
 	ld hl, rMR3w
 	ld [hld], a
 	ld a, c
@@ -450,7 +452,7 @@ RAMBankReadWriteScreen:
 	pop de
 	hlcoord 1, 4
 	rst PrintString
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	hlcoord 15, 2
 	call PrintHexByte
 	pop hl
@@ -464,18 +466,18 @@ TestRAMBankRangeReadWriteOption::
 	ld de, .screen_text
 	call RAMBankReadWriteScreen
 	ret c
-	ld a, [hBankStep]
+	ldh a, [hBankStep]
 	and a
 	ld hl, ZeroStepString
 	jr z, .error
-	ld a, [hInitialBank]
+	ldh a, [hInitialBank]
 	ld c, a
-	ld a, [hFinalBank]
+	ldh a, [hFinalBank]
 	cp c
 	ld hl, NoBanksSelectedString
 	jr c, .error
 	ld c, a
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	cp c
 	ld hl, RAMBankOutOfRangeString
 	jp nc, TestRAMBankRangeReadWrite
@@ -502,9 +504,9 @@ TestOneRAMBankReadWriteOption::
 	ld de, .screen_text
 	call RAMBankReadWriteScreen
 	ret c
-	ld a, [hInitialBank]
+	ldh a, [hInitialBank]
 	ld c, a
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	cp c
 	jr nc, .go
 	ld hl, RAMBankOutOfRangeString
@@ -512,9 +514,9 @@ TestOneRAMBankReadWriteOption::
 	jr .retry
 .go
 	ld a, c
-	ld [hFinalBank], a
+	ldh [hFinalBank], a
 	ld a, 1
-	ld [hBankStep], a
+	ldh [hBankStep], a
 	jr TestRAMBankRangeReadWrite
 
 .screen_text
@@ -528,11 +530,11 @@ TestAllRAMBanksReadWriteOption::
 	call CheckRAMInitialized
 	ret c
 	xor a
-	ld [hInitialBank], a
+	ldh [hInitialBank], a
 	inc a
-	ld [hBankStep], a
-	ld a, [hRAMBanks]
-	ld [hFinalBank], a
+	ldh [hBankStep], a
+	ldh a, [hRAMBanks]
+	ldh [hFinalBank], a
 TestRAMBankRangeReadWrite:
 	; do not run this test via ExecuteTest!
 	call MakeFullscreenTextbox
@@ -541,11 +543,11 @@ TestRAMBankRangeReadWrite:
 	call PrintWithBlankLine
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
-	ld a, [hInitialBank]
+	ldh a, [hInitialBank]
 	ld c, a
 .loop
 	ld a, c
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld [rMR2w], a
 	call TestReadContentsFromRAMBank
 	ld hl, .read_failed_text
@@ -553,11 +555,11 @@ TestRAMBankRangeReadWrite:
 	call WriteAndVerifyRAMBank
 	ld hl, .write_failed_text
 	call c, PrintAndIncrementErrorCount
-	ld a, [hBankStep]
+	ldh a, [hBankStep]
 	add a, c
 	jr c, .done
 	ld c, a
-	ld a, [hFinalBank]
+	ldh a, [hFinalBank]
 	cp c
 	jr nc, .loop
 .done
@@ -598,11 +600,11 @@ TestRAMInBankAliasing:
 	ld [rMR3w], a
 	xor a
 	call .test
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	call .test
 	call Random
 	ld c, a
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	and c
 	call .test
 	jp PrintEmptyStringAndReinitializeMRRegisters
@@ -612,7 +614,7 @@ TestRAMInBankAliasing:
 	db "aliasing test:<@>"
 
 .test
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld [rMR2w], a
 .resample
 	call GetRandomRAMAddress
@@ -662,27 +664,27 @@ TestRAMCrossBankAliasing:
 	ld a, MR3_MAP_SRAM_RW
 	ld [rMR3w], a
 	ld hl, .test_description_text
-	rst Print
-	ld a, [hRAMBanks]
+	rst PrintText
+	ldh a, [hRAMBanks]
 	dec a
 	jr z, .two_banks
 	ld hl, .testing_five_pairs_text
-	rst Print
-	ld a, [hRAMBanks]
+	rst PrintText
+	ldh a, [hRAMBanks]
 	srl a
 	inc a
 	ld c, a
 	ld b, 0
 	call .test
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	ld b, a
 	srl a
 	ld c, a
 	call .test
 	ld a, 3
-	ld [hMax], a
+	ldh [hMax], a
 .loop
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	ld c, a
 	call Random
 	and c
@@ -702,7 +704,7 @@ TestRAMCrossBankAliasing:
 
 .two_banks
 	ld hl, TestingAmountOfRAMBanksString
-	rst Print
+	rst PrintText
 	lb bc, 0, 1
 	call .test
 	jr .done_testing
@@ -718,7 +720,7 @@ TestRAMCrossBankAliasing:
 .test
 	push bc
 	ld a, b
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld [rMR2w], a
 	call FillRandomBuffer
 	call GetRandomRAMAddress
@@ -731,7 +733,7 @@ TestRAMCrossBankAliasing:
 	pop bc
 	pop hl
 	ld a, l
-	ld [hCurrent + 1], a
+	ldh [hCurrent + 1], a
 	ld [rMR2w], a
 	push hl
 	push de
@@ -769,7 +771,7 @@ RunAllRAMTests::
 	call TestRAMWrites
 	call TestRAMWritesReadOnly
 	call TestRAMWritesDeselected
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	and a
 	push af
 	call nz, TestSwapRAMBanksDeselected
@@ -793,14 +795,15 @@ TestRAMBankswitchAndMap::
 	jp PrintEmptyStringAndReinitializeMRRegisters
 
 .do_test
-	ld [hCurrentTest], a
-	rst Print
+	ldh [hCurrentTest], a
+	rst PrintText
 	ld a, 3
-	ld [hMax], a
+	ldh [hMax], a
 .loop
-	xor a ;ld a, MR3_MAP_REGS
+	assert MR3_MAP_REGS == 0
+	xor a
 	ld [rMR3w], a
-	ld a, [hRAMBanks]
+	ldh a, [hRAMBanks]
 	ld c, a
 	ld hl, hCurrent ;uninitialized for the first iteration, but that doesn't matter
 .resample
@@ -819,8 +822,9 @@ TestRAMBankswitchAndMap::
 	ld sp, hl
 	ei
 	ld hl, TestReadContentsFromRAMBank
+	assert MR3_MAP_SRAM_RO == 2
 	dec b
-	dec b ; MR3_MAP_SRAM_RO = 2
+	dec b
 	jr z, .selected_check
 	ld hl, WriteAndVerifyRAMBank
 .selected_check

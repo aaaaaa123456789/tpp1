@@ -1,46 +1,55 @@
 VBlank::
+	assert @ == $0040
 	push bc
 	push de
 	push hl
 	push af
 	ld a, 1
-	db $18, $01 ;skip the next instruction
-	
-	reti ; $48 handler
-	
-	ld [hVBlankOccurred], a
-	ld a, [hVBlankLine]
+	jr :+
+
+	assert @ == $0048
+	reti
+:
+
+	ldh [hVBlankOccurred], a
+	ldh a, [hVBlankLine]
 	ld c, a
-	db $18, $01 ;skip the next instruction
-	
-	reti ; $50 handler
-	
+	jr :+
+
+	assert @ == $0050
+	reti
+:
+
 	cp SCREEN_HEIGHT
 	jr nc, .no_screen_update
 	add a, a
-	db $18, $01 ;skip the next instruction
-	
-	reti ; $58 handler
+	jr :+
+
+	assert @ == $0058
+	reti
+:
 
 	add a, a
 	add a, c
 	add a, a
 	add a, a	
 	ld c, a
-	db $18, $01 ;skip the next instruction
+	jr :+
 
-	reti ; $60 handler
+	assert @ == $0060
+	reti
+:
 
 	ld b, 0
 	rl b	
 	ld hl, wScreenBuffer
 	add hl, bc
-	ld a, [hVBlankLine]
+	ldh a, [hVBlankLine]
 	swap a
 	rlca
 	ld e, a
 	and $1f
-	add a, vBGMap >> 8
+	add a, HIGH(vBGMap)
 	ld d, a
 	ld a, e
 	and $e0
@@ -61,7 +70,7 @@ VBlank::
 	jr nc, .no_pointer_carry
 	inc d
 .no_pointer_carry
-	ld a, [hVBlankLine]
+	ldh a, [hVBlankLine]
 	inc a
 	cp SCREEN_HEIGHT
 	jr c, .line_OK
@@ -69,7 +78,7 @@ VBlank::
 	ld de, vBGMap
 	xor a
 .line_OK
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	ld c, SCREEN_WIDTH / 5
 	dec b
 	jr nz, .loop

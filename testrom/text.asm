@@ -6,15 +6,15 @@ MakeFullscreenTextbox::
 MakeCurrentTextbox::
 	; same as Textbox, but it also sets it as current
 	ld a, l
-	ld [hTextboxPointer], a
+	ldh [hTextboxPointer], a
 	ld a, h
-	ld [hTextboxPointer + 1], a
+	ldh [hTextboxPointer + 1], a
 	ld a, d
-	ld [hTextboxWidth], a
+	ldh [hTextboxWidth], a
 	ld a, e
-	ld [hTextboxHeight], a
+	ldh [hTextboxHeight], a
 	xor a
-	ld [hTextboxLine], a
+	ldh [hTextboxLine], a
 	; fallthrough
 
 Textbox::
@@ -101,9 +101,9 @@ ScrollTextbox::
 	push hl
 	push de
 	push bc
-	ld a, [hTextboxPointer]
+	ldh a, [hTextboxPointer]
 	ld l, a
-	ld a, [hTextboxPointer + 1]
+	ldh a, [hTextboxPointer + 1]
 	ld h, a
 	ld de, SCREEN_WIDTH
 	add hl, de
@@ -111,13 +111,13 @@ ScrollTextbox::
 	push hl
 	add hl, de
 	pop de
-	ld a, [hTextboxHeight]
+	ldh a, [hTextboxHeight]
 	sub 2
 	ld b, a
 .loop
 	dec b
 	jr z, .done
-	ld a, [hTextboxWidth]
+	ldh a, [hTextboxWidth]
 	sub 2
 	ld c, a
 	push hl
@@ -132,7 +132,7 @@ ScrollTextbox::
 	add hl, de
 	jr .loop
 .done
-	ld a, [hTextboxWidth]
+	ldh a, [hTextboxWidth]
 	sub 2
 	ld c, a
 	ld a, " "
@@ -145,16 +145,16 @@ ScrollTextbox::
 	pop bc
 	pop de
 	pop hl
-	ld a, [hTextboxLine]
+	ldh a, [hTextboxLine]
 	sub 1
 	ret c
-	ld [hTextboxLine], a
+	ldh [hTextboxLine], a
 	ret
 
 PrintFunction::
 	ld d, h
 	ld e, l
-	ld a, [hTextboxHeight]
+	ldh a, [hTextboxHeight]
 	sub 2
 	ld b, a
 .line_loop
@@ -164,23 +164,23 @@ PrintFunction::
 	ret
 
 .print_line
-	ld a, [hTextboxLine]
+	ldh a, [hTextboxLine]
 	cp b
 	call nc, ScrollTextbox
 	push bc
 	ld c, a
-	ld a, [hTextboxPointer]
+	ldh a, [hTextboxPointer]
 	ld l, a
-	ld a, [hTextboxPointer + 1]
+	ldh a, [hTextboxPointer + 1]
 	ld h, a
 	ld a, c
 	inc hl
 	inc a
-	ld [hTextboxLine], a
+	ldh [hTextboxLine], a
 	ld bc, SCREEN_WIDTH
 	rst AddNTimes
 	pop bc
-	ld a, [hTextboxWidth]
+	ldh a, [hTextboxWidth]
 	sub 2
 	ld c, a
 .loop
@@ -236,10 +236,10 @@ MessageBox:
 	hlcoord 1, 9
 	rst PrintString
 	ld a, 6
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	call WaitForButtonPress
 	xor a
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	ld hl, wSavedScreenData
 	decoord 0, 8
 	ld bc, 4 * SCREEN_WIDTH
@@ -260,8 +260,8 @@ EndFullscreenTextbox::
 	jp WaitForAPress
 
 PrintWithBlankLine::
-	rst Print
+	rst PrintText
 PrintEmptyString::
 	ld hl, EmptyString
-	rst Print
+	rst PrintText
 	ret

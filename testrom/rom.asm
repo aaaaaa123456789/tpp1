@@ -21,12 +21,10 @@ INCLUDE "interrupt.asm"
 INCLUDE "highhome.asm"
 
 SECTION "Header", ROM0[$0100]
-	ld [hGBType], a
-	db $18, $50 ; jr $0154, but rgbds doesn't like compiling a jr across section boundaries
+	ldh [hGBType], a
+	jr Init
 	
-	rept $50
-		db $00
-	endr
+	ds $50, 0
 
 SECTION "Main", ROM0[$0154]
 

@@ -2,18 +2,17 @@
 
 This repository aims to [define and specify a GB/GBC mapper](specification.md).
 
-There is a test ROM available here. In order to compile it, you will need the
-version of rgbds that is contained in this repository; build it by using the
-`make` command inside the `rgbds` directory.
+There is a test ROM available here. In order to build it, you will need
+[RGBDS version 0.5.1 or later](https://github.com/gbdev/rgbds).
 
 Once that is done, you can build the test ROM using the `make` command in the
 repository's main directory; the output will be called `testrom.gb`. Using
 `make clean` will remove the built files.
 
-The compilation of the test ROM can be parameterized via three variables passed
-to `make`, those being `ROMSIZE`, `RAMSIZE` and `ROMFLAGS`. For instance, in
-order to set all three to their maximum possible values, compile the test ROM as
-`make ROMSIZE=F RAMSIZE=9 ROMFLAGS=7`.
+The compilation of the test ROM can be parameterized via four variables passed
+to `make`, those being `ROMSIZE`, `RAMSIZE`, `RTC` and `RUMBLE`. For instance,
+in order to set all of them to their maximum possible values, compile the test
+ROM as `make ROMSIZE=F RAMSIZE=9 RTC=ON RUMBLE=MULTI`.
 
 The values these variables can take are as follows:
 
@@ -53,14 +52,11 @@ The values these variables can take are as follows:
 |  8  |  128|  1 MiB|
 |  9  |  256|  2 MiB|
 
-`ROMFLAGS`; sets the additional features declared in the ROM header. Default
-value is 7.
+`RTC`: enables or disables RTC support in the header. Any non-empty value will
+enable RTC support; set the variable to an empty value to disable it. Default
+value is on.
 
-|Value|Features              |
-|:---:|:---------------------|
-|  0  |No additional features|
-|  1  |1 rumble speed        |
-|  3  |3 rumble speeds       |
-|  4  |RTC                   |
-|  5  |1 rumble speed, RTC   |
-|  7  |3 rumble speeds, RTC  |
+`RUMBLE`: sets the type of rumble supported in the header. Setting the variable
+to the value `MULTI` will enable three rumble speeds; any other non-empty value
+will enable a single speed, and an empty value will disable rumble altogether.
+Default is 3 speeds.

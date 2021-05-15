@@ -9,19 +9,19 @@ MainMenu::
 	jr .loop
 
 RenderMenu:
-	ld a, [hSelectedMenu]
+	ldh a, [hSelectedMenu]
 	ld l, a
-	ld a, [hSelectedMenu + 1]
+	ldh a, [hSelectedMenu + 1]
 	ld h, a
-	ld a, [hNextMenuAction]
+	ldh a, [hNextMenuAction]
 	and a
 	ret z
 	dec a
 	jr nz, .not_full_reload
 	; reload
 	xor a
-	ld [hFirstOption], a
-	ld [hSelectedOption], a
+	ldh [hFirstOption], a
+	ldh [hSelectedOption], a
 	push hl
 	ld c, -1
 	ld a, [hli]
@@ -37,9 +37,9 @@ RenderMenu:
 	jr nz, .option_count_loop
 	pop hl
 	ld a, c
-	ld [hOptionCount], a
+	ldh [hOptionCount], a
 .not_full_reload
-	ld a, [hNextMenuAction]
+	ldh a, [hNextMenuAction]
 	cp ACTION_UPDATE
 	jr nc, .not_full_redraw
 	push hl
@@ -64,7 +64,7 @@ RenderMenu:
 	lb de, SCREEN_WIDTH, 14
 	call Textbox
 	pop hl
-	ld a, [hFirstOption]
+	ldh a, [hFirstOption]
 	call FindOptionByNumber
 	ld bc, 0
 .loop
@@ -95,9 +95,9 @@ RenderMenu:
 	cp OPTIONS_PER_SCREEN
 	jr c, .loop
 .done
-	ld a, [hFirstOption]
+	ldh a, [hFirstOption]
 	ld e, a
-	ld a, [hSelectedOption]
+	ldh a, [hSelectedOption]
 	sub e
 	cp OPTIONS_PER_SCREEN
 	jr nc, .invalid_cursor_position
@@ -107,7 +107,7 @@ RenderMenu:
 	ld [hl], "<RIGHT>"
 .invalid_cursor_position
 	hlcoord 18, 4
-	ld a, [hFirstOption]
+	ldh a, [hFirstOption]
 	and a
 	ld [hl], "<->"
 	jr z, .cannot_scroll_up
@@ -117,23 +117,23 @@ RenderMenu:
 	ld [hl], "<->"
 	add a, OPTIONS_PER_SCREEN + 1
 	ld e, a
-	ld a, [hOptionCount]
+	ldh a, [hOptionCount]
 	cp e
 	jr c, .cannot_scroll_down
 	ld [hl], "<DOWN>"
 .cannot_scroll_down
 	xor a
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	ld a, 3
 	rst DelayFrames
 	xor a
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	ret
 
 GetMenuJoypad::
 	; reacts to only buttons pressed alone, other than A and B (B taking priority). That way we eliminate combined presses
 	push hl
-	ld a, [hButtonsPressed]
+	ldh a, [hButtonsPressed]
 	ld h, MENU_START
 	cp START
 	jr z, .done
@@ -185,40 +185,40 @@ UpdateMenuContents:
 	dec a
 	jr nz, .not_execute
 	dec a ; a = -1
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	call ExecuteSelectedOption
-	ld a, [hNextMenuAction]
+	ldh a, [hNextMenuAction]
 	inc a
 	ret nz
 	ld a, ACTION_REDRAW
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	ret
 
 .not_execute
 	dec a
 	jr nz, .not_cancel
-	ld a, [hSelectedMenu]
+	ldh a, [hSelectedMenu]
 	ld l, a
-	ld a, [hSelectedMenu + 1]
+	ldh a, [hSelectedMenu + 1]
 	ld h, a
 	inc hl
 	inc hl
 	ld a, [hli]
-	ld [hSelectedMenu], a
+	ldh [hSelectedMenu], a
 	ld a, [hl]
-	ld [hSelectedMenu + 1], a
+	ldh [hSelectedMenu + 1], a
 	ld a, ACTION_RELOAD
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	ret
 
 .not_cancel
 	dec a
 	jr nz, .not_up
-	ld a, [hSelectedOption]
+	ldh a, [hSelectedOption]
 	and a
 	ret z
 	dec a
-	ld [hSelectedOption], a
+	ldh [hSelectedOption], a
 	ld hl, hFirstOption
 	cp [hl]
 	jr nc, .update_menu
@@ -228,77 +228,77 @@ UpdateMenuContents:
 .not_up
 	dec a
 	jr nz, .not_down
-	ld a, [hOptionCount]
+	ldh a, [hOptionCount]
 	ld e, a
-	ld a, [hSelectedOption]
+	ldh a, [hSelectedOption]
 	inc a
 	cp e
 	ret nc
-	ld [hSelectedOption], a
+	ldh [hSelectedOption], a
 	ld e, a
-	ld a, [hFirstOption]
+	ldh a, [hFirstOption]
 	add a, OPTIONS_PER_SCREEN - 1
 	cp e
 	jr nc, .update_menu
 	ld a, e
 	sub OPTIONS_PER_SCREEN - 1
-	ld [hFirstOption], a
+	ldh [hFirstOption], a
 .update_menu
 	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	ret
 
 .not_down
 	dec a
 	jr nz, .not_left
-	ld a, [hSelectedOption]
+	ldh a, [hSelectedOption]
 	sub OPTIONS_PER_SCREEN
 	jr nc, .no_selection_underflow
 	xor a
 .no_selection_underflow
-	ld [hSelectedOption], a
-	ld a, [hFirstOption]
+	ldh [hSelectedOption], a
+	ldh a, [hFirstOption]
 	sub OPTIONS_PER_SCREEN
 	jr nc, .no_first_underflow
 	xor a
 .no_first_underflow
-	ld [hFirstOption], a
+	ldh [hFirstOption], a
 	jr .update_menu
 
 .not_left
 	dec a
 	ret nz ;not right
-	ld a, [hOptionCount]
+	ldh a, [hOptionCount]
 	ld c, a
-	ld a, [hSelectedOption]
+	ldh a, [hSelectedOption]
 	add a, OPTIONS_PER_SCREEN
 	cp c
 	jr c, .no_selection_overflow
 	ld a, c
 	dec a
 .no_selection_overflow
-	ld [hSelectedOption], a
+	ldh [hSelectedOption], a
 	ld a, c
 	sub OPTIONS_PER_SCREEN + 1
 	ld c, a
 	ld a, 0
 	jr c, .first_option_chosen
-	ld a, [hFirstOption]
+	ldh a, [hFirstOption]
 	add a, OPTIONS_PER_SCREEN
 	inc c
 	cp c
 	jr c, .first_option_chosen
 	ld a, c
 .first_option_chosen
-	ld [hFirstOption], a
+	ldh [hFirstOption], a
 	jr .update_menu
 
 ExecuteSelectedOption:
-	ld a, [hSelectedMenu]
+	ldh a, [hSelectedMenu]
 	ld l, a
-	ld a, [hSelectedMenu + 1]
+	ldh a, [hSelectedMenu + 1]
 	ld h, a
-	ld a, [hSelectedOption]
+	ldh a, [hSelectedOption]
 	call FindOptionByNumber
 	inc hl
 	inc hl
@@ -315,9 +315,9 @@ ExecuteSelectedOption:
 
 	jr nz, .not_exec
 	push hl
-	ld a, [hFirstOption]
+	ldh a, [hFirstOption]
 	ld e, a
-	ld a, [hSelectedOption]
+	ldh a, [hSelectedOption]
 	sub e
 	ld bc, SCREEN_WIDTH
 	hlcoord 1, 5
@@ -348,14 +348,14 @@ ExecuteSelectedOption:
 	call MessageBox
 UpdateMenuScreen::
 	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	ret
 
 LoadMenu::
 	ld a, l
-	ld [hSelectedMenu], a
+	ldh [hSelectedMenu], a
 	ld a, h
-	ld [hSelectedMenu + 1], a
+	ldh [hSelectedMenu + 1], a
 	ld a, ACTION_RELOAD
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	ret

@@ -1,10 +1,10 @@
 DelayFrame::
 	push af
 	xor a
-	ld [hVBlankOccurred], a
+	ldh [hVBlankOccurred], a
 .loop
 	halt
-	ld a, [hVBlankOccurred]
+	ldh a, [hVBlankOccurred]
 	and a
 	jr z, .loop
 	pop af
@@ -18,12 +18,12 @@ VBlankBusyWait::
 	; but we get the flag for free, since it comes from the control flow, so why not
 	; well I guess it's not as free if we need a ccf, but I'm too lazy to change the flow now
 	; this function has a lot of comments, doesn't it
-	ld a, [rLCDC]
+	ldh a, [rLCDC]
 	add a, a
 	ccf
 	ret c
 .loop
-	ld a, [rLY]
+	ldh a, [rLY]
 	cp $90
 	ret nc
 	jr .loop
@@ -44,30 +44,30 @@ CopyBytesUntilMatch::
 
 LoadPalettes::
 	; only load them if we're on a GBC
-	ld a, [hGBType]
+	ldh a, [hGBType]
 	cp $11
 	ret nz
 	; initialize the register to a convenient location
 	ld a, $be
-	ld [rBGPI], a
+	ldh [rBGPI], a
 	; and load all palettes just in case, so we don't have to care about a dirty attribute map
-	lb bc, 8, rBGPD & $ff
+	lb bc, 8, LOW(rBGPD)
 .loop
 	; we load an actual four-shade grayscale just in case some code eventually uses shades 1 and 2
 	xor a
-	ld [c], a
-	ld [c], a
+	ldh [c], a
+	ldh [c], a
 	dec a
-	ld [c], a
-	ld [c], a
+	ldh [c], a
+	ldh [c], a
 	ld a, $b5
-	ld [c], a
+	ldh [c], a
 	ld a, $56
-	ld [c], a
+	ldh [c], a
 	ld a, $4a
-	ld [c], a
+	ldh [c], a
 	ld a, $29
-	ld [c], a
+	ldh [c], a
 	dec b
 	jr nz, .loop
 	ret

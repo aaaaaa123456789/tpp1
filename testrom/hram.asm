@@ -1,63 +1,67 @@
-hGBType              EQU $ff80 ;do not relocate
+SECTION "HRAM", HRAM[$ff80]
 
-hButtonsHeld         EQU $ff81
-hButtonsPressed      EQU $ff82
-hButtonsLast         EQU $ff83
+hGBType:: db ;ff80, do not relocate
 
-hProduct             EQU $ff84 ;4 bytes
+hButtonsHeld:: db ;ff81
+hButtonsPressed:: db ;ff82
+hButtonsLast:: db ;ff83
 
-hCurrent             EQU $ff88 ;2 bytes
-hCurrentTest         EQU $ff89 ;overlapping with previous
-hMax                 EQU $ff8a ;2 bytes
+hProduct:: ds 4 ;ff84
 
-hMemoryBank          EQU $ff8c ;2 bytes
-hMemoryCursor        EQU $ff8d ;overlapping with previous
-hMemoryAddress       EQU $ff8e ;2 bytes
+hCurrent:: dw ;ff88
+hCurrentTest EQU hCurrent + 1 ;ff89, overlapping with previous
+hMax:: dw ;ff8a
 
-hInitialTestNumber   EQU $ff90
-hInitialTestResult   EQU $ff91
+hMemoryBank:: dw ;ff8c
+hMemoryCursor EQU hMemoryBank + 1 ;ff8d, overlapping with previous
+hMemoryAddress:: dw ;ff8e
 
-hComplianceTestRun   EQU $ff92
-hComplianceErrors    EQU $ff93 ;3 bytes
+hInitialTestNumber:: db ;ff90
+hInitialTestResult:: db ;ff91
 
-hInitialBank         EQU $ff96 ;2 bytes
-hFinalBank           EQU $ff98 ;2 bytes
-hBankStep            EQU $ff9a
+hComplianceTestRun:: db ;ff92
+hComplianceErrors:: ds 3 ;ff93
 
-hSelectedRAMBank     EQU $ff9b
-hSelectedROMBank     EQU $ff9c ;2 bytes
+hInitialBank:: dw ;ff96
+hFinalBank:: dw ;ff98
+hBankStep:: db ;ff9a
 
-hTimesetSecond       EQU $ffe0
-hTimesetMinute       EQU $ffe1
-hTimesetHour         EQU $ffe2
-hTimesetDay          EQU $ffe3
-hTimesetWeek         EQU $ffe4
-hTimesetCursor       EQU $ffe5
+hSelectedRAMBank:: db ;ff9b
+hSelectedROMBank:: dw ;ff9c
 
-hRAMBanks            EQU $ffe6
-hRAMInitialized      EQU $ffe7
+	ds $42
 
-hTextboxPointer      EQU $ffe8 ;2 bytes
-hTextboxWidth        EQU $ffea
-hTextboxHeight       EQU $ffeb
-hTextboxLine         EQU $ffec
+hTimesetSecond:: db ;ffe0
+hTimesetMinute:: db ;ffe1
+hTimesetHour:: db ;ffe2
+hTimesetDay:: db ;ffe3
+hTimesetWeek:: db ;ffe4
+hTimesetCursor:: db ;ffe5
 
-hHexEntryCount       EQU $ffed
-hHexEntryData        EQU $ffee ;2 bytes
-hHexEntryByte        EQU $fff0
-hHexEntryCurrent     EQU $fff1
-hHexEntryRow         EQU $fff2
-hHexEntryColumn      EQU $fff3
+hRAMBanks:: db ;ffe6
+hRAMInitialized:: db ;ffe7
 
-hSelectedMenu        EQU $fff4 ;2 bytes
-hFirstOption         EQU $fff6
-hSelectedOption      EQU $fff7
-hOptionCount         EQU $fff8
-hNextMenuAction      EQU $fff9
+hTextboxPointer:: dw ;ffe8
+hTextboxWidth:: db ;ffea
+hTextboxHeight:: db ;ffeb
+hTextboxLine:: db ;ffec
 
-hFrameCounter        EQU $fffa ;2 bytes
+hHexEntryCount:: db ;ffed
+hHexEntryData:: dw ;ffee
+hHexEntryByte:: db ;fff0
+hHexEntryCurrent:: db ;fff1
+hHexEntryRow:: db ;fff2
+hHexEntryColumn:: db ;fff3
 
-hRandomCalls         EQU $fffc
+hSelectedMenu:: dw ;fff4
+hFirstOption:: db ;fff6
+hSelectedOption:: db ;fff7
+hOptionCount:: db ;fff8
+hNextMenuAction:: db ;fff9
 
-hVBlankLine          EQU $fffd
-hVBlankOccurred      EQU $fffe
+hFrameCounter:: dw ;fffa
+
+hRandomCalls:: db ;fffc
+
+hVBlankLine:: db ;fffd
+hVBlankOccurred:: db ;fffe

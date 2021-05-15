@@ -3,7 +3,7 @@ Init::
 	ld sp, StackTop
 	call VBlankBusyWait
 	ld a, $51
-	ld [rLCDC], a
+	ldh [rLCDC], a
 	ld hl, $c000
 	call GetRandomSeed
 	push bc
@@ -37,12 +37,12 @@ Init::
 	ld a, $d
 	call Load1bpp
 	xor a
-	ld [rSTAT], a
+	ldh [rSTAT], a
 	dec a
 	ld bc, $a0
 	ld hl, $fe00
-	ld [rWY], a
-	ld [rWX], a
+	ldh [rWY], a
+	ldh [rWX], a
 	rst FillByte
 	call ClearScreen
 	ld hl, vBGMap
@@ -51,7 +51,7 @@ Init::
 	rst FillByte
 	call LoadPalettes
 	ld a, 1
-	ld [rIE], a
+	ldh [rIE], a
 	ld hl, rLCDC
 	set 7, [hl]
 	; fallthrough
@@ -132,7 +132,7 @@ Main::
 	ld hl, wRandomSeed
 	ld e, 8
 .random_reseed_loop
-	ld a, [rDIV]
+	ldh a, [rDIV]
 	xor [hl]
 	ld [hli], a
 	call Random
@@ -193,7 +193,7 @@ Restart::
 	push de
 	dec c
 	jr nz, .random_saving_loop
-	ld a, [hInitialTestResult]
+	ldh a, [hInitialTestResult]
 	ld b, a
 	ld hl, hFrameCounter
 	ld a, [hli]
@@ -214,7 +214,7 @@ Restart::
 	pop bc
 	ld [hl], c
 	ld a, b
-	ld [hInitialTestResult], a
+	ldh [hInitialTestResult], a
 	ld hl, wRandomSeed
 	ld c, 4
 .random_reloading_loop
@@ -227,5 +227,5 @@ Restart::
 	jr nz, .random_reloading_loop
 	call ClearScreen
 	ld a, 1
-	ld [rIE], a
+	ldh [rIE], a
 	jp MainMenu

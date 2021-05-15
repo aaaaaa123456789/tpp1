@@ -27,7 +27,7 @@ SetRumbleHigh::
 	ld c, 3
 SetRumble:
 	ld a, ACTION_UPDATE
-	ld [hNextMenuAction], a
+	ldh [hNextMenuAction], a
 	call GetMaxRumbleSpeed
 	and a
 	ld hl, NoRumbleString
@@ -52,11 +52,11 @@ TestRumbleMR4::
 	ld c, a
 	jr nz, .go
 	ld hl, NoRumbleString
-	rst Print
+	rst PrintText
 	jr .done
 .go
 	ld hl, .device_will_rumble_text
-	rst Print
+	rst PrintText
 	call ClearMR4 ;exits with hl = rMR3w
 	ld [hl], MR3_MAP_REGS
 .loop
@@ -97,9 +97,9 @@ TestRumbleMR4::
 
 .error
 	push hl
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld a, c
-	ld [hMax], a
+	ldh [hMax], a
 	ld hl, .error_text
 PrintAndIncrementErrorCount_HLPushed::
 	call PrintAndIncrementErrorCount

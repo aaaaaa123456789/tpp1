@@ -1,28 +1,28 @@
 HexadecimalEntry::
 	; returns carry if cancelled or no carry if accepted
 	ld a, l
-	ld [hHexEntryData], a
+	ldh [hHexEntryData], a
 	ld a, h
-	ld [hHexEntryData + 1], a
+	ldh [hHexEntryData + 1], a
 	call CountHexDataEntries
-	ld [hHexEntryCount], a
+	ldh [hHexEntryCount], a
 	hlcoord 0, 14
 	ld de, wSavedScreenData
 	ld bc, SCREEN_WIDTH * 4
 	rst CopyBytes
 	xor a
-	ld [hHexEntryByte], a
-	ld [hHexEntryRow], a
-	ld [hHexEntryColumn], a
+	ldh [hHexEntryByte], a
+	ldh [hHexEntryRow], a
+	ldh [hHexEntryColumn], a
 	dec a
-	ld [hHexEntryCurrent], a
+	ldh [hHexEntryCurrent], a
 	call UpdateHexDigits
 	call DrawHexEntryMenu
 	ld a, 3
 	rst DelayFrames
 .loop
 	ld a, 12
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	call DelayFrame
 	call GetMenuJoypad
 	jr z, .loop
@@ -41,14 +41,14 @@ HexadecimalEntry::
 	jr .loop
 .done
 	xor a
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	ld hl, wSavedScreenData
 	decoord 0, 14
 	ld bc, SCREEN_WIDTH * 4
 	rst CopyBytes
-	ld a, [hHexEntryCount]
+	ldh a, [hHexEntryCount]
 	ld c, a
-	ld a, [hHexEntryByte]
+	ldh a, [hHexEntryByte]
 	cp c
 	ret
 
@@ -84,9 +84,9 @@ DrawHexEntryMenu:
 
 UpdateHexDigits:
 	xor a
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	ld c, a
-	ld a, [hHexEntryByte]
+	ldh a, [hHexEntryByte]
 	ld b, a
 	ld hl, hHexEntryData
 	ld a, [hli]
@@ -100,7 +100,7 @@ UpdateHexDigits:
 	ld a, c
 	cp b
 	jr c, .initial_loop
-	ld a, [hHexEntryCount]
+	ldh a, [hHexEntryCount]
 	sub b
 	jr z, .finished_entry
 	ld b, a
@@ -158,7 +158,7 @@ UpdateHexDigits:
 	ld e, a
 	ld a, [hli]
 	ld d, a
-	ld a, [hHexEntryCurrent]
+	ldh a, [hHexEntryCurrent]
 	cp 16
 	jr c, .print_digit
 	ld a, "-"
@@ -187,18 +187,18 @@ UpdateHexEntryCursor:
 
 	sub MENU_UP
 	jr nz, .not_up
-	ld a, [hHexEntryRow]
+	ldh a, [hHexEntryRow]
 	sub 1
 	jr nc, .row_ok
 	ld a, 2
 .row_ok
-	ld [hHexEntryRow], a
+	ldh [hHexEntryRow], a
 	jr .done
 
 .not_up
 	dec a
 	jr nz, .not_down
-	ld a, [hHexEntryRow]
+	ldh a, [hHexEntryRow]
 	inc a
 	cp 3
 	jr c, .row_ok
@@ -208,7 +208,7 @@ UpdateHexEntryCursor:
 .not_down
 	dec a
 	jr nz, .not_left
-	ld a, [hHexEntryColumn]
+	ldh a, [hHexEntryColumn]
 	sub 1
 	jr nc, .col_ok
 	ld a, 5
@@ -217,13 +217,13 @@ UpdateHexEntryCursor:
 .not_left
 	dec a
 	jr nz, .done
-	ld a, [hHexEntryColumn]
+	ldh a, [hHexEntryColumn]
 	inc a
 	cp 6
 	jr c, .col_ok
 	xor a
 .col_ok
-	ld [hHexEntryColumn], a
+	ldh [hHexEntryColumn], a
 .done
 	call CalculateCurrentCursorPosition
 	ld [hl], "<RIGHT>"
@@ -231,10 +231,10 @@ UpdateHexEntryCursor:
 
 CalculateCurrentCursorPosition:
 	hlcoord 0, 15
-	ld a, [hHexEntryRow]
+	ldh a, [hHexEntryRow]
 	ld bc, SCREEN_WIDTH
 	rst AddNTimes
-	ld a, [hHexEntryColumn]
+	ldh a, [hHexEntryColumn]
 	ld c, a
 	add a, a
 	add a, c
@@ -246,9 +246,9 @@ CalculateCurrentCursorPosition:
 
 CalculateCurrentCursorValue:
 	; returns 16 for back, and 17 for OK/exit
-	ld a, [hHexEntryColumn]
+	ldh a, [hHexEntryColumn]
 	ld c, a
-	ld a, [hHexEntryRow]
+	ldh a, [hHexEntryRow]
 	add a, c
 	add a, c
 	add a, c
@@ -263,16 +263,16 @@ ExecuteHexEntryAction:
 	ccf
 	ret c
 	ld c, a
-	ld a, [hHexEntryByte]
+	ldh a, [hHexEntryByte]
 	ld b, a
-	ld a, [hHexEntryCount]
+	ldh a, [hHexEntryCount]
 	cp b
 	ret z
-	ld a, [hHexEntryCurrent]
+	ldh a, [hHexEntryCurrent]
 	cp 16
 	jr c, .enter_byte
 	ld a, c
-	ld [hHexEntryCurrent], a
+	ldh [hHexEntryCurrent], a
 	ret
 .enter_byte
 	swap a
@@ -295,47 +295,47 @@ ExecuteHexEntryAction:
 	ld [hl], c
 	inc b
 	ld a, $ff
-	ld [hHexEntryCurrent], a
+	ldh [hHexEntryCurrent], a
 	ld a, b
-	ld [hHexEntryByte], a
-	ld a, [hHexEntryCount]
+	ldh [hHexEntryByte], a
+	ldh a, [hHexEntryCount]
 	cp b
 	ret nz
 	call CalculateCurrentCursorPosition
 	ld [hl], " "
 	ld a, 2
-	ld [hHexEntryRow], a
+	ldh [hHexEntryRow], a
 	ld a, 5
-	ld [hHexEntryColumn], a
+	ldh [hHexEntryColumn], a
 	ld a, "<RIGHT>"
 	writecoord 15, 17
 	ret
 
 .cancel_current_byte
 	ld a, $ff
-	ld [hHexEntryCurrent], a
+	ldh [hHexEntryCurrent], a
 	and a
 	ret
 
 .back_button
-	ld a, [hHexEntryByte]
+	ldh a, [hHexEntryByte]
 	and a
 	jr nz, .back
-	ld a, [hHexEntryCurrent]
+	ldh a, [hHexEntryCurrent]
 	cp 16
 	ccf
 	ret c
 .back
-	ld a, [hHexEntryByte]
+	ldh a, [hHexEntryByte]
 	ld b, a
 	and a
 	jr z, .cancel_current_byte
-	ld a, [hHexEntryCurrent]
+	ldh a, [hHexEntryCurrent]
 	cp 16
 	jr c, .cancel_current_byte
 	dec b
 	ld a, b
-	ld [hHexEntryByte], a
+	ldh [hHexEntryByte], a
 	ld d, 0
 	add a, a
 	rl d
@@ -353,5 +353,5 @@ ExecuteHexEntryAction:
 	ld a, [hl]
 	swap a
 	and 15
-	ld [hHexEntryCurrent], a
+	ldh [hHexEntryCurrent], a
 	ret

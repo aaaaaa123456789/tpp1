@@ -10,7 +10,7 @@ ClearScreenAndStopUpdates::
 	ld a, 3
 	rst DelayFrames
 	ld a, -1
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	ret
 
 CopyBytesFunctionLoop:
@@ -56,16 +56,16 @@ Load1bpp::
 	ret
 
 UpdateJoypad::
-	ld a, [hButtonsHeld]
-	ld [hButtonsLast], a
-	ld c, rJOYP & $ff
+	ldh a, [hButtonsHeld]
+	ldh [hButtonsLast], a
+	ld c, LOW(rJOYP)
 	; for some reason I don't quite understand, the joypad register uses 0 as yes and 1 as no
 	; so in order to select direction keys (bit 4), we need to set bit 4 to 0... don't even ask
 	ld a, $2f
-	ld [c], a
+	ldh [c], a
 	; D-Pad keys seem to take six reads to stabilize. Source: lots of probably unverified code in the wild that probably also took each other as source
 	rept 6
-		ld a, [c]
+		ldh a, [c]
 	endr
 	; ...and we invert it, because remember, bits are *cleared* to indicate a button pressed!
 	cpl
@@ -74,26 +74,26 @@ UpdateJoypad::
 	ld b, a
 	; ...now with buttons...
 	ld a, $1f
-	ld [c], a
+	ldh [c], a
 	; ...which seem to take 6 reads to stabilize as well... (source: voodoo incantations found in most code out there)
 	rept 6
-		ld a, [c]
+		ldh a, [c]
 	endr
 	; ...and another inversion
 	cpl
 	and 15
 	; combine with the previous result...
 	or b
-	ld [hButtonsHeld], a
+	ldh [hButtonsHeld], a
 	; ...and we're almost done
 	ld b, a
-	ld a, [hButtonsLast]
+	ldh a, [hButtonsLast]
 	cpl
 	and b
-	ld [hButtonsPressed], a
+	ldh [hButtonsPressed], a
 	; now we check for soft reset
-	ld a, [hButtonsHeld]
-	or (A_BUTTON | B_BUTTON | SELECT | START) ^ $ff
+	ldh a, [hButtonsHeld]
+	or ~(A_BUTTON | B_BUTTON | SELECT | START)
 	inc a
 	ret nz
 DoReset::
@@ -101,13 +101,13 @@ DoReset::
 	rst Reset ;does not return
 
 WaitForAPress::
-	ld a, [hButtonsPressed]
+	ldh a, [hButtonsPressed]
 	and A_BUTTON
 	jr z, .loop
 	call DelayFrame
 	jr WaitForAPress
 .loop
-	ld a, [hButtonsPressed]
+	ldh a, [hButtonsPressed]
 	and A_BUTTON
 	ret nz
 	call DelayFrame
@@ -116,12 +116,12 @@ WaitForAPress::
 WaitForButtonPress::
 	; returns carry if B is pressed or nc if A is pressed
 	push bc
-	ld a, [hButtonsPressed]
+	ldh a, [hButtonsPressed]
 	cpl
 	ld b, a
 .loop
 	call DelayFrame
-	ld a, [hButtonsPressed]
+	ldh a, [hButtonsPressed]
 	ld c, a
 	cpl
 	or b
@@ -136,43 +136,43 @@ WaitForButtonPress::
 
 DoubleSpeed::
 	; set double speed if we're on a GBC. This should make some stuff faster.
-	ld a, [hGBType]
+	ldh a, [hGBType]
 	cp $11
 	ret nz
 	; if we're already in double speed, do nothing
-	ld a, [rKEY1]
+	ldh a, [rKEY1]
 	cp $80
 	ret nc
 DoSpeedSwitch::
 	; otherwise, prepare a speed switch
 	or 1
-	ld [rKEY1], a
+	ldh [rKEY1], a
 	ld a, $3f
-	ld [rJOYP], a
+	ldh [rJOYP], a
 	xor a
-	ld [rIF], a
-	ld [rIE], a
+	ldh [rIF], a
+	ldh [rIE], a
 	; and do it
 	stop
 	; finally, restore rIE
 	inc a
-	ld [rIE], a
+	ldh [rIE], a
 	ret
 
 GetCurrentSpeed::
 	; returns carry if we're running on double speed
-	ld a, [hGBType]
+	ldh a, [hGBType]
 	xor $11 ;xor clears carry
 	; this is not even a GBC at all
 	ret nz
-	ld a, [rKEY1]
+	ldh a, [rKEY1]
 	add a, a
 	ret
 
 ClearMemory::
 	ld hl, $c000
 	ld bc, Stack - $c000 ; don't touch the stack, we don't care about it
-	;(also, stack must be aligned to $100 for this code to work nicely)
+	assert LOW(Stack) == 0
 	xor a
 .loop
 	ld [hli], a
@@ -180,9 +180,10 @@ ClearMemory::
 	jr nz, .loop
 	dec b
 	jr nz, .loop
-	ld c, $81 ;skip hGBType
+	assert hGBType == $ff80
+	ld c, LOW(hGBType + 1)
 .hram_loop
-	ld [c], a
+	ldh [c], a
 	inc c
 	jr nz, .hram_loop
 	reti ;this also clears rIE, so we just return with interrupts on after that
@@ -213,5 +214,5 @@ FillRandomBuffer::
 	pop de
 	pop bc
 	xor a
-	ld [rIF], a ;if we're in vblank, discard it
+	ldh [rIF], a ;if we're in vblank, discard it
 	reti

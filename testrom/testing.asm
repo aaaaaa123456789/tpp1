@@ -6,7 +6,7 @@ ExecuteTest::
 	call _hl_
 PrintErrorCountAndEnd::
 	call GenerateErrorCountString
-	rst Print
+	rst PrintText
 	jp EndFullscreenTextbox
 
 LoadRAMTestingMenu::
@@ -34,11 +34,11 @@ LoadRumbleTestingMenu::
 CheckInitialTests::
 	ld hl, .initial_test_text
 	call PrintWithBlankLine
-	ld a, [hInitialTestResult]
+	ldh a, [hInitialTestResult]
 	and $f
 	ld hl, .initial_MR_failed_text
 	call nz, PrintAndIncrementErrorCount
-	ld a, [hInitialTestResult]
+	ldh a, [hInitialTestResult]
 	and $10
 	ld hl, .initial_bank_failed_text
 	call nz, PrintAndIncrementErrorCount
@@ -70,7 +70,7 @@ RunAllTests::
 	call ClearMR4 ;exits with hl = rMR3w
 	ld [hl], MR3_MAP_REGS
 	call GenerateErrorCountString
-	rst Print
+	rst PrintText
 	ld hl, wErrorCount
 	ld a, [hli]
 	or [hl]
@@ -79,7 +79,7 @@ RunAllTests::
 	jr nz, .no_compliance_message
 	call PrintEmptyString
 	ld hl, .compliance_text
-	rst Print
+	rst PrintText
 .no_compliance_message
 	ld hl, hComplianceTestRun
 	inc [hl]
@@ -88,11 +88,11 @@ RunAllTests::
 .no_compliance_overflow
 	ld hl, wErrorCount
 	ld a, [hli]
-	ld [hComplianceErrors], a
+	ldh [hComplianceErrors], a
 	ld a, [hli]
-	ld [hComplianceErrors + 1], a
+	ldh [hComplianceErrors + 1], a
 	ld a, [hl]
-	ld [hComplianceErrors + 2], a
+	ldh [hComplianceErrors + 2], a
 	jp EndFullscreenTextbox
 
 .run_RAM_tests

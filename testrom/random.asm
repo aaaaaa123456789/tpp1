@@ -4,18 +4,18 @@ Random::
 	ld hl, wRandomSeed
 	call StableRandom
 	push af
-	ld a, [hRandomCalls]
+	ldh a, [hRandomCalls]
 	inc a
 	and 15
-	ld [hRandomCalls], a
+	ldh [hRandomCalls], a
 	add a, $d0
 	ld h, a
-	ld a, [hFrameCounter]
+	ldh a, [hFrameCounter]
 	ld l, a
 	pop af
 	xor [hl]
 	ld h, a
-	ld a, [rDIV]
+	ldh a, [rDIV]
 	xor h
 	pop hl
 	ret

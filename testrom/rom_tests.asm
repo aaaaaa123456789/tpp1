@@ -10,11 +10,12 @@ TestROMBankSampleOption::
 	call PrintAndIncrementErrorCount
 .valid_max
 	xor a
-	ld [hCurrent], a
-	ld [hCurrent + 1], a
+	ldh [hCurrent], a
+	ldh [hCurrent + 1], a
+	assert rMR0w == 0
 	ld h, a
 	ld l, a
-	ld [hli], a ; MR0 = 0
+	ld [hli], a
 	ld [hl], a
 	call TestROMHomeBank
 	ld hl, BankFailedString
@@ -25,7 +26,7 @@ TestROMBankSampleOption::
 	add a, 33
 	add a, a
 	dec a
-	ld [hMax], a ;test between 1 and 63 random banks based on ROM size
+	ldh [hMax], a ;test between 1 and 63 random banks based on ROM size
 .loop
 	call Random
 	and d
@@ -39,15 +40,15 @@ TestROMBankSampleOption::
 	ld hl, rMR0w
 	ld [hli], a
 	ld [hl], b
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld a, b
-	ld [hCurrent + 1], a
+	ldh [hCurrent + 1], a
 	call TestROMBank
 	ld hl, BankFailedString
 	call c, PrintAndIncrementErrorCount
-	ld a, [hMax]
+	ldh a, [hMax]
 	dec a
-	ld [hMax], a
+	ldh [hMax], a
 	jr nz, .loop
 	call PrintEmptyString
 	jp PrintErrorCountAndEnd
@@ -120,7 +121,7 @@ GetMaxValidROMBank::
 	ret
 
 TestROMBankRange:
-	ld a, [hBankStep]
+	ldh a, [hBankStep]
 	ld hl, ZeroStepString
 	and a
 	jr z, .message_box
@@ -171,13 +172,13 @@ TestAllROMBanks::
 	; fallthrough
 ROMBankRangeTest:
 	ld hl, .testing_text
-	rst Print
+	rst PrintText
 	call GetMaxValidROMBank
 	call c, .unknown_max_bank
 	ld a, e
-	ld [hMax], a
+	ldh [hMax], a
 	ld a, d
-	ld [hMax + 1], a
+	ldh [hMax + 1], a
 	ld hl, hInitialBank
 	ld a, [hli]
 	ld c, a
@@ -185,23 +186,23 @@ ROMBankRangeTest:
 	or b
 	call z, .test_home_bank
 .loop
-	ld a, [hFinalBank + 1]
+	ldh a, [hFinalBank + 1]
 	cp b
 	jr c, .done
 	jr nz, .in_range
-	ld a, [hFinalBank]
+	ldh a, [hFinalBank]
 	cp c
 	jr c, .done
 .in_range
 	ld a, c
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld a, b
-	ld [hCurrent + 1], a
-	ld a, [hMax]
+	ldh [hCurrent + 1], a
+	ldh a, [hMax]
 	cpl
 	and c
 	ld e, a
-	ld a, [hMax + 1]
+	ldh a, [hMax + 1]
 	cpl
 	and b
 	or e
@@ -215,14 +216,14 @@ ROMBankRangeTest:
 	ld [hli], a
 	ld [hl], b
 	call TestROMBank
-	ld a, [hCurrent]
+	ldh a, [hCurrent]
 	ld c, a
-	ld a, [hCurrent + 1]
+	ldh a, [hCurrent + 1]
 	ld b, a
 	ld hl, BankFailedString
 	call c, PrintAndIncrementErrorCount
 .handle_loop
-	ld a, [hBankStep]
+	ldh a, [hBankStep]
 	add a, c
 	ld c, a
 	jr nc, .loop
@@ -244,18 +245,19 @@ ROMBankRangeTest:
 
 .test_home_bank
 	xor a
+	assert rMR0w == 0
 	ld h, a
-	ld l, a ;hl = rMR0w
+	ld l, a
 	ld [hli], a
 	ld [hl], a
 	call TestROMHomeBank
-	ld a, [hBankStep]
+	ldh a, [hBankStep]
 	ld c, a
 	ld b, 0
 	ret nc
 	xor a
-	ld [hCurrent], a
-	ld [hCurrent + 1], a
+	ldh [hCurrent], a
+	ldh [hCurrent + 1], a
 	ld hl, BankFailedString
 	jr PrintAndIncrementErrorCount
 
@@ -263,7 +265,7 @@ ROMBankRangeTest:
 	ld de, $ffff
 	ld hl, UnknownMaxBankString
 PrintAndIncrementErrorCount::
-	rst Print
+	rst PrintText
 	jp IncrementErrorCount
 
 TestROMHomeBank:
@@ -328,7 +330,7 @@ TestROMBank::
 	; we assume that every bank (other than 0) is loaded with a simple pattern based on the bank number
 	; namely, every bank (starting from 1) is filled so that every four-byte value is the number of the bank multiplied by the address
 	; values are 32-bit little endian
-	; we don't test the full bank because that would be silly; we just test the start and the end, and a few random addresses inbetween
+	; we don't test the full bank because that would be silly; we just test the start and the end, and a few random addresses in between
 	push de
 	ld hl, $4000
 	ld e, 4
@@ -366,19 +368,19 @@ TestROMBank::
 
 .check_value
 	call Multiply16
-	ld a, [hProduct]
+	ldh a, [hProduct]
 	cp [hl]
 	ret nz
 	inc hl
-	ld a, [hProduct + 1]
+	ldh a, [hProduct + 1]
 	cp [hl]
 	ret nz
 	inc hl
-	ld a, [hProduct + 2]
+	ldh a, [hProduct + 2]
 	cp [hl]
 	ret nz
 	inc hl
-	ld a, [hProduct + 3]
+	ldh a, [hProduct + 3]
 	cp [hl]
 	ret nz
 	inc hl
@@ -390,14 +392,15 @@ TestROMBankswitchSpeed::
 	call CheckLastROMBankExists ;returns max valid ROM bank in de
 	ret c
 	ld a, 5
-	ld [hMax], a
+	ldh [hMax], a
 	xor a
+	assert rMR0w == 0
 	ld h, a
 	ld l, a
 	ld [hli], a
 	ld [hl], a ;bankswitch to home
-	ld [hCurrent], a
-	ld [hCurrent + 1], a
+	ldh [hCurrent], a
+	ldh [hCurrent + 1], a
 .loop
 	call SelectNewRandomROMBank
 	push de
@@ -422,9 +425,9 @@ TestROMBankswitchSpeed::
 	jp PrintEmptyString
 
 ValidateROMBankDataAt4004:
-	ld a, [hCurrent]
+	ldh a, [hCurrent]
 	ld l, a
-	ld a, [hCurrent + 1]
+	ldh a, [hCurrent + 1]
 	ld h, a
 	or l
 	jr z, .validate_home
@@ -461,13 +464,13 @@ ValidateROMBankDataAt4004:
 .validate_home
 	; the ROM begins with di ($f3), xor a ($af), ld sp, StackTop ($31 $00 $d0), jp Restart ($c3 $f1 $02)
 	ld hl, hProduct ;just use it as storage for the "correct" values
-	ld a, StackTop >> 8
+	ld a, HIGH(StackTop)
 	ld [hli], a
 	ld a, $c3
 	ld [hli], a
-	ld a, Restart & $ff
+	ld a, LOW(Restart)
 	ld [hli], a
-	ld [hl], Restart >> 8
+	ld [hl], HIGH(Restart)
 	jr .do_validation
 
 .error_text
@@ -490,17 +493,17 @@ SelectNewRandomROMBank:
 	call Random
 	and d
 	ld b, a
-	ld a, [hCurrent]
+	ldh a, [hCurrent]
 	cp c
 	jr nz, .selected
-	ld a, [hCurrent + 1]
+	ldh a, [hCurrent + 1]
 	cp b
 	jr z, SelectNewRandomROMBank
 .selected
 	ld a, c
-	ld [hCurrent], a
+	ldh [hCurrent], a
 	ld a, b
-	ld [hCurrent + 1], a
+	ldh [hCurrent + 1], a
 	ret
 
 RunAllROMTests::
@@ -514,7 +517,7 @@ TestROMPushBankswitch::
 	call CheckLastROMBankExists ;returns max valid ROM bank in de
 	ret c
 	ld a, 5
-	ld [hMax], a
+	ldh [hMax], a
 .loop
 	call SelectNewRandomROMBank
 	di

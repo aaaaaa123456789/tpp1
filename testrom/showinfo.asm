@@ -111,7 +111,7 @@ DisplaySystemInformation::
 	ld [hl], "n"
 .printed_RTC
 	hlcoord 18, 9
-	ld a, [hGBType]
+	ldh a, [hGBType]
 	cp $11
 	ld a, "C"
 	jr nz, .not_GBC
@@ -126,7 +126,7 @@ DisplaySystemInformation::
 	hlcoord 17, 10
 	ld [hli], a
 	ld [hl], "x"
-	ld a, [hComplianceTestRun]
+	ldh a, [hComplianceTestRun]
 	dec a
 	jr z, .tested_once
 	inc a
@@ -156,7 +156,7 @@ DisplaySystemInformation::
 	push hl
 	call PrintNumber
 	ld [hl], "<@>"
-	ld a, wDigitsBuffer & $ff
+	ld a, LOW(wDigitsBuffer)
 	sub l
 	ld c, a
 	ld b, $ff
@@ -171,7 +171,7 @@ DisplaySystemInformation::
 	rst CopyString
 .display_done
 	xor a
-	ld [hVBlankLine], a
+	ldh [hVBlankLine], a
 	ld a, 3
 	rst DelayFrames
 	jp PrintBackMessageAndWait
