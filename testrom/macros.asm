@@ -1,66 +1,66 @@
-lb: MACRO
+MACRO lb
 	ld \1, (LOW(\2) << 8) | LOW(\3)
 ENDM
 
-bigdw: MACRO
+MACRO bigdw
 	rept _NARG
 		db HIGH(\1), LOW(\1)
 		shift
 	endr
 ENDM
 
-dbww: MACRO
+MACRO dbww
 	db \1
 	dw \2, \3
 ENDM
 
 tile EQUS " + $10 * "
 
-coord: MACRO
+MACRO coord
 	ld \1, wScreenBuffer + (\2) + ((\3) * SCREEN_WIDTH)
 ENDM
 
-dwcoord: MACRO
+MACRO dwcoord
 	dw wScreenBuffer + (\1) + ((\2) * SCREEN_WIDTH)
 ENDM
 
-writecoord: MACRO
+MACRO writecoord
 	db $ea ;ld [nnnn], a
 	dwcoord \1, \2
 ENDM
 
-const_def: MACRO
-const_value = 0
+MACRO const_def
+  DEF const_value = 0
 ENDM
 
-const: MACRO
-\1 EQU const_value
-const_value = const_value + 1
+MACRO const
+  DEF \1 EQU const_value
+  DEF const_value = const_value + 1
 ENDM
 
-shift_const: MACRO
-\1 EQU (1 << const_value)
-const_value = const_value + 1
+MACRO shift_const
+  DEF \1 EQU (1 << const_value)
+  DEF const_value = const_value + 1
 ENDM
 
-option_label: MACRO
+MACRO option_label
 .option_\1
 ENDM
 
-option_link: MACRO
+MACRO option_link
 	dw .option_\1
 ENDM
 
-menu: MACRO
-option_number = 0
+MACRO menu
+  DEF option_number = 0
 	option_link {d:option_number}
 	dw \2
 	db \1, "<@>"
 ENDM
 
-option: MACRO
+MACRO option
 	option_label {d:option_number}
-option_number = option_number + 1
+  DEF option_number = option_number + 1
 	if _NARG > 3
 		dw \4
 	else
@@ -70,21 +70,21 @@ option_number = option_number + 1
 	db \1, "<@>"
 ENDM
 
-ldopt: MACRO
+MACRO ldopt
 	ld \1, (\3) | ((\2) << 14)
 ENDM
 
-end_menu: MACRO
+MACRO end_menu
 	option_label {d:option_number}
 	dw -1
 ENDM
 
-hex_input: MACRO
+MACRO hex_input
 	dw \3
 	dwcoord \1, \2
 ENDM
 
-hex_input_dw: MACRO
+MACRO hex_input_dw
 	hex_input \1, \2, (\3) + 1
 	hex_input (\1) + 2, \2, \3
 ENDM

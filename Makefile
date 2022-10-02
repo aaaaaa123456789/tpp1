@@ -13,7 +13,7 @@ ROMFLAGS := $(if $(RTC),+TIMER,)$(if $(RUMBLE),+$(and $(findstring $(RUMBLE),MUL
 
 all: padder.c $(wildcard testrom/*.asm)
 	${CC} -O3 padder.c -o padder
-	cd testrom && ${RGBASM} -hL -p 0xff -o ../testrom.o rom.asm
+	cd testrom && ${RGBASM} -Wno-unmapped-char -hL -p 0xff -o ../testrom.o rom.asm
 	${RGBLINK} -o testrom.gb -p 0xff -n testrom.sym testrom.o
 	./padder testrom.gb ${ROMSIZE}
 	${RGBFIX} -cv -p 0xff -r ${RAMSIZE} -m TPP1_1.0+BATTERY${ROMFLAGS} -l 0x33 -k TP -t TPP1TESTROM -i TPP1 testrom.gb
